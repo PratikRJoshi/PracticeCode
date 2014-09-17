@@ -2,13 +2,14 @@
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+
 import javax.swing.*;
 
 
 public class imageReader {
 
   
-   public static void main(String[] args) {
+   public static void main(String[] args) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException {
    	
 
 	String fileName = args[0];
@@ -16,7 +17,15 @@ public class imageReader {
 	int height = Integer.parseInt(args[2]);
 	
     BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
+    
+//    File outputFile = new File("indValues.txt");
+//    FileOutputStream fos = new FileOutputStream(outputFile);
+//    PrintStream ps = new PrintStream(fos);
+//    System.setOut(ps);
+    
+    PrintWriter writer = new PrintWriter("indValues.txt", "UTF-8");
+    
+    
     try {
 	    File file = new File(args[0]);
 	    InputStream is = new FileInputStream(file);
@@ -36,11 +45,19 @@ public class imageReader {
         }
     
     		
-    	int ind = 0, i=0;
-//    	while(ind+(height*width*2)!=bytes.length){
+    	int ind = 0;
+    	while(ind+(height*width*2)!=bytes.length){
+    	
+    		int i=0;
+    		redValues = new byte[width*height];
+    		greenValues = new byte[width*height];
+    		blueValues = new byte[width*height]; 
+    		
     		for(int y = 0; y < height; y++){
     			for(int x = 0; x < width; x++){
     				System.out.println();
+    				writer.write("ind = "+ind+"\n");
+    				
     				
     				System.out.println("byte["+ind+"] = "+bytes[ind]);
     				redValues[i] = bytes[ind];
@@ -66,19 +83,27 @@ public class imageReader {
     				i++;
     			}
     		}
-//    	}
+    		// Use a label to display the image
+    	    JFrame frame = new JFrame();
+    	    JLabel label = new JLabel(new ImageIcon(img));
+    	    frame.getContentPane().add(label, BorderLayout.CENTER);
+    	    frame.pack();
+    	    frame.setVisible(true);
+    		System.out.println("Done");
+//    		Thread.sleep(10000);
+    	}
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
     
-    // Use a label to display the image
-    JFrame frame = new JFrame();
-    JLabel label = new JLabel(new ImageIcon(img));
-    frame.getContentPane().add(label, BorderLayout.CENTER);
-    frame.pack();
-    frame.setVisible(true);
+//    // Use a label to display the image
+//    JFrame frame = new JFrame();
+//    JLabel label = new JLabel(new ImageIcon(img));
+//    frame.getContentPane().add(label, BorderLayout.CENTER);
+//    frame.pack();
+//    frame.setVisible(true);
 
    }
   
