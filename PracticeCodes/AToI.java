@@ -1,5 +1,4 @@
-
-public class Test {
+public class AtoI {
 	public int atoi(String str) {
         //if the string is empty or null, return 0
         if(str.length()==0 || str.isEmpty())
@@ -16,6 +15,10 @@ public class Test {
             signFlag = -1;
             index++;
         }
+        if(str.charAt(0)=='+'){
+            signFlag = 1;
+            index++;
+        }
         
         double finalInteger = 0;
 //        int power = 0;
@@ -26,10 +29,14 @@ public class Test {
         		finalInteger = finalInteger*10 + (str.charAt(index)-'0');
         		index++;
         	}
-        	else if(c==' ')
-        		index++;
+        	else if(c==' '){
+//        		index++;
+        		finalInteger*=signFlag;
+    		return (int) finalInteger;
+        }
         	else{
-        		return 0;
+        		finalInteger*=signFlag;
+        		return (int) finalInteger;
         	}
         }
         
@@ -46,8 +53,8 @@ public class Test {
         
     }
 	public static void main(String args[]){
-		Test t = new Test();
-		String input = " -123 4 ";
+		AtoI t = new AtoI();
+		String input = " +0 123";
 		int result = t.atoi(input);
 		System.out.println(result);
 	}
