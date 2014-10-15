@@ -21,21 +21,25 @@
 
 public class UniquePathCountWithObstacles {
     public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+    	//base case
         if(obstacleGrid == null || obstacleGrid.length == 0 || obstacleGrid[0].length == 0)
             return 0;
         
         int rowLength = obstacleGrid.length;
         int columnLength = obstacleGrid[0].length;
         
+        //an array to store the total number of unique paths at each point in the grid
         int numberOfUniquePaths[][] = new int[rowLength][columnLength];
         
+        //set all the first column entries to 1 where there is no obstacle
         for(int i=0;i<rowLength;i++){
             if(obstacleGrid[i][0] == 1)
                 break;
             else
               numberOfUniquePaths[i][0] = 1;  
         }
-        
+
+        //set all the first row entries to 1 where there is no obstacle
         for(int j=0;j<columnLength;j++){
             if(obstacleGrid[0][j] == 1)
                 break;
@@ -43,6 +47,8 @@ public class UniquePathCountWithObstacles {
                 numberOfUniquePaths[0][j] = 1;
         }
         
+        //now traverse through the remaining entries in the grid and go on setting each entry
+        //to the total number of unique paths till that point 
         for(int i=1;i<rowLength;i++){
             for(int j=1;j<columnLength;j++){
                 if(obstacleGrid[i][j] == 1)
@@ -51,6 +57,8 @@ public class UniquePathCountWithObstacles {
                     numberOfUniquePaths[i][j] = numberOfUniquePaths[i-1][j] + numberOfUniquePaths[i][j-1];
             }
         }
+        
+        //the final answer is in the last cell of the grid
         return numberOfUniquePaths[rowLength-1][columnLength-1];
     }
     
