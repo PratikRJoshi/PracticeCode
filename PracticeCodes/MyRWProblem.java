@@ -3,27 +3,37 @@
  */
 public class MyRWProblem {
     static RWDriver rwDriver;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         rwDriver = new RWDriver();
         Thread rt1 = new Thread(new Readers(rwDriver), "First Reader thread");
+        Thread rt2 = new Thread(new Readers(rwDriver), "First Reader thread");
         Thread wt1 = new Thread(new Writers(rwDriver), "First Writer thread");
+        Thread wt2 = new Thread(new Writers(rwDriver), "First Writer thread");
         rt1.start();
+        rt2.start();
         wt1.start();
+        wt2.start();
+
+        rt1.join();
+        rt2.join();
+        wt1.join();
+
     }
 }
 
 class RWDriver {
-    private int readers = 0;
-    private int writers = 0;
-    private int writeRequest = 0;
+    private static int readers = 0;
+    private static int writers = 0;
+    private static int writeRequest = 0;
 
     public synchronized void lockRead() throws InterruptedException {
-        while (this.writers > 0 || this.writeRequest > 0) {
+        while (writers > 0 || writeRequest > 0) {
             System.out.println(Thread.currentThread().getName() + " is waiting to get read lock.");
             Thread.currentThread().wait();
         }
-        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading.");
+        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading");
         readers++;
+
     }
 
     public synchronized void unlockRead() {
@@ -61,6 +71,7 @@ class Readers implements Runnable {
 
     public void run() {
         try {
+            System.out.println("Starting reader "+Thread.currentThread().getName());
             rwDriver.lockRead();
             /* Do some read operation */
             System.out.println(Thread.currentThread().getName() + " has started reading.");
@@ -83,6 +94,7 @@ class Writers implements Runnable {
 
     public void run() {
         try {
+            System.out.println("Starting writer "+Thread.currentThread().getName());
             rwDriver.lockWrite();
             /* Do some write operation */
             System.out.println(Thread.currentThread().getName() + " has started writing.");
