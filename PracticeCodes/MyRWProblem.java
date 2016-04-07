@@ -84,7 +84,6 @@ class Readers implements Runnable {
             System.out.println("Starting reader - "+Thread.currentThread().getName());
             rwDriver.lockRead();
             /* Do some read operation */
-            Thread.sleep(1000);
             System.out.println(Thread.currentThread().getName() + " has started reading.");
             /* Finish the read operation */
             rwDriver.unlockRead();
@@ -108,7 +107,6 @@ class Writers implements Runnable {
             System.out.println("Starting writer - "+Thread.currentThread().getName());
             rwDriver.lockWrite();
             /* Do some write operation */
-            Thread.sleep(1000);
             System.out.println(Thread.currentThread().getName() + " has started writing.");
             /* Finish the write operation */
             rwDriver.unlockWrite();
