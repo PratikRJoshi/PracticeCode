@@ -5,7 +5,7 @@ public class MyThreadProblem {
     static RWDriver rwDriver;
     public static void main(String[] args) throws InterruptedException {
 
-        int numberOfReaders = 3;
+/*        int numberOfReaders = 3;
         int numberOfWriters = 2;
 
         rwDriver = new RWDriver();
@@ -28,43 +28,67 @@ public class MyThreadProblem {
         for (int i = 0; i < numberOfReaders; i++){
             wt[i].join();
         }
+*/
+        rwDriver = new RWDriver();
+        Thread rt1 = new Thread(new Readers(rwDriver));
+        rt1.start();
+        Thread rt2 = new Thread(new Readers(rwDriver));
+        rt2.start();
+        Thread rt3 = new Thread(new Readers(rwDriver));
+        rt3.start();
+
+        Thread wt1 = new Thread(new Writers(rwDriver));
+        wt1.start();
+        Thread wt2 = new Thread(new Writers(rwDriver));
+        wt2.start();
+
+        rt1.join();
+        rt2.join();
+        rt3.join();
+
+        wt1.join();
+        wt2.join();
+
     }
 }
 
 class RWDriver {
     private static int readers = 0;
     private static int writers = 0;
-    private static int writeRequest = 0;
+    private static int maxReaders = 2;
 
     public synchronized void lockRead() throws InterruptedException {
-        while (writers > 0 || writeRequest > 0) {
+        System.out.println(Thread.currentThread().getName() + " has entered lockRead");
+        while (writers > 0 || readers >= maxReaders) {
             System.out.println(Thread.currentThread().getName() + " is waiting to get read lock.");
             Thread.currentThread().wait();
         }
-        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading.");
         readers++;
+        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading. Number of threads at " +
+                "this point is "+ readers);
 
     }
 
     public synchronized void unlockRead() {
+        System.out.println(Thread.currentThread().getName() + " has entered unlockRead");
         readers--;
         notifyAll();
         System.out.println(Thread.currentThread().getName() + " has released lock for reading.");
     }
 
     public synchronized void lockWrite() throws InterruptedException {
-        writeRequest++;
-
-        while (readers > 0 || writers > 0) {
+        System.out.println(Thread.currentThread().getName() + " has entered lockWrite");
+        while (writers > 0) {
             System.out.println(Thread.currentThread().getName() + " is waiting to get write lock.");
             Thread.currentThread().wait();
         }
-        writeRequest--;
-        System.out.println(Thread.currentThread().getName() + " has acquired lock for writing.");
         writers++;
+        System.out.println(Thread.currentThread().getName() + " has acquired lock for writing. The number of writers " +
+                "at this point is "+ writers);
     }
 
     public synchronized void unlockWrite() {
+        System.out.println(Thread.currentThread().getName() + " has entered unlockWrite");
         writers--;
         notifyAll();
         System.out.println(Thread.currentThread().getName() + " has released lock for writing.");
