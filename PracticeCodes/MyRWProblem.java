@@ -4,20 +4,30 @@
 public class MyRWProblem {
     static RWDriver rwDriver;
     public static void main(String[] args) throws InterruptedException {
+
+        int numberOfReaders = 3;
+        int numberOfWriters = 2;
+
         rwDriver = new RWDriver();
-        Thread rt1 = new Thread(new Readers(rwDriver), "First Reader thread");
-        Thread rt2 = new Thread(new Readers(rwDriver), "First Reader thread");
-        Thread wt1 = new Thread(new Writers(rwDriver), "First Writer thread");
-        Thread wt2 = new Thread(new Writers(rwDriver), "First Writer thread");
-        rt1.start();
-        rt2.start();
-        wt1.start();
-        wt2.start();
+        Thread rt[] = new Thread[numberOfReaders];
+        for (int i = 0 ; i < numberOfReaders; i++){
+            rt[i] = new Thread(new Readers(rwDriver), "Reader "+(i+1)+" thread");
+            rt[i].start();
+        }
 
-        rt1.join();
-        rt2.join();
-        wt1.join();
+        Thread wt[] = new Thread[numberOfReaders];
+        for (int i = 0; i < numberOfReaders; i++){
+            wt[i] = new Thread(new Writers(rwDriver), "Writer "+(i+1)+" thread");
+            wt[i].start();
+        }
 
+        for (int i = 0; i < numberOfReaders; i++){
+            rt[i].join();
+        }
+
+        for (int i = 0; i < numberOfReaders; i++){
+            wt[i].join();
+        }
     }
 }
 
@@ -31,7 +41,7 @@ class RWDriver {
             System.out.println(Thread.currentThread().getName() + " is waiting to get read lock.");
             Thread.currentThread().wait();
         }
-        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading");
+        System.out.println(Thread.currentThread().getName() + " has acquired lock for reading.");
         readers++;
 
     }
@@ -71,9 +81,10 @@ class Readers implements Runnable {
 
     public void run() {
         try {
-            System.out.println("Starting reader "+Thread.currentThread().getName());
+            System.out.println("Starting reader - "+Thread.currentThread().getName());
             rwDriver.lockRead();
             /* Do some read operation */
+            Thread.sleep(1000);
             System.out.println(Thread.currentThread().getName() + " has started reading.");
             /* Finish the read operation */
             rwDriver.unlockRead();
@@ -94,9 +105,10 @@ class Writers implements Runnable {
 
     public void run() {
         try {
-            System.out.println("Starting writer "+Thread.currentThread().getName());
+            System.out.println("Starting writer - "+Thread.currentThread().getName());
             rwDriver.lockWrite();
             /* Do some write operation */
+            Thread.sleep(1000);
             System.out.println(Thread.currentThread().getName() + " has started writing.");
             /* Finish the write operation */
             rwDriver.unlockWrite();
