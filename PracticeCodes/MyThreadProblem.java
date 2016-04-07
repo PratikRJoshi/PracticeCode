@@ -1,7 +1,7 @@
 /**
  * Basic implementation of reader writer problem.
  */
-public class MyRWProblem {
+public class MyThreadProblem {
     static RWDriver rwDriver;
     public static void main(String[] args) throws InterruptedException {
 
