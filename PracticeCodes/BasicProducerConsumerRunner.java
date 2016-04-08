@@ -21,12 +21,12 @@ class ProducerConsumer {
 
                 list.add(item.nextInt(100));
                 lock.notifyAll();
-                Thread.sleep(100);
+                Thread.sleep(300);
             }
         }
     }
 
-    public void consume() throws InterruptedException {
+    public synchronized void consume() throws InterruptedException {
         while (true) {
             synchronized (lock) {
                 while (list.size() == 0){
@@ -37,7 +37,39 @@ class ProducerConsumer {
                 System.out.println("Retrieved item: " + value + "; Current list size: " + list.size());
                 lock.notifyAll();
             }
-            Thread.sleep(1000);
+            Thread.sleep(100);
+        }
+    }
+}
+
+class Producer implements Runnable {
+    ProducerConsumer pc;
+
+    public Producer(ProducerConsumer pc) {
+        this.pc = pc;
+    }
+
+    public void run() {
+        try {
+            pc.produce();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class Consumer implements Runnable {
+    ProducerConsumer pc;
+
+    public Consumer(ProducerConsumer pc){
+        this.pc = pc;
+    }
+
+    public void run() {
+        try {
+            pc.consume();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
@@ -46,33 +78,16 @@ public class BasicProducerConsumerRunner {
     public static void main(String[] args) throws InterruptedException {
         ProducerConsumer pc = new ProducerConsumer();
 
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    pc.produce();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "Producer thread");
-
-        Thread t2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    pc.consume();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "Consumer thread1");
-
+        Thread t1 = new Thread(new Producer(pc), "Producer thread");
+        Thread t2 = new Thread(new Consumer(pc), "Consumer thread1");
+        Thread t3 = new Thread(new Consumer(pc), "Consumer thread2");
 
         t1.start();
         t2.start();
+        t3.start();
 
         t1.join();
         t2.join();
+        t3.join();
     }
 }
