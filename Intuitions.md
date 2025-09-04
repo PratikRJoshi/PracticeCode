@@ -1,4 +1,3 @@
-
 ### When to Use a Global Variable in Recursive Problems
 
 Knowing when to use a "global" variable (or a class member variable, in this case) versus passing all state through function returns is a key design decision in recursive problems.
@@ -189,9 +188,112 @@ You use this pattern when the state of the current node influences the problem f
 
 ---
 
-### Summary
+### When to Use a Helper Function in Tree Problems
 
-| Timing                      | Information Flow                | Intuition                                                              | Key Use Cases                                                              |
-| --------------------------- | ------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **After** Recursive Calls   | **Bottom-up** (Post-order)      | "I need results from my children to calculate my own result."          | Height, depth, diameter, counting, summing subtrees.                       |
-| **Before** Recursive Calls  | **Top-down** (Pre-order)        | "I'll process myself and pass information down to my children."        | Pathfinding, maintaining running state, validating against ancestor rules.  |
+The decision to use a helper function usually comes down to one key question:
+
+**"Does the signature of the function I need for my recursion match the signature of the main function given by the problem?"**
+
+The "signature" includes:
+1.  **The parameters it accepts.**
+2.  **The type of value it returns.**
+
+---
+
+#### When to Use a Helper Function
+
+You should create a helper function when the recursive part of your algorithm needs a **different signature** or requires **setup/cleanup** that the main function will handle.
+
+**1. You Need to Pass Extra Parameters (State) Down the Tree**
+
+This is the most common reason. The recursion needs to keep track of information that wasn't provided in the original function call.
+
+*   **Pattern:** The main function calls the helper with initial state values. The helper then calls itself with updated state.
+*   **Example: [LeetCode 98. Validate a Binary Search Tree](https://leetcode.com/problems/validate-a-binary-search-tree/)**
+    *   **Main Function Signature:** `public boolean isValidBST(TreeNode root)`
+    *   **The Problem:** To validate a node, you need to know the valid range (`min`, `max`) it must be in, which is determined by its ancestors. The original signature doesn't have a place for `min` and `max`.
+    *   **Helper Function Signature:** `private boolean isValid(TreeNode node, Integer min, Integer max)`
+    *   **Usage:**
+        ```java
+        public boolean isValidBST(TreeNode root) {
+            // Initial call with no constraints
+            return isValid(root, null, null); 
+        }
+        
+        private boolean isValid(TreeNode node, Integer min, Integer max) {
+            // Recursive calls pass updated constraints
+            // isValid(node.left, min, node.val)
+        }
+        ```
+
+**2. The Recursive Function Needs a Different Return Type**
+
+The value your recursion needs to "bubble up" is different from the final answer's type.
+
+*   **Pattern:** The main function calls the helper, interprets its return value, and then returns the final answer in the correct type (`boolean`, `int`, etc.).
+*   **Example: [LeetCode 110. Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/)**
+    *   **Main Function Signature:** `public boolean isBalanced(TreeNode root)` (must return a boolean).
+    *   **The Problem:** The most efficient way to solve this is with a function that calculates a subtree's height but also signals imbalance. Returning an `int` (height) or a flag (`-1`) is cleaner than returning a complex object.
+    *   **Helper Function Signature:** `private int checkHeight(TreeNode node)`
+    *   **Usage:**
+        ```java
+        public boolean isBalanced(TreeNode root) {
+            // Interpret the helper's int result to return a boolean
+            return checkHeight(root) != -1; 
+        }
+        
+        private int checkHeight(TreeNode node) {
+            // Returns height (an int) or -1 (an int)
+        }
+        ```
+
+**3. You Need to Do Setup or Teardown (Using Global State)**
+
+The main function serves as an entry point to initialize state, trigger the recursion, and then return the final result.
+
+*   **Pattern:** The main function initializes a class member variable, calls the helper, and then returns the variable's final value.
+*   **Example: [LeetCode 543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)**
+    *   **Main Function Signature:** `public int diameterOfBinaryTree(TreeNode root)`
+    *   **The Problem:** We need a variable `maxDiameter` to be accessible across all recursive calls.
+    *   **Helper Function Signature:** `private int height(TreeNode node)`
+    *   **Usage:**
+        ```java
+        private int maxDiameter = 0; // Setup: Initialize state
+
+        public int diameterOfBinaryTree(TreeNode root) {
+            height(root); // Trigger recursion
+            return maxDiameter; // Teardown: Return final state
+        }
+        
+        private int height(TreeNode node) {
+            // This helper's job is to calculate height, but it
+            // modifies maxDiameter as a side effect.
+        }
+        ```
+
+---
+
+#### When the Given Function is Sufficient
+
+You can just call the main function recursively if its signature is **perfectly suited** for the recursive calls. This means the parameters and return type are exactly what you need for the subproblems.
+
+*   **Pattern:** The function calls itself on subproblems (`node.left`, `node.right`) with modified parameters that fit the existing signature.
+
+**Examples:**
+
+1.  **[LeetCode 112. Path Sum](https://leetcode.com/problems/path-sum/)**
+    *   **Signature:** `public boolean hasPathSum(TreeNode root, int targetSum)`
+    *   **Why it works:** The recursive call needs a `node` and the `remainingSum`. This perfectly matches the function's signature. We can just call `hasPathSum(node.left, newTargetSum)`. No extra parameters or different return types are needed.
+
+2.  **[LeetCode 226. Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/)**
+    *   **Signature:** `public TreeNode invertTree(TreeNode root)`
+    *   **Why it works:** The function needs to operate on a node and return the modified node. The recursive calls, `invertTree(root.left)` and `invertTree(root.right)`, fit this signature perfectly.
+
+### Summary Table
+
+| Condition                                                              | Decision                                         | Rationale                                                                        |
+| ---------------------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Recursion needs extra parameters (e.g., `min`, `max` bounds).          | **Use a helper function.**                       | The main function's signature is insufficient.                                   |
+| Recursion's natural return value is a different type (e.g., `int` vs `boolean`). | **Use a helper function.**                       | The main function's job is to translate the helper's result into the final type. |
+| You need to initialize a "global" or member variable before recursion. | **Use a helper function.**                       | The main function acts as a setup/driver for the recursive worker.                |
+| The recursive subproblem fits the main function's signature exactly.   | **Call the main function recursively.**          | The signature is self-sufficient. No need for an extra layer.                    |
