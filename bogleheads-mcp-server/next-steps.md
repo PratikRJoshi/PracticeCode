@@ -84,4 +84,28 @@ Build an MCP(Model Context Protocol) server for `bogleheads.org` forum. I want i
 9. **Docker + CI + Deploy** (medium)
    - Dockerize app; GitHub Actions build/test; deploy to Cloud Run/Fly.io/Render.
 
-> **Next coding task:** implement **Scraper sub-task (a)** — `ScraperService.crawlIndex(int maxPages)`.
+## Progress Update (2025-09-10)
+
+- Scraper implemented (crawl index + download HTML)
+- Parser implemented (HTML → ContextChunk)
+- Indexing switched to FSDirectory and persists across restarts
+- REST API `/v1/context` live and returning results
+
+## Upcoming Tasks
+
+1. **Ranking improvements** (medium)
+   - Tune BM25 parameters.
+   - Add recency/popularity boost.
+2. **Health-check endpoint** (low)
+   - `GET /health` returns status + index size.
+3. **Crawler orchestration** (medium)
+   - Schedule periodic runs (Spring @Scheduled).
+   - Skip unchanged threads by ETag/date.
+4. **Dockerization** (medium)
+   - Multi-stage build for slim JRE image.
+5. **CI Pipeline** (medium)
+   - GitHub Actions: mvn verify → docker build → push.
+6. **Deployment** (low)
+   - Use Cloud Run or Fly.io.
+
+> **Next coding task:** create `/health` endpoint and simple rank tuning.
