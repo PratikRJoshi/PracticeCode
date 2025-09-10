@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Project-local Maven settings
+  This file lives under <project>/.mvn/settings.xml so it is applied automatically
+  (via .mvn/maven.config) whenever you run any mvn command inside this project.
+  Customise mirrors, repositories, authentication servers, profiles, etc., as needed.
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+      <localRepository>.m2/repository</localRepository>
+
+    <mirrors>
+        <!-- Example: use Maven Central directly (default) -->
+        <mirror>
+            <id>central</id>
+            <name>Maven Central Mirror</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+        <!-- Add additional mirrors here if needed -->
+    </mirrors>
+
+    <servers>
+        <!--
+          Put encrypted credentials for private repos here.
+          Example:
+          <server>
+              <id>my-internal-repo</id>
+              <username>${env.REPO_USER}</username>
+              <password>${env.REPO_PASS}</password>
+          </server>
+        -->
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>default-profile</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            </properties>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>default-profile</activeProfile>
+    </activeProfiles>
+</settings>
