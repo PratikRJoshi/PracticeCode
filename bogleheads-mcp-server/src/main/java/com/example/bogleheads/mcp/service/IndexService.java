@@ -13,10 +13,12 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,13 @@ import java.util.List;
  */
 @Service
 public class IndexService {
-    private final Directory directory = new ByteBuffersDirectory();
-    private final Analyzer analyzer = new StandardAnalyzer();
+    private final Directory directory;
+    private final Analyzer analyzer;
     private IndexWriter writer;
 
     public IndexService() throws Exception {
+        directory = FSDirectory.open(Path.of("data/index"));
+        analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         writer = new IndexWriter(directory, config);
     }
@@ -60,5 +64,13 @@ public class IndexService {
             }
         }
         return out;
+    }
+
+    public void rebuild() throws IOException {
+        writer.close();
+        directory.close();
+        directory = FSDirectory.open(Path.of("data/index"));
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        writer = new IndexWriter(directory, config);
     }
 }
