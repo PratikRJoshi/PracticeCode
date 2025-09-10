@@ -18,3 +18,7 @@ buildNumber.properties
 .classpath
 
 /.m2/
+
+# Local crawler output
+/data/
+cp.txt

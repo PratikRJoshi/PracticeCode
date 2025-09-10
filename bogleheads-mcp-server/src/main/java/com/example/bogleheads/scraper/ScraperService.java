@@ -5,9 +5,17 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service responsible for discovering forum thread URLs from the bogleheads.org index pages.
@@ -22,6 +30,7 @@ public class ScraperService {
     private static final String INDEX_URL = "https://www.bogleheads.org/forum/index.php";
     private static final String BASE_URL = "https://www.bogleheads.org/forum/";
     private static final int TIMEOUT_MS = (int) Duration.ofSeconds(30).toMillis();
+    private static final Pattern THREAD_ID_PATTERN = Pattern.compile("viewtopic\\.php\\?t=([0-9]+)");
 
     /**
      * Crawl the forum index and return discovered thread URLs.
@@ -57,7 +66,11 @@ public class ScraperService {
     private List<String> extractThreadUrls(Document doc) {
         return doc.select("a.topictitle")
                   .stream()
-                  .map(el -> "https://www.bogleheads.org/forum/" + el.attr("href"))
+                  .map(el -> el.attr("href"))
+                  .map(href -> href.startsWith("./") ? href.substring(2) : href)
+                  .filter(href -> href.startsWith("viewtopic.php?t="))
+                  .map(href -> BASE_URL + href)
+                  .distinct()
                   .toList();
     }
 
@@ -70,5 +83,38 @@ public class ScraperService {
                   .map(href -> BASE_URL + href)
                   .distinct()
                   .toList();
+    }
+
+    /**
+     * Download each thread URL and persist raw HTML under data/raw/YYYY/MM/DD/{threadId}.html
+     * Performs a polite pause between requests.
+     *
+     * @param threadUrls List of thread URLs collected from {@link #crawlIndex(int)}
+     * @param pauseMs    milliseconds to wait between HTTP requests
+     */
+    public void downloadThreads(List<String> threadUrls, long pauseMs) throws IOException, InterruptedException {
+        LocalDate today = LocalDate.now();
+        Path dayDir = Paths.get("data", "raw", today.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+        Files.createDirectories(dayDir);
+
+        for (String url : threadUrls) {
+            String threadId = extractThreadId(url);
+            if (threadId == null) continue; // skip unexpected url pattern
+
+            Path outFile = dayDir.resolve(threadId + ".html");
+            if (Files.exists(outFile)) continue; // already downloaded
+
+            Document doc = Jsoup.connect(url)
+                                .userAgent("Mozilla/5.0 (compatible; bogleheads-mcp/1.0; +https://github.com/your-repo)")
+                                .timeout(TIMEOUT_MS)
+                                .get();
+            Files.writeString(outFile, doc.outerHtml(), StandardCharsets.UTF_8);
+            Thread.sleep(pauseMs);
+        }
+    }
+
+    private String extractThreadId(String url) {
+        Matcher m = THREAD_ID_PATTERN.matcher(url);
+        return m.find() ? m.group(1) : null;
     }
 }
