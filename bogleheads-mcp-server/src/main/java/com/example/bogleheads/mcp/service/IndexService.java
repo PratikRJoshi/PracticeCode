@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Service
 public class IndexService {
-    private final Directory directory;
+    private Directory directory;
     private final Analyzer analyzer;
     private IndexWriter writer;
 
