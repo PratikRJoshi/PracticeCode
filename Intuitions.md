@@ -297,3 +297,106 @@ You can just call the main function recursively if its signature is **perfectly 
 | Recursion's natural return value is a different type (e.g., `int` vs `boolean`). | **Use a helper function.**                       | The main function's job is to translate the helper's result into the final type. |
 | You need to initialize a "global" or member variable before recursion. | **Use a helper function.**                       | The main function acts as a setup/driver for the recursive worker.                |
 | The recursive subproblem fits the main function's signature exactly.   | **Call the main function recursively.**          | The signature is self-sufficient. No need for an extra layer.                    |
+
+---
+
+## Monotonic Stack “Waiting Room” Intuition
+
+A monotonic stack is a **waiting room** of indices still looking for the first element to their right that satisfies some comparison (typically `>` or `<`).  The canonical pop loop:
+
+```java
+while (!stack.isEmpty() && currentValue COMPARE arr[stack.peek()]) {
+    int idx = stack.pop();        // idx just found its answer: currentValue
+    // record answer for idx here
+}
+stack.push(currentIndex);         // current now waits for its own answer
+```
+
+Key points
+1. **Invariant** – the stack is kept in sorted order (decreasing for “next greater”, increasing for “next smaller”).  This guarantees that once an element is popped it will never need to be considered again.
+2. **Amortised O(1)** – each index is pushed once and popped once, so the whole scan is linear.
+3. **Analogy** – people queue by height.  Each newcomer either waits (push) or kicks out shorter people ahead (pop) because they found their taller person.
+4. **Flexibility** – swap `>`/`<`, allow `=` on one side, or iterate `2·n` for circular arrays.  The skeleton stays identical.
+
+Pattern table
+| Problem flavour | Comparison | Invariant |
+|-----------------|------------|-----------|
+| Next **greater** element | `curr  >  arr[top]` | decreasing stack |
+| Next **greater or equal** | `curr >= arr[top]` | *strictly* decreasing |
+| Next **smaller** element  | `curr  <  arr[top]` | increasing stack |
+| Circular array            | same compare, loop `2n`, push only first `n` |
+
+The loop is the moment “waiting ends” for zero or more elements; everything else in the algorithm is just how you **record** that discovery (map assignment, span counting, water trapped…).
+
+
+---
+
+### A Guide to Pointers in Linked Lists
+
+Here are the key principles for correctly positioning `slow` and `fast` pointers and handling null checks in linked list problems.
+
+#### 1. The Dummy Node: Your Best Friend
+
+- **What it is**: A `ListNode dummy = new ListNode(0); dummy.next = head;`. It's a placeholder node that sits *before* the actual head of your list.
+- **Why it's essential**:
+    - **Uniformity**: It turns all operations into "middle-of-the-list" operations. Removing the head is the same as removing any other node; you're always modifying a `prev.next` pointer.
+    - **No Special Head Checks**: Without a dummy, code like `slow.next = slow.next.next` fails if you need to remove the head. You'd need an `if (head needs removal)` block. The dummy node eliminates this.
+- **Rule of Thumb**: If you are modifying a linked list (deleting, inserting), start with a dummy node.
+
+#### 2. Positioning `slow` and `fast` Pointers
+
+The goal is to establish a "window" or "gap" between `slow` and `fast` that helps you find a specific node. The key is to determine where `slow` should be when `fast` hits the end.
+
+- **Scenario A: `slow` needs to be *at* the target node.**
+    - **Example**: Find the middle of the list.
+    - **Logic**: When `fast` reaches the end, `slow` should be in the middle. This means `fast` must travel roughly twice as fast.
+    - **Code**: `while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }`
+    - **Null Check**: `fast != null && fast.next != null` is the standard for a 2x speed `fast` pointer. It handles both even and odd length lists gracefully.
+
+- **Scenario B: `slow` needs to be *before* the target node.**
+    - **Example**: Remove Nth node from the end.
+    - **Logic**: We need `slow` to point to the predecessor of the node to be deleted. To achieve this, we create a gap of `n` nodes between `slow` and `fast`. By advancing `fast` one extra step initially (a gap of `n+1` from the start), `slow` naturally ends up one step behind the target.
+    - **Code**:
+        1. `for (int i = 0; i <= n; i++) { fast = fast.next; }` (Creates the gap)
+        2. `while (fast != null) { slow = slow.next; fast = fast.next; }` (Moves them together)
+
+#### 3. Null Checks: The Defensive Playbook
+
+Null checks prevent `NullPointerException`. The pointer you are about to access `.next` on is the one you must check.
+
+- **`while (current != null)`**: Use this for a simple traversal where you need to visit every node.
+  ```java
+  ListNode current = head;
+  while (current != null) {
+      // Process current.val
+      current = current.next;
+  }
+
+### When to Use +1 in Memoization Array Size
+
+Use `+1` when:
+
+1. You need to store results for value 0
+2. Your problem uses 1-based indexing
+3. You need to access dp[1], dp[2] directly
+
+Don't use +1 when:
+- Using 0-based indexing
+- Shifting indices in your logic
+- Not including 0 as valid input
+
+---
+
+### When to Use Helper Functions in Recursion
+
+Use a helper function when:
+
+1. You need extra parameters not in original signature
+2. You need a different return type for recursion
+3. You need to initialize state before recursion
+4. You want to hide implementation details
+
+Don't use a helper when:
+- The function signature works perfectly for recursion
+- No additional state or different return types needed
+- A helper would only add unnecessary complexity
