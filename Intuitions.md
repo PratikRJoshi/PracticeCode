@@ -188,6 +188,86 @@ You use this pattern when the state of the current node influences the problem f
 
 ---
 
+### Forward vs Backward Recursion: Starting Point Matters
+
+When designing a recursive solution, you have a choice: start from the beginning and work forward, or start from the end and work backward. Both are valid, but one is often more natural than the other.
+
+#### Backward Recursion (Start from the End)
+
+**Pattern:** Call the helper with the full problem size (e.g., `helper(m, n)` for strings of length m and n), then recursively work toward smaller problems until reaching base case 0.
+
+**When it's natural:**
+- The problem asks about the "whole thing" and naturally decomposes by removal
+- Base case of "empty/zero" is simpler than "at the end"
+- You're building up a solution from smaller subproblems
+
+**Example: Longest Common Subsequence**
+```java
+public int longestCommonSubsequence(String text1, String text2) {
+    memo = new Integer[m + 1][n + 1];
+    return lcsHelper(m, n);  // Start with full problem
+}
+
+private int lcsHelper(int i, int j) {
+    if (i == 0 || j == 0) return 0;  // Base: empty strings
+
+    // Work backwards: consider first i chars and first j chars
+    if (text1.charAt(i-1) == text2.charAt(j-1)) {
+        return 1 + lcsHelper(i-1, j-1);  // Recurse toward 0
+    }
+    return Math.max(lcsHelper(i-1, j), lcsHelper(i, j-1));
+}
+```
+
+**Why backward here?**
+- Problem asks: "What's the LCS of these complete strings?"
+- Natural decomposition: "Remove a character and solve smaller problem"
+- Base case is simple: empty string → LCS = 0
+- The `+1` array size naturally accommodates index 0 for the base case
+
+#### Forward Recursion (Start from the Beginning)
+
+**Pattern:** Call the helper starting at index 0, then recursively advance toward the end.
+
+**When it's natural:**
+- You're scanning/searching through data
+- State accumulates as you progress (running sum, path tracking)
+- The problem naturally flows left-to-right or top-to-bottom
+
+**Example: Path Sum**
+```java
+public boolean hasPathSum(TreeNode node, int targetSum) {
+    if (node == null) return false;
+
+    int remaining = targetSum - node.val;  // Update state
+
+    if (node.left == null && node.right == null) {
+        return remaining == 0;  // Reached the end
+    }
+
+    // Work forward: pass updated state down
+    return hasPathSum(node.left, remaining) || hasPathSum(node.right, remaining);
+}
+```
+
+#### Can You Always Switch?
+
+**Bottom-up DP** is the "forward" version of "backward" memoization:
+
+| Approach | Direction | LCS Example |
+|----------|-----------|-------------|
+| Top-down memoization | Backward: `helper(m,n)` → `helper(0,0)` | Start with full strings, recurse toward empty |
+| Bottom-up DP | Forward: `dp[0][0]` → `dp[m][n]` | Start with empty strings, build up to full |
+
+Both solve the same problem, just from opposite ends. Choose based on:
+- Which base case is simpler to express
+- Which direction feels more natural for the problem
+- Whether the problem statement suggests a starting point
+
+**Key insight:** The `+1` array size in backward recursion serves to hold the base case (index 0 = empty/nothing), while forward DP initializes index 0 explicitly and builds from there.
+
+---
+
 ### When to Use a Helper Function in Tree Problems
 
 The decision to use a helper function usually comes down to one key question:
