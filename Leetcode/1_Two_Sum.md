@@ -7,72 +7,17 @@ The key insight is to use a hash map to store the numbers we've seen so far and 
 
 ### Java Reference Implementation
 ```java
-import java.util.HashMap;
-import java.util.Map;
-
 class Solution {
     public int[] twoSum(int[] nums, int target) {
-        Map<Integer, Integer> numToIndex = new HashMap<>();
-        
-        for (int i = 0; i < nums.length; i++) {
-            int complement = target - nums[i];
-            
-            if (numToIndex.containsKey(complement)) {
-                return new int[] { numToIndex.get(complement), i };
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < nums.length; i++){
+            if(map.containsKey(target - nums[i])){
+                return new int[]{i, map.get(target - nums[i])};
             }
-            
-            numToIndex.put(nums[i], i);
+            map.put(nums[i], i);
         }
-        
-        // No solution found
-        return new int[] {};
-    }
-}
-```
 
-### Alternative Implementation (Two-Pass Hash Map)
-```java
-import java.util.HashMap;
-import java.util.Map;
-
-class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        Map<Integer, Integer> numToIndex = new HashMap<>();
-        
-        // First pass: Store all numbers and their indices
-        for (int i = 0; i < nums.length; i++) {
-            numToIndex.put(nums[i], i);
-        }
-        
-        // Second pass: Check for complements
-        for (int i = 0; i < nums.length; i++) {
-            int complement = target - nums[i];
-            
-            if (numToIndex.containsKey(complement) && numToIndex.get(complement) != i) {
-                return new int[] { i, numToIndex.get(complement) };
-            }
-        }
-        
-        // No solution found
-        return new int[] {};
-    }
-}
-```
-
-### Alternative Implementation (Brute Force)
-```java
-class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        for (int i = 0; i < nums.length; i++) {
-            for (int j = i + 1; j < nums.length; j++) {
-                if (nums[i] + nums[j] == target) {
-                    return new int[] { i, j };
-                }
-            }
-        }
-        
-        // No solution found
-        return new int[] {};
+        return new int[]{};
     }
 }
 ```
