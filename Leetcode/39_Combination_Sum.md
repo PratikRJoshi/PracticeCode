@@ -1,4 +1,3 @@
-```markdown
 # Combination Sum - LeetCode 39
 
 ## Main Idea / Intuition
