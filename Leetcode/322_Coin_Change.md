@@ -142,3 +142,48 @@ class Solution {
 - **Coin Change 2** (Problem 518): Count the number of ways to make up an amount using given coins
 - **Minimum Cost For Tickets** (Problem 983): Similar DP problem with different constraints
 - **Perfect Squares** (Problem 279): Find the minimum number of perfect squares that sum to n
+
+### Comparison with Coin Change 2 (Problem 518)
+
+#### Problem Objective Difference
+- **Coin Change (322)**: Find the *minimum number* of coins needed to make up an amount
+- **Coin Change 2 (518)**: Count the *total number of ways* to make up an amount
+
+#### Key Implementation Differences
+
+1. **DP State Meaning**:
+   - **322**: `dp[i]` = minimum number of coins to make amount i
+   - **518**: `dp[i]` = number of different ways to make amount i
+
+2. **Initialization**:
+   - **322**: `dp[0] = 0`, others initialized to `amount + 1` (representing "infinity")
+   - **518**: `dp[0] = 1` (one way to make zero - use no coins), others initialized to `0`
+
+3. **Loop Order** (critical difference):
+   - **322**: 
+     ```java
+     for (int amount = 1; amount <= target; amount++) {
+         for (int coin : coins) {
+             // Update dp[amount]
+         }
+     }
+     ```
+   - **518**: 
+     ```java
+     for (int coin : coins) {
+         for (int amount = coin; amount <= target; amount++) {
+             // Update dp[amount]
+         }
+     }
+     ```
+   In 322, the loop order doesn't matter because we're finding the minimum. In 518, this specific order prevents counting the same combination in different orders.
+
+4. **Recurrence Relation**:
+   - **322**: `dp[amount] = Math.min(dp[amount], dp[amount - coin] + 1)`
+   - **518**: `dp[amount] += dp[amount - coin]`
+
+5. **Result Interpretation**:
+   - **322**: Return `-1` if no solution exists (`dp[amount] > amount`)
+   - **518**: Always return `dp[amount]` (could be 0 if no ways exist)
+
+These differences reflect the fundamental distinction between finding a minimum value (optimization problem) and counting all possibilities (combinatorial problem).
