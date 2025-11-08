@@ -107,3 +107,18 @@ class Solution {
 ### Complexity
 - **Time Complexity**: O(log(m*n)) - Binary search on a virtual array of size m*n
 - **Space Complexity**: O(1) - Constant extra space
+
+### Comparison with LeetCode 240 (Search a 2D Matrix II)
+
+| Aspect | LeetCode 74 | LeetCode 240 |
+|--------|------------|-------------|
+| **Matrix Properties** | 1. Rows sorted left to right<br>2. First element of each row > last element of previous row | 1. Rows sorted left to right<br>2. Columns sorted top to bottom |
+| **Can treat as 1D array?** | Yes | No |
+| **Optimal Algorithm** | Binary Search | Search Space Reduction |
+| **Time Complexity** | O(log(m*n)) | O(m + n) |
+| **Starting Position** | N/A (binary search) | Top-right or bottom-left corner |
+
+**Key Insight**: The additional constraint in LeetCode 74 (each row's first element > previous row's last element) allows us to treat the matrix as a single sorted array, enabling binary search. Without this constraint in LeetCode 240, we need a different approach that takes advantage of the 2D sorting properties.
+
+**Algorithm Choice**: For LeetCode 74, binary search is optimal. For LeetCode 240, the search space reduction technique starting from a corner is optimal. Using the LeetCode 240 approach for LeetCode 74 would work but would be less efficient (O(m+n) vs O(log(m*n))).
+
