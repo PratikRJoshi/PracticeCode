@@ -2,17 +2,21 @@
 ### Problem Link: [Redundant Connection](https://leetcode.com/problems/redundant-connection/)
 
 ### Intuition/Main Idea
-This problem asks us to find an edge that can be removed to make a graph into a tree. In a tree with n nodes, there should be exactly n-1 edges. Since the input has n edges for n nodes, there is exactly one redundant edge. The key insight is to use a Union-Find (Disjoint Set) data structure to detect cycles. We process edges one by one, and when we find an edge that connects two nodes that are already in the same set (connected), that edge creates a cycle and is the redundant connection.
+This problem asks us to find an edge that can be removed to make a graph into a tree. In a tree with n nodes, there should be exactly n-1 edges. Since the input has n edges for n nodes, there is exactly one redundant edge that creates a cycle.
 
-The problem also specifies that if there are multiple answers, we should return the edge that appears last in the input. This is automatically handled by processing edges in order.
+The key insight is to use a **Union-Find (Disjoint Set)** data structure to detect cycles in the graph. We process edges one by one, and for each edge (u, v):
+1. If u and v are already in the same set (connected), then adding this edge would create a cycle, so it's the redundant edge.
+2. Otherwise, we union the sets containing u and v.
+
+The problem specifies that if there are multiple answers, we should return the edge that appears last in the input. This is automatically handled by processing edges in order.
 
 ### Code Mapping
 
 | Problem Requirement | Java Code Section (Relevant Lines) |
 |---------------------|-----------------------------------|
 | Process edges in order | `for (int[] edge : edges)` |
-| Detect if nodes are already connected | `if (find(parent, edge[0]) == find(parent, edge[1]))` |
-| Union operation to connect nodes | `union(parent, edge[0], edge[1])` |
+| Detect if nodes are already connected | `if (find(parent, u) == find(parent, v))` |
+| Union operation to connect nodes | `union(parent, u, v)` |
 | Return the redundant edge | `return edge;` |
 | Initialize parent array | `int[] parent = new int[n + 1];` |
 

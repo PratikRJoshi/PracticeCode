@@ -1,38 +1,28 @@
 ### 743. Network Delay Time
-Problem: https://leetcode.com/problems/network-delay-time/
+### Problem Link: [Network Delay Time](https://leetcode.com/problems/network-delay-time/)
 
----
+### Intuition/Main Idea
+This problem asks us to find the minimum time it takes for a signal to reach all nodes in a network, starting from a given source node. If some nodes cannot be reached, we return -1.
 
-### Main Idea: Dijkstra's Single-Source Shortest Path
+This is a classic **Single-Source Shortest Path** problem on a weighted, directed graph. Since all edge weights (times) are positive, **Dijkstra's algorithm** is the ideal choice. The key insight is that the time it takes for all nodes to receive the signal is determined by the node that takes the longest time to receive it.
 
-This problem asks for the minimum time required for a signal to propagate from a starting node `k` to all other nodes in a network. This is a classic **single-source shortest path** problem on a weighted, directed graph.
+Dijkstra's algorithm works by greedily selecting the node with the smallest known distance from the source and relaxing all of its outgoing edges. We use a priority queue to efficiently select the next node to process. Once we've processed all reachable nodes, the answer is the maximum time among all nodes. If any node is unreachable (its time is still infinity), we return -1.
 
-1.  **Model:** The network is a graph where nodes are routers and edges have weights equal to the travel time.
-2.  **Algorithm Choice:** Since edge weights are positive, **Dijkstra's algorithm** is the ideal choice. It efficiently finds the shortest path from a source to all other nodes.
-3.  **Strategy:**
-    *   We use a `dist` array to keep track of the shortest time found so far from `k` to every other node, initialized to infinity.
-    *   A **Priority Queue** is used to always process the node that is currently closest to the source `k`. This greedy approach ensures we find the shortest paths.
-    *   We start with node `k` (distance 0). We iteratively pull the closest node from the queue and "relax" its neighbors: if we find a shorter path to a neighbor through the current node, we update its distance and add it to the queue.
-4.  **Final Result:** After the algorithm runs, the answer is the **maximum time** in our `dist` array. If any node is unreachable (its distance is still infinity), we return -1.
+### Code Mapping
 
----
+| Problem Requirement | Java Code Section (Relevant Lines) |
+|---------------------|-----------------------------------|
+| Build the graph representation | `Map<Integer, List<int[]>> graph = new HashMap<>();` |
+| Track minimum time to reach each node | `int[] minTimeToReachNode = new int[n + 1];` |
+| Process nodes in order of increasing time | `PriorityQueue<int[]> priorityQueue = new PriorityQueue<>((a, b) -> a[1] - b[1]);` |
+| Update time if a shorter path is found | `if (newTime < minTimeToReachNode[neighborNode]) { minTimeToReachNode[neighborNode] = newTime; }` |
+| Find the maximum time among all nodes | `int maxTime = 0; for (int i = 1; i <= n; i++) { maxTime = Math.max(maxTime, time); }` |
+| Handle unreachable nodes | `if (time == Integer.MAX_VALUE) { return -1; }` |
 
-### Requirement → Code Mapping
-
-| Tag | Requirement | Where Implemented |
-|---|---|---|
-| R1 | Model the weighted, directed graph | `graph.get(u).add(new int[]{v, w});` |
-| R2 | Track shortest distance from `k` to all nodes | `int[] dist = new int[n + 1];` |
-| R3 | Use a priority queue to always explore the closest node first | `PriorityQueue<int[]> pq = new PriorityQueue<>(...);` |
-| R4 | Update a neighbor's distance if a shorter path is found (Relaxation) | `if (dist[u] + w < dist[v]) { ... }` |
-| R5 | Find the time to reach the farthest node | `int maxDelay = 0; ... maxDelay = Math.max(maxDelay, dist[i]);` |
-| R6 | Handle unreachable nodes | `if (dist[i] == Integer.MAX_VALUE) return -1;` |
-
----
-
-### Dijkstra's Algorithm Solution (Clearer Variable Names)
+### Final Java Code & Learning Pattern
 
 ```java
+// [Pattern: Dijkstra's Algorithm for Single-Source Shortest Path]
 import java.util.*;
 
 class Solution {
@@ -49,7 +39,7 @@ class Solution {
         // Stores the minimum time from startNode k to every other node
         int[] minTimeToReachNode = new int[n + 1];
         Arrays.fill(minTimeToReachNode, Integer.MAX_VALUE);
-        minTimeToReachNode[k] = 0;
+        minTimeToReachNode[k] = 0;  // Time to reach the source node is 0
 
         // Priority Queue stores {node, time_from_k}, sorted by time
         PriorityQueue<int[]> priorityQueue = new PriorityQueue<>((a, b) -> a[1] - b[1]);
@@ -65,6 +55,7 @@ class Solution {
                 continue;
             }
 
+            // If this node has no outgoing edges, continue
             if (!graph.containsKey(currentNode)) {
                 continue;
             }
@@ -100,13 +91,22 @@ class Solution {
 }
 ```
 
----
-
 ### Complexity Analysis
-*   **Time Complexity: `O(E log V)`**, where `V` is `n` (nodes) and `E` is `times.length` (edges).
-    *   Building the graph takes `O(E)`.
-    *   Each node is added to the priority queue at most once. Each edge relaxation involves a potential priority queue operation, which takes `O(log V)` time. In total, this gives `O(E log V)`.
+- **Time Complexity**: $O(E \log V)$ where $E$ is the number of edges (times.length) and $V$ is the number of vertices (n).
+  - Building the graph takes $O(E)$ time.
+  - Each edge relaxation involves a potential priority queue operation, which takes $O(\log V)$ time.
+  - In the worst case, we might process each edge once, giving us $O(E \log V)$ overall.
 
-*   **Space Complexity: `O(V + E)`**
-    *   The `graph` map stores all edges, taking `O(E)` space.
-    *   The `dist` array and the priority queue can take up to `O(V)` space.
+- **Space Complexity**: $O(V + E)$
+  - The graph representation requires $O(E)$ space to store all edges.
+  - The distance array and priority queue can take up to $O(V)$ space.
+
+### Similar Problems
+1. **LeetCode 787: Cheapest Flights Within K Stops** - Similar shortest path problem with an additional constraint on the number of stops.
+2. **LeetCode 1631: Path With Minimum Effort** - Find a path with the minimum maximum absolute difference in heights.
+3. **LeetCode 1514: Path with Maximum Probability** - Find the path with the maximum probability of success.
+4. **LeetCode 1334: Find the City With the Smallest Number of Neighbors at a Threshold Distance** - Uses shortest path algorithms to find cities within a distance threshold.
+5. **LeetCode 1368: Minimum Cost to Make at Least One Valid Path in a Grid** - Find the minimum cost to make a valid path in a grid.
+6. **LeetCode 1462: Course Schedule IV** - Determine if a course is a prerequisite of another course.
+7. **LeetCode 399: Evaluate Division** - Evaluate expressions involving variables and division operations.
+8. **LeetCode 1976: Number of ways to Arrive at destination** - Count the number of ways to reach a destination with the minimum possible cost.
