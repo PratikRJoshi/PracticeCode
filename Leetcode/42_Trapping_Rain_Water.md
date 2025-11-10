@@ -176,3 +176,61 @@ class Solution {
 - **Container With Most Water** (Problem 11): Similar concept but with different constraints
 - **Largest Rectangle in Histogram** (Problem 84): Uses a similar stack-based approach
 - **Product of Array Except Self** (Problem 238): Uses a similar technique of computing from both ends
+
+
+### Comparison with Container With Most Water (Problem 11)
+
+While both problems use a two-pointer approach, they solve fundamentally different water-related challenges:
+
+#### Key Differences:
+
+1. **Problem Statement**:
+    - **Trapping Rain Water**: Calculate water trapped *above* positions between bars
+    - **Container With Most Water**: Find maximum water contained *between* two lines
+
+2. **What We're Optimizing**:
+    - **Trapping Rain Water**: Total accumulated water across all positions
+    - **Container With Most Water**: Single maximum area between two lines
+
+3. **Pointer Movement Logic**:
+    - **Trapping Rain Water**: Move pointer with smaller *maximum height seen so far*
+    - **Container With Most Water**: Move pointer with smaller *current height*
+
+4. **Calculation Formula**:
+    - **Trapping Rain Water**: `water += min(leftMax, rightMax) - height[current]`
+    - **Container With Most Water**: `area = (right - left) * min(height[left], height[right])`
+
+#### Code Comparison:
+
+```java
+// Trapping Rain Water (42)
+while (left < right) {
+    leftMax = Math.max(leftMax, height[left]);    // Track maximum heights
+    rightMax = Math.max(rightMax, height[right]);
+    
+    if (leftMax < rightMax) {
+        water += leftMax - height[left];          // Accumulate water
+        left++;
+    } else {
+        water += rightMax - height[right];
+        right--;
+    }
+}
+```
+
+```java
+// Container With Most Water (11)
+while (start < end) {
+    if (height[start] < height[end]) {
+        temp = (end - start) * height[start];     // Calculate area
+        start++;
+    } else {
+        temp = (end - start) * height[end];
+        end--;
+    }
+    
+    max = Math.max(max, temp);                    // Track maximum
+}
+```
+
+Both solutions achieve O(n) time complexity and O(1) space complexity, but they solve different problems with subtle yet important variations in their implementation details.
