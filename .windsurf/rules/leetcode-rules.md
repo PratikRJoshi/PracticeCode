@@ -13,38 +13,43 @@ globs:
 You should solve the requested problem with the following rules -
 
 **A. File Management & Naming (New File Content Generation):**
-1.  The file name must be changed at the end to be <ProblemNumber_ProblemTitle.md>
-2. If it exists, delete the other file having the pattern <ProblemNumber.md>
-3. If the file with the <ProblemNumber_ProblemTitle.md> already exists and has the full solution, then ignore and continue with the remaining prompt.
+1. Any new file for Leetcode problems should be compulsorily added to the Leetcode directory in the current project repo.
+2. The file name must be changed at the end to be <ProblemNumber_ProblemTitle.md>
+3. If it exists, delete the other file having the pattern <ProblemNumber.md>
+4. If the file with the <ProblemNumber_ProblemTitle.md> already exists and has the full solution, then ignore and continue with the remaining prompt.
 
 
 
 **B. Structured Solution Output:**
 For every solution or modification request, your output content MUST be in raw markdown format and must strictly follow these four sections in order:
 
-1.  **Intuition/Main Idea:**
+1. **Problem Description**
+    * Every file should start with the Problem title, hyperlink to the problem on Leetcode website, problem description, examples explaining the problem.
+    
+2.  **Intuition/Main Idea:**
     * Explain the core algorithm, data structure, or mathematical principle used.
     * Keep it concise, focusing on the 'why' of the approach.
 
-2.  **Code Mapping:**
+3.  **Code Mapping:**
     * Present a **Markdown Table** to map problem requirements and constraints.
     * The table must specifically address any requirement or constraint tagged with the **@** symbol in the user's prompt.
     * **Headers:** `Problem Requirement (@)` | `Java Code Section (Relevant Lines)`
 
-3.  **Final Java Code & Learning Pattern (Full Content):**
+4.  **Final Java Code & Learning Pattern (Full Content):**
     * Provide the **complete, final, and accepted Java code** solution inside a single, marked Java code block.
     * The code should have detailed explanation for the whys behind the code lines that build up to the final solution code.
 
-4.  **Complexity Analysis:**
+5.  **Complexity Analysis:**
     * State the **Time Complexity** using $O(...)$ notation.
     * State the **Space Complexity** using $O(...)$ notation.
 
-5. ** Tree Problems **
+6. ** Tree Problems **
     * For every tree problem, add explanations for the following - 
       * Why or why not a helper function is required.
       * Why or why not a global variable is required.
       * What all is calculated at the current level or node of the tree.
       * What is returned to the parent from the current level of the tree.
+      * How to decide if a recursive call to children needs to be made before current node calculation or vice versa
 
 6. ** Binary Search Problems **
     * For every tree problem, add explanations for the following - 
