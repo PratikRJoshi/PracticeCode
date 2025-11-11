@@ -1,18 +1,34 @@
 ### 994. Rotting Oranges
 ### Problem Link: [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
-### Intuition
-This problem presents a grid where:
-1. Each cell contains either an empty cell (0), a fresh orange (1), or a rotten orange (2)
-2. Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten
-3. We need to determine the minimum number of minutes until no fresh oranges are left, or return -1 if it's impossible
 
-The key insight is to use a Breadth-First Search (BFS) approach, which naturally models the "spreading" process of rotting oranges in layers (or time steps). We start with all initially rotten oranges in the queue, and then process them level by level, marking fresh oranges as rotten and counting the minutes it takes.
+### Intuition/Main Idea
+This problem asks us to find the minimum number of minutes until no fresh oranges are left in a grid. Each minute, any fresh orange adjacent to a rotten orange becomes rotten.
 
-### Java Reference Implementation (BFS)
+The key insight is to use a **Breadth-First Search (BFS)** approach, which is perfect for finding the shortest path or minimum time in a grid. We start by identifying all initially rotten oranges and enqueue them. Then, we process them level by level, where each level represents one minute of time.
+
+For each rotten orange, we check its four adjacent cells (up, down, left, right). If there's a fresh orange, we make it rotten and add it to the queue for the next level. We continue this process until the queue is empty, meaning no more oranges can rot.
+
+Finally, we check if any fresh oranges remain. If so, it's impossible to rot all oranges, and we return -1. Otherwise, we return the number of minutes elapsed (which is the number of levels processed in our BFS).
+
+This approach ensures we find the minimum time because BFS processes all possibilities at the current time step before moving to the next time step.
+
+### Code Mapping
+
+| Problem Requirement | Java Code Section (Relevant Lines) |
+|---------------------|-----------------------------------|
+| Count fresh oranges | `int freshCount = 0; for (int i = 0; i < rows; i++) { for (int j = 0; j < cols; j++) { if (grid[i][j] == 1) { freshCount++; } } }` |
+| Initialize queue with rotten oranges | `if (grid[i][j] == 2) { queue.offer(new int[]{i, j}); }` |
+| Process oranges level by level | `while (!queue.isEmpty() && freshCount > 0) { int size = queue.size(); for (int i = 0; i < size; i++) { /* process current level */ } minutes++; }` |
+| Check four adjacent directions | `int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};` |
+| Return -1 if impossible | `return freshCount > 0 ? -1 : minutes;` |
+
+### Final Java Code & Learning Pattern
+
 ```java
+// [Pattern: BFS for Minimum Time/Distance in Grid]
 class Solution {
     public int orangesRotting(int[][] grid) {
-        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+        if (grid == null || grid.length == 0) {
             return 0;
         }
         
@@ -21,13 +37,13 @@ class Solution {
         Queue<int[]> queue = new LinkedList<>();
         int freshCount = 0;
         
-        // Add all rotten oranges to the queue and count fresh oranges
+        // Count fresh oranges and add rotten oranges to queue
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (grid[i][j] == 2) {
-                    queue.offer(new int[]{i, j});
-                } else if (grid[i][j] == 1) {
+                if (grid[i][j] == 1) {
                     freshCount++;
+                } else if (grid[i][j] == 2) {
+                    queue.offer(new int[]{i, j});
                 }
             }
         }
@@ -37,7 +53,7 @@ class Solution {
             return 0;
         }
         
-        // If there are fresh oranges but no rotten ones, it's impossible
+        // If there are fresh oranges but no rotten ones, impossible
         if (queue.isEmpty()) {
             return -1;
         }
@@ -45,20 +61,20 @@ class Solution {
         int minutes = 0;
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // Up, Down, Left, Right
         
-        // BFS to rot oranges level by level (minute by minute)
+        // BFS to rot oranges level by level (each level = 1 minute)
         while (!queue.isEmpty() && freshCount > 0) {
             int size = queue.size();
             
-            // Process all oranges at the current level (minute)
+            // Process all rotten oranges at the current minute
             for (int i = 0; i < size; i++) {
-                int[] pos = queue.poll();
+                int[] cell = queue.poll();
                 
-                // Check all four adjacent positions
+                // Check all four adjacent cells
                 for (int[] dir : directions) {
-                    int newRow = pos[0] + dir[0];
-                    int newCol = pos[1] + dir[1];
+                    int newRow = cell[0] + dir[0];
+                    int newCol = cell[1] + dir[1];
                     
-                    // If the position is valid and has a fresh orange
+                    // Check if the adjacent cell is valid and has a fresh orange
                     if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol] == 1) {
                         // Make the orange rotten
                         grid[newRow][newCol] = 2;
@@ -68,70 +84,91 @@ class Solution {
                 }
             }
             
-            // Increment minutes after processing all oranges at the current level
+            // Increment time after processing all oranges at current minute
             minutes++;
         }
         
-        // If there are still fresh oranges left, it's impossible to rot all of them
+        // If there are still fresh oranges left, it's impossible to rot all
+        return freshCount > 0 ? -1 : minutes;
+    }
+}
+```
+
+### Alternative Implementation (Using In-place Marking)
+
+```java
+// [Pattern: BFS with In-place Marking]
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int freshCount = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        
+        // First pass: count fresh oranges and add initial rotten oranges to queue
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 1) {
+                    freshCount++;
+                } else if (grid[i][j] == 2) {
+                    // Use a special marker for initial rotten oranges
+                    queue.offer(new int[]{i, j});
+                }
+            }
+        }
+        
+        // If no fresh oranges, return 0
+        if (freshCount == 0) {
+            return 0;
+        }
+        
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int minutes = 0;
+        
+        // BFS
+        while (!queue.isEmpty() && freshCount > 0) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                int[] pos = queue.poll();
+                
+                for (int[] dir : directions) {
+                    int newRow = pos[0] + dir[0];
+                    int newCol = pos[1] + dir[1];
+                    
+                    // Check if adjacent cell is valid and has a fresh orange
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol] == 1) {
+                        // Mark as rotten with the current time + 2
+                        // (We add 2 to distinguish from original values 0, 1, 2)
+                        grid[newRow][newCol] = minutes + 2 + 2;
+                        queue.offer(new int[]{newRow, newCol});
+                        freshCount--;
+                    }
+                }
+            }
+            
+            minutes++;
+        }
+        
         return freshCount == 0 ? minutes : -1;
     }
 }
 ```
 
-### Requirement → Code Mapping
-- **R0 (Handle edge cases)**: Check for empty grid and cases with no fresh oranges
-- **R1 (Identify initial state)**: Count fresh oranges and collect all rotten oranges
-- **R2 (BFS approach)**: Use a queue to process oranges level by level, representing minutes
-- **R3 (Track progress)**: Decrement fresh orange count as they rot
-- **R4 (Check for impossibility)**: Return -1 if there are still fresh oranges after BFS completes
+### Complexity Analysis
+- **Time Complexity**: $O(m \times n)$ where m is the number of rows and n is the number of columns in the grid. In the worst case, we might need to visit every cell in the grid once.
+- **Space Complexity**: $O(m \times n)$ for the queue, which in the worst case might contain all cells in the grid.
 
-### Example Walkthrough
-For the grid:
-```
-2 1 1
-1 1 0
-0 1 1
-```
-
-1. Initial state:
-    - Rotten oranges: (0,0)
-    - Fresh oranges: 7
-    - Queue: [(0,0)]
-    - Minutes: 0
-
-2. Minute 1:
-    - Process (0,0) → rot (0,1) and (1,0)
-    - Fresh oranges: 5
-    - Queue: [(0,1), (1,0)]
-    - Minutes: 1
-
-3. Minute 2:
-    - Process (0,1) → rot (0,2) and (1,1)
-    - Process (1,0) → rot (2,0) (but it's already empty)
-    - Fresh oranges: 3
-    - Queue: [(0,2), (1,1)]
-    - Minutes: 2
-
-4. Minute 3:
-    - Process (0,2) → no new rots
-    - Process (1,1) → rot (2,1)
-    - Fresh oranges: 2
-    - Queue: [(2,1)]
-    - Minutes: 3
-
-5. Minute 4:
-    - Process (2,1) → rot (2,2)
-    - Fresh oranges: 1
-    - Queue: [(2,2)]
-    - Minutes: 4
-
-6. All oranges are rotten, return 4 minutes.
-
-### Complexity
-- **Time Complexity**: O(m × n) where m is the number of rows and n is the number of columns. We visit each cell at most once.
-- **Space Complexity**: O(m × n) for the queue in the worst case where all oranges are rotten initially.
-
-### Key Insights
-1. **BFS vs DFS**: BFS is more suitable for this problem because it naturally models the time progression (level by level).
-2. **Counting Fresh Oranges**: Keeping track of fresh oranges allows us to quickly determine if all oranges can be rotted.
-3. **Queue Size Tracking**: Processing the queue in batches (based on size) helps us track the minutes accurately.
+### Similar Problems
+1. **LeetCode 286: Walls and Gates** - Find the distance of each cell to the nearest gate.
+2. **LeetCode 542: 01 Matrix** - Find the distance of the nearest 0 for each cell.
+3. **LeetCode 1162: As Far from Land as Possible** - Find the maximum distance from land.
+4. **LeetCode 1091: Shortest Path in Binary Matrix** - Find the shortest path from top-left to bottom-right.
+5. **LeetCode 934: Shortest Bridge** - Find the shortest bridge connecting two islands.
+6. **LeetCode 1293: Shortest Path in a Grid with Obstacles Elimination** - Find shortest path with obstacle removal.
+7. **LeetCode 1197: Minimum Knight Moves** - Find the minimum number of moves for a knight to reach a position.
+8. **LeetCode 752: Open the Lock** - Find the minimum number of moves to open a lock.

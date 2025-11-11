@@ -1,109 +1,24 @@
 ### 110. Balanced Binary Tree
-Problem: https://leetcode.com/problems/balanced-binary-tree/
+### Problem Link: [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/)
 
----
+### Intuition/Main Idea
+A balanced binary tree is defined as a tree where the height difference between the left and right subtrees of every node is at most 1. The key insight is to use a **post-order traversal** approach where we check the balance condition from the bottom up.
 
-### Main Idea & Intuition
+Instead of calculating the height of each subtree multiple times (which would be inefficient), we can combine the height calculation and balance checking in a single recursive function. This function returns the height of a subtree if it's balanced, or a special value (like -1) if it's unbalanced.
 
-The problem asks us to determine if a binary tree is "height-balanced." This means that for *every single node* in the tree, the height of its left subtree and the height of its right subtree differ by at most 1.
+The elegance of this approach is that once we detect an imbalance anywhere in the tree, we can immediately propagate this information up the recursion stack without doing any further unnecessary calculations. This makes the algorithm both efficient and clean.
 
-This problem is a perfect example of a **post-order traversal** where the result from the children determines the result for the parent.
+### Code Mapping
 
-**Core Logic:**
-To check if a node is balanced, we first need to know the heights of its left and right subtrees. This is a classic bottom-up approach. We can write a helper function that does two things:
-1.  Calculates the height of a subtree.
-2.  Checks if that subtree is balanced.
+| Problem Requirement | Java Code Section (Relevant Lines) |
+|---------------------|-----------------------------------|
+| Check if tree is balanced | `return checkHeight(root) != -1;` |
+| Calculate height of subtrees | `int leftHeight = checkHeight(node.left); int rightHeight = checkHeight(node.right);` |
+| Check balance condition | `if (Math.abs(leftHeight - rightHeight) > 1) { return -1; }` |
+| Propagate imbalance | `if (leftHeight == -1 || rightHeight == -1) { return -1; }` |
+| Return height if balanced | `return 1 + Math.max(leftHeight, rightHeight);` |
 
-We can combine these two goals elegantly. Our helper function will return the height of a subtree *if it is balanced*. If it's unbalanced, we'll return a special flag value (like `-1`).
-
-When a parent node gets the results from its children:
-- If either child returned `-1`, the parent knows an imbalance exists below it. It doesn't need to do any more work and can immediately return `-1` to its own parent.
-- If both children return valid heights, the parent checks if *it* is balanced by comparing the two heights. If `abs(leftHeight - rightHeight) > 1`, it's unbalanced and returns `-1`. 
-- Otherwise, it is balanced, and it returns its own height: `1 + max(leftHeight, rightHeight)`. 
-
-This avoids using a global variable by encoding the "isBalanced" status directly into the return value of our height-calculating function.
-
----
-
-### Step-by-Step to the Final Code
-
-**Step 1: Define the main function.**
-The main function `isBalanced` will call our recursive helper and check the final result. If the helper returns `-1`, the tree is unbalanced; otherwise, it's balanced.
-
-```java
-class Solution {
-    public boolean isBalanced(TreeNode root) {
-        return checkHeight(root) != -1;
-    }
-    
-    // Helper function to be defined next
-}
-```
-
-**Step 2: Create the recursive helper `checkHeight`.**
-This function will return the height of the tree rooted at `node` if it's balanced, or `-1` if it's not.
-
-**Step 3: Define the base case.**
-An empty tree (`node == null`) is balanced and has a height of 0.
-
-```java
-private int checkHeight(TreeNode node) {
-    if (node == null) {
-        return 0;
-    }
-    // ... more logic
-}
-```
-
-**Step 4: Add recursive calls and check for imbalance from children.**
-Recursively call `checkHeight` on the left and right children. After each call, check if the returned value is `-1`. If it is, an imbalance was found below, so we immediately stop and propagate the `-1` upwards.
-
-```java
-private int checkHeight(TreeNode node) {
-    if (node == null) {
-        return 0;
-    }
-
-    int leftHeight = checkHeight(node.left);
-    if (leftHeight == -1) {
-        return -1; // Propagate imbalance
-    }
-
-    int rightHeight = checkHeight(node.right);
-    if (rightHeight == -1) {
-        return -1; // Propagate imbalance
-    }
-    // ...
-}
-```
-
-**Step 5: Check the balance at the current node.**
-If the children are balanced, we now check the current node. If the absolute difference in their heights is greater than 1, the current node is unbalanced. Return `-1`.
-
-```java
-private int checkHeight(TreeNode node) {
-    // ... (recursive calls from Step 4)
-
-    if (Math.abs(leftHeight - rightHeight) > 1) {
-        return -1; // Current node is unbalanced
-    }
-    // ...
-}
-```
-
-**Step 6: Return the height if balanced.**
-If the current node is balanced, its height is `1 + max(leftHeight, rightHeight)`. Return this value.
-
-```java
-private int checkHeight(TreeNode node) {
-    // ... (checks from Step 4 & 5)
-
-    // Return height if balanced
-    return 1 + Math.max(leftHeight, rightHeight);
-}
-```
-
-**Final Code:**
+### Final Java Code & Learning Pattern
 
 ```java
 /**
@@ -121,49 +36,104 @@ private int checkHeight(TreeNode node) {
  *     }
  * }
  */
+// [Pattern: Post-order Traversal with Height Calculation]
 class Solution {
     public boolean isBalanced(TreeNode root) {
         return checkHeight(root) != -1;
     }
 
-    // Returns the height of the tree if it's balanced, otherwise returns -1.
+    // Returns the height of the tree if it's balanced, otherwise returns -1
     private int checkHeight(TreeNode node) {
-        // Base case: An empty tree is balanced and has height 0.
+        // Base case: An empty tree is balanced and has height 0
         if (node == null) {
             return 0;
         }
 
-        // Recursively get the height of the left subtree.
-        // If it's unbalanced, propagate the -1 up.
+        // Recursively get the height of the left subtree
         int leftHeight = checkHeight(node.left);
         if (leftHeight == -1) {
-            return -1;
+            return -1;  // Left subtree is unbalanced
         }
 
-        // Recursively get the height of the right subtree.
-        // If it's unbalanced, propagate the -1 up.
+        // Recursively get the height of the right subtree
         int rightHeight = checkHeight(node.right);
         if (rightHeight == -1) {
-            return -1;
+            return -1;  // Right subtree is unbalanced
         }
 
-        // Check if the current node is balanced.
+        // Check if the current node is balanced
         if (Math.abs(leftHeight - rightHeight) > 1) {
-            return -1;
+            return -1;  // Current node is unbalanced
         }
 
-        // If balanced, return its height.
+        // If balanced, return its height
         return 1 + Math.max(leftHeight, rightHeight);
     }
 }
+
 ```
 
----
+### Alternative Implementation (Two-Pass Approach)
+
+```java
+// [Pattern: Separate Height Calculation and Balance Check]
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        
+        // Check if left and right subtrees are balanced
+        if (!isBalanced(root.left) || !isBalanced(root.right)) {
+            return false;
+        }
+        
+        // Check if current node is balanced
+        int leftHeight = getHeight(root.left);
+        int rightHeight = getHeight(root.right);
+        
+        return Math.abs(leftHeight - rightHeight) <= 1;
+    }
+    
+    private int getHeight(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
+}
+
+```
 
 ### Complexity Analysis
+- **Time Complexity**: $O(n)$ for the optimized one-pass solution, where n is the number of nodes in the binary tree. We visit each node exactly once.
+- **Space Complexity**: $O(h)$ where h is the height of the tree. This is the space used by the recursion stack. In the worst case (a skewed tree), this could be $O(n)$, but for a balanced tree, it would be $O(\log n)$.
 
-*   **Time Complexity: O(N)**
-    *   We visit each node exactly once in a post-order traversal. `N` is the number of nodes.
+For the two-pass approach:
+- **Time Complexity**: $O(n^2)$ in the worst case, as for each node, we might recalculate heights of its subtrees multiple times.
+- **Space Complexity**: $O(h)$ same as the one-pass solution.
 
-*   **Space Complexity: O(H)**
-    *   The space complexity is determined by the recursion stack depth, which is the height of the tree, `H`. In the worst case (a skewed tree), this is `O(N)`. In a balanced tree, it's `O(log N)`.
+### Tree Problems Explanation
+- **Helper Function**: A helper function is required to combine height calculation and balance checking. This allows us to efficiently propagate the balance status up the tree while calculating heights.
+
+- **Global Variable**: No global variable is needed in this solution. Instead, we encode the "balanced" status directly in the return value of our recursive function. This makes the code cleaner and avoids potential issues with shared state.
+
+- **Current Level Calculation**: At each node, we calculate:
+  1. Whether the left and right subtrees are balanced
+  2. The heights of the left and right subtrees
+  3. Whether the current node is balanced based on the height difference
+
+- **Return Value**: The helper function returns:
+  - The height of the subtree if it's balanced
+  - -1 if the subtree is unbalanced
+  This dual-purpose return value efficiently combines height calculation and balance checking.
+
+### Similar Problems
+1. **LeetCode 104: Maximum Depth of Binary Tree** - Calculate the height of a binary tree.
+2. **LeetCode 543: Diameter of Binary Tree** - Find the longest path between any two nodes in a tree.
+3. **LeetCode 124: Binary Tree Maximum Path Sum** - Find the path with the maximum sum in a binary tree.
+4. **LeetCode 1120: Maximum Average Subtree** - Find the subtree with the maximum average value.
+5. **LeetCode 366: Find Leaves of Binary Tree** - Remove leaves of a tree layer by layer.
+6. **LeetCode 563: Binary Tree Tilt** - Calculate the tilt of a binary tree.
+7. **LeetCode 1448: Count Good Nodes in Binary Tree** - Count nodes that are greater than all nodes in the path from root.
+8. **LeetCode 1372: Longest ZigZag Path in a Binary Tree** - Find the longest zigzag path in a binary tree.
