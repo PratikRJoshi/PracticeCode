@@ -175,7 +175,117 @@ class Solution {
 }
 ```
 
-**Explanation of Key Code Sections:**
+## Visual Walkthrough of the Interleaving Approach
+
+Let's visualize the interleaving approach using a simple example with three nodes:
+- Original list: A → B → C with random pointers (A→C, B→A, C→B)
+
+### Step 1: Create Interleaved List
+
+Starting with the original list:
+```
+A → B → C
+↘   ↘   ↘
+ C   A   B
+```
+
+After creating and interleaving the copied nodes:
+```
+A → A' → B → B' → C → C'
+↘         ↘         ↘
+ C         A         B
+```
+
+Visually:
+```
+┌─────┐     ┌─────┐     ┌─────┐
+│  A  │────▶│  B  │────▶│  C  │
+└──┬──┘     └──┬──┘     └──┬──┘
+   │           │           │
+   │ random    │ random    │ random
+   ▼           ▼           ▼
+┌─────┐     ┌─────┐     ┌─────┐
+│  C  │     │  A  │     │  B  │
+└─────┘     └─────┘     └─────┘
+
+        ⬇ Create copies and interleave
+
+┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐
+│  A  │────▶│  A' │────▶│  B  │────▶│  B' │────▶│  C  │────▶│  C' │
+└──┬──┘     └─────┘     └──┬──┘     └─────┘     └──┬──┘     └─────┘
+   │                        │                        │
+   │ random                 │ random                 │ random
+   ▼                        ▼                        ▼
+┌─────┐                  ┌─────┐                  ┌─────┐
+│  C  │                  │  A  │                  │  B  │
+└─────┘                  └─────┘                  └─────┘
+```
+
+### Step 2: Set Random Pointers for Copied Nodes
+
+For each original node, set its copy's random pointer:
+- A'.random = A.random.next = C.next = C'
+- B'.random = B.random.next = A.next = A'
+- C'.random = C.random.next = B.next = B'
+
+```
+┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐
+│  A  │────▶│  A' │────▶│  B  │────▶│  B' │────▶│  C  │────▶│  C' │
+└──┬──┘     └──┬──┘     └──┬──┘     └──┬──┘     └──┬──┘     └──┬──┘
+   │           │           │           │           │           │
+   │ random    │ random    │ random    │ random    │ random    │ random
+   ▼           ▼           ▼           ▼           ▼           ▼
+┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐
+│  C  │────▶│  C' │     │  A  │────▶│  A' │     │  B  │────▶│  B' │
+└─────┘     └─────┘     └─────┘     └─────┘     └─────┘     └─────┘
+```
+
+### Step 3: Separate the Two Lists
+
+Restore the original list's next pointers and connect the copied nodes:
+
+```
+Original list after separation:
+┌─────┐     ┌─────┐     ┌─────┐
+│  A  │────▶│  B  │────▶│  C  │
+└──┬──┘     └──┬──┘     └──┬──┘
+   │           │           │
+   │ random    │ random    │ random
+   ▼           ▼           ▼
+┌─────┐     ┌─────┐     ┌─────┐
+│  C  │     │  A  │     │  B  │
+└─────┘     └─────┘     └─────┘
+
+Copied list after separation:
+┌─────┐     ┌─────┐     ┌─────┐
+│  A' │────▶│  B' │────▶│  C' │
+└──┬──┘     └──┬──┘     └──┬──┘
+   │           │           │
+   │ random    │ random    │ random
+   ▼           ▼           ▼
+┌─────┐     ┌─────┐     ┌─────┐
+│  C' │     │  A' │     │  B' │
+└─────┘     └─────┘     └─────┘
+```
+
+The separation process:
+```
+┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐
+│  A  │────▶│  A' │────▶│  B  │────▶│  B' │────▶│  C  │────▶│  C' │
+└─────┘     └─────┘     └─────┘     └─────┘     └─────┘     └─────┘
+
+        ⬇ Update next pointers
+
+┌─────┐              ┌─────┐              ┌─────┐
+│  A  │──────────────▶│  B  │──────────────▶│  C  │
+└─────┘              └─────┘              └─────┘
+
+┌─────┐              ┌─────┐              ┌─────┐
+│  A' │──────────────▶│  B' │──────────────▶│  C' │
+└─────┘              └─────┘              └─────┘
+```
+
+## Explanation of Key Code Sections:
 
 **Two-Pass Approach:**
 
@@ -199,12 +309,6 @@ class Solution {
 - **Random pointers:** `original.random.next` gives us the copy of `original.random`.
 - **Space efficient:** Uses O(1) extra space (excluding the new list).
 
-**Example walkthrough:**
-- Original: A -> B -> C (with random pointers)
-- After interleaving: A -> A' -> B -> B' -> C -> C'
-- Set random: A'.random = A.random.next
-- Separate: A -> B -> C and A' -> B' -> C'
-
 ## Complexity Analysis
 
 - **Time Complexity:** $O(n)$ where $n$ is the number of nodes. We traverse the list a constant number of times.
@@ -227,4 +331,3 @@ Problems that can be solved using similar techniques:
 8. **23. Merge k Sorted Lists** - Multiple list merging
 9. **141. Linked List Cycle** - Cycle detection
 10. **142. Linked List Cycle II** - Find cycle start
-

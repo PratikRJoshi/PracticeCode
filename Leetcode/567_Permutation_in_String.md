@@ -30,161 +30,101 @@ Output: false
 This is a **sliding window** problem with **frequency counting**. We need to check if any window in `s2` has the same character frequency as `s1`.
 
 **Core Algorithm:**
-1. Count frequency of each character in `s1`.
-2. Use a sliding window of size `s1.length()` in `s2`.
-3. Maintain frequency count of characters in the current window.
-4. If frequencies match, return true.
-5. Slide the window and update frequencies.
+1. Count frequency of each character in `s1` using a HashMap.
+2. Use a sliding window approach to check substrings in `s2`.
+3. Track the number of character matches between the current window and `s1`.
+4. If all characters match in frequency, return true.
+5. Slide the window by adding a new character and removing an old one.
 
-**Why sliding window works:** We need to check all contiguous substrings of length `s1.length()` in `s2`. A sliding window efficiently processes these substrings by adding one character and removing one character at a time.
+**Why HashMap and matches counter works:** Instead of comparing entire frequency arrays each time, we track how many characters have the correct frequency. When this count equals the number of unique characters in `s1`, we have a match.
 
 ## Code Mapping
 
 | Problem Requirement | Java Code Section (Relevant Lines) |
 |---------------------|-----------------------------------|
-| Count frequency of s1 | Frequency array - Lines 7-10 |
-| Initialize sliding window | Window frequency - Lines 12-15 |
-| Check if frequencies match | `matches` method - Lines 32-38 |
-| Slide window and update | For loop - Lines 17-29 |
-| Add new character | Frequency increment - Line 21 |
-| Remove old character | Frequency decrement - Line 24 |
-| Return result | Return statement - Line 30 |
+| Count frequency of s1 | HashMap initialization - Lines 7-10 |
+| Track character matches | `matches` variable - Line 12 |
+| Process window characters | While loop - Lines 13-37 |
+| Add new character | Frequency decrement - Lines 15-20 |
+| Check if all characters match | Matches check - Lines 22-24 |
+| Remove old character | Frequency increment - Lines 27-33 |
+| Return result | Return statement - Line 39 |
 
 ## Final Java Code & Learning Pattern
 
 ```java
 class Solution {
     public boolean checkInclusion(String s1, String s2) {
-        int len1 = s1.length();
-        int len2 = s2.length();
-        
-        if (len1 > len2) {
+        if(s1 == null || s2 == null || s1.isEmpty() || s2.isEmpty()){
             return false;
         }
-        
-        // Frequency array for s1
-        int[] count1 = new int[26];
-        for (char c : s1.toCharArray()) {
-            count1[c - 'a']++;
+
+        Map<Character, Integer> map = new HashMap<>();
+        for(char c : s1.toCharArray()){
+            map.put(c, map.getOrDefault(c, 0) + 1);
         }
-        
-        // Frequency array for sliding window in s2
-        int[] count2 = new int[26];
-        
-        // Initialize window: first len1 characters
-        for (int i = 0; i < len1; i++) {
-            count2[s2.charAt(i) - 'a']++;
-        }
-        
-        // Check if initial window matches
-        if (matches(count1, count2)) {
-            return true;
-        }
-        
-        // Slide the window
-        for (int i = len1; i < len2; i++) {
-            // Add new character (right end of window)
-            count2[s2.charAt(i) - 'a']++;
-            
-            // Remove old character (left end of window)
-            count2[s2.charAt(i - len1) - 'a']--;
-            
-            // Check if current window matches
-            if (matches(count1, count2)) {
+
+        int start = 0, end = 0, matches = 0;
+        while(end < s2.length()){
+            char c = s2.charAt(end);
+            if(map.containsKey(c)){
+                map.put(c, map.get(c) - 1);
+                if(map.get(c) == 0){
+                    matches++;
+                }
+            }
+
+            if(matches == map.size()){
                 return true;
             }
-        }
-        
-        return false;
-    }
-    
-    // Check if two frequency arrays match
-    private boolean matches(int[] count1, int[] count2) {
-        for (int i = 0; i < 26; i++) {
-            if (count1[i] != count2[i]) {
-                return false;
+
+            if(end >= s1.length() - 1){
+                char c2 = s2.charAt(start);
+                if(map.containsKey(c2)){
+                    if(map.get(c2) == 0){
+                        matches--;
+                    }
+                    map.put(c2, map.get(c2) + 1);
+                }
+                start++;
             }
+            end++;
         }
-        return true;
+
+        return false;
     }
 }
 ```
 
 **Explanation of Key Code Sections:**
 
-1. **Edge Case (Lines 5-7):** If `s1` is longer than `s2`, it's impossible to find a permutation.
+1. **Edge Cases (Lines 3-5):** Check for null or empty strings.
 
-2. **Count s1 Frequency (Lines 9-12):** Create a frequency array for `s1`. This is our target pattern.
+2. **Count s1 Frequency (Lines 7-10):** Create a HashMap to store the frequency of each character in `s1`. This is our target pattern.
 
-3. **Initialize Window (Lines 14-17):** Create frequency array for the first `len1` characters of `s2`. This is our initial sliding window.
+3. **Initialize Variables (Line 12):**
+   - `start`: Left boundary of sliding window
+   - `end`: Right boundary of sliding window
+   - `matches`: Number of characters that have the correct frequency
 
-4. **Check Initial Window (Lines 19-21):** Check if the initial window matches `s1`.
+4. **Process Window (Lines 13-37):** For each character in `s2`:
+   - **Process Current Character (Lines 14-20):** If the character is in our map, decrement its count. If its count becomes 0, increment `matches`.
+   - **Check for Match (Lines 22-24):** If `matches` equals the size of the map (all characters have correct frequency), return true.
+   - **Slide Window (Lines 26-35):** If window size reaches `s1.length()`, remove the leftmost character and slide the window.
+   - **Update Window (Lines 27-33):** When removing a character, if it's in our map, increment its count. If its count was 0, decrement `matches`.
 
-5. **Slide Window (Lines 23-29):** For each new position:
-   - **Add Right Character (Line 24):** Include the new character at the right end.
-   - **Remove Left Character (Line 27):** Exclude the character that's no longer in the window.
-   - **Check Match (Lines 29-31):** Check if the updated window matches `s1`.
+5. **Final Result (Line 39):** If no match is found, return false.
 
-6. **Match Function (Lines 34-40):** Compare two frequency arrays element by element.
-
-**Why sliding window is efficient:**
-- **O(1) update:** Adding/removing one character takes constant time.
-- **O(26) comparison:** Checking if frequencies match takes O(26) = O(1) time.
-- **Overall:** O(n) time where n is length of s2.
-
-**Optimization:** Instead of comparing entire arrays each time, we can track the number of matching characters:
-
-```java
-class Solution {
-    public boolean checkInclusion(String s1, String s2) {
-        int len1 = s1.length();
-        int len2 = s2.length();
-        
-        if (len1 > len2) return false;
-        
-        int[] count = new int[26];
-        for (char c : s1.toCharArray()) {
-            count[c - 'a']++;
-        }
-        
-        int matches = 0;
-        // Initialize window
-        for (int i = 0; i < len1; i++) {
-            int idx = s2.charAt(i) - 'a';
-            count[idx]--;
-            if (count[idx] == 0) matches++;
-            else if (count[idx] == -1) matches--;
-        }
-        
-        if (matches == 26) return true;
-        
-        // Slide window
-        for (int i = len1; i < len2; i++) {
-            // Remove left
-            int leftIdx = s2.charAt(i - len1) - 'a';
-            count[leftIdx]++;
-            if (count[leftIdx] == 0) matches++;
-            else if (count[leftIdx] == 1) matches--;
-            
-            // Add right
-            int rightIdx = s2.charAt(i) - 'a';
-            count[rightIdx]--;
-            if (count[rightIdx] == 0) matches++;
-            else if (count[rightIdx] == -1) matches--;
-            
-            if (matches == 26) return true;
-        }
-        
-        return false;
-    }
-}
-```
+**Why this approach is efficient:**
+- **Targeted counting:** We only track characters that appear in `s1`.
+- **Optimized comparison:** Instead of comparing all characters each time, we track the number of matching characters.
+- **Dynamic window:** The window expands until it reaches the size of `s1`, then slides by maintaining its size.
 
 ## Complexity Analysis
 
 - **Time Complexity:** $O(n)$ where $n$ is the length of `s2`. We process each character at most twice (once when added, once when removed).
 
-- **Space Complexity:** $O(1)$ as we only use fixed-size arrays (26 elements).
+- **Space Complexity:** $O(k)$ where $k$ is the number of unique characters in `s1`. In the worst case, this is $O(26)$ for lowercase English letters, which simplifies to $O(1)$.
 
 ## Similar Problems
 
@@ -200,4 +140,3 @@ Problems that can be solved using similar sliding window patterns:
 8. **30. Substring with Concatenation of All Words** - Sliding window variant
 9. **159. Longest Substring with At Most Two Distinct Characters** - Sliding window
 10. **340. Longest Substring with At Most K Distinct Characters** - Sliding window
-

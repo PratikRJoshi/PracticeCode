@@ -38,9 +38,19 @@ class Solution {
                     dp[i][j] = dp[i - 1][j - 1];
                 } else {
                     // Calculate the minimum cost of the three operations
-                    int replace = dp[i - 1][j - 1] + 1; // Replace
-                    int delete = dp[i - 1][j] + 1;      // Delete
-                    int insert = dp[i][j - 1] + 1;      // Insert
+                    int replace = dp[i - 1][j - 1] + 1; // Replace: Change word1[i-1] to word2[j-1]
+                    
+                    // Delete operation: Remove word1[i-1] and match word1[0...i-2] with word2[0...j-1]
+                    // We're essentially saying "What if we delete the current character from word1?"
+                    // So we look at the cost of matching word1[0...i-2] with word2[0...j-1] (which is dp[i-1][j])
+                    // and add 1 for the deletion operation
+                    int delete = dp[i - 1][j] + 1;
+                    
+                    // Insert operation: Insert word2[j-1] into word1 after matching word1[0...i-1] with word2[0...j-2]
+                    // We're essentially saying "What if we insert the current character from word2 into word1?"
+                    // So we look at the cost of matching word1[0...i-1] with word2[0...j-2] (which is dp[i][j-1])
+                    // and add 1 for the insertion operation
+                    int insert = dp[i][j - 1] + 1;
                     
                     dp[i][j] = Math.min(replace, Math.min(delete, insert));
                 }
@@ -82,9 +92,17 @@ class Solution {
                     curr[j] = prev[j - 1];
                 } else {
                     // Calculate the minimum cost of the three operations
-                    int replace = prev[j - 1] + 1; // Replace
-                    int delete = prev[j] + 1;      // Delete
-                    int insert = curr[j - 1] + 1;  // Insert
+                    int replace = prev[j - 1] + 1; // Replace: Change word1[i-1] to word2[j-1]
+                    
+                    // Delete operation: Remove word1[i-1] from consideration
+                    // prev[j] represents the edit distance after processing word1[0...i-2] and word2[0...j-1]
+                    // Adding 1 represents the cost of deleting the current character from word1
+                    int delete = prev[j] + 1;
+                    
+                    // Insert operation: Insert word2[j-1] into word1
+                    // curr[j-1] represents the edit distance after processing word1[0...i-1] and word2[0...j-2]
+                    // Adding 1 represents the cost of inserting the current character from word2 into word1
+                    int insert = curr[j - 1] + 1;
                     
                     curr[j] = Math.min(replace, Math.min(delete, insert));
                 }

@@ -110,14 +110,8 @@ class Twitter {
         if (followerId == followeeId) {
             return;
         }
-        
-        // Create follower's set if doesn't exist
-        if (!followMap.containsKey(followerId)) {
-            followMap.put(followerId, new HashSet<>());
-        }
-        
-        // Add followee to follower's set
-        followMap.get(followerId).add(followeeId);
+
+        followMap.computeIfAbsent(followerId, k -> new HashSet<>()).add(followeeId);
     }
     
     public void unfollow(int followerId, int followeeId) {
