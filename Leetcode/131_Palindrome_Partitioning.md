@@ -74,6 +74,15 @@ class Solution {
                 current.add(s.substring(start, end + 1));
                 
                 // Explore: recurse for remaining string
+                // CRITICAL: We use 'end + 1' here, NOT 'start + 1'
+                // This is because we've just processed the substring from start to end,
+                // so the next substring should begin at position (end + 1).
+                // If we used 'start + 1' instead, we would:
+                // 1. Skip portions of the string (if end > start + 1)
+                // 2. Create overlapping partitions, which is invalid for this problem
+                // 3. Never reach the base case for some inputs, causing infinite recursion
+                // For example, with s = "aab", if we used 'start + 1' after finding "a" is a palindrome,
+                // we would process "a" again instead of moving to "a" and "b", missing valid partitions.
                 backtrack(s, end + 1, current, result);
                 
                 // Unchoose: remove last added substring (backtrack)
@@ -120,7 +129,26 @@ class Solution {
         for (int end = start; end < s.length(); end++) {
             if (isPalindrome(s, start, end, memo)) {
                 current.add(s.substring(start, end + 1));
+                
+                // CRITICAL: We use 'end + 1' here, NOT 'start + 1'
+                // Using 'end + 1' ensures we move to the next unprocessed character after
+                // the current palindrome substring (s[start...end]).
+                // If we incorrectly used 'start + 1' here:
+                // 1. We would process overlapping substrings, which violates the partitioning requirement
+                // 2. We might never finish processing the entire string
+                // 3. We would generate invalid partitions
+                //
+                // Example with s = "aab":
+                // - When start=0, end=0: We find "a" is palindrome
+                //   - Using end+1: We recurse with start=1, correctly moving to next character
+                //   - Using start+1: We would also recurse with start=1, but we'd be ignoring
+                //     the fact that we just included "a" in our partition
+                // - When start=0, end=1: We find "aa" is palindrome
+                //   - Using end+1: We recurse with start=2, correctly moving after "aa"
+                //   - Using start+1: We would recurse with start=1, which would be wrong
+                //     because we've already included "aa" in our partition
                 backtrack(s, end + 1, current, result, memo);
+                
                 current.remove(current.size() - 1);
             }
         }
@@ -189,4 +217,3 @@ Problems that can be solved using similar backtracking patterns:
 8. **46. Permutations** - Backtracking permutations
 9. **78. Subsets** - Backtracking subsets
 10. **90. Subsets II** - Backtracking with duplicates
-
