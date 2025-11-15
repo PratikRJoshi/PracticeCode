@@ -158,30 +158,39 @@ class TimeMap {
 }
 ```
 
-**Explanation of Key Code Sections:**
+### Understanding TreeMap's floorKey vs ceilingKey Methods
 
-1. **Data Structure (Line 5):** We use a `HashMap` where each key maps to a list of `(timestamp, value)` pairs. Since timestamps are strictly increasing, the list is automatically sorted.
+TreeMap in Java provides several navigation methods that are particularly useful for this problem:
 
-2. **Set Operation (Lines 9-12):**
-   - **Create List (Line 11):** If the key doesn't exist, create a new list.
-   - **Append Pair (Line 13):** Add the `(timestamp, value)` pair to the list. Since timestamps are strictly increasing, the list remains sorted.
+1. **floorKey(K key)** - Returns the greatest key less than or equal to the given key, or null if there is no such key.
+   - In our problem: `floorKey(timestamp)` gives us the largest timestamp that is ≤ the query timestamp.
+   - This is exactly what we need for the `get` operation, as we want the value with the largest timestamp not exceeding our query timestamp.
+   - Example: If we have timestamps [1, 4, 8] and query for timestamp 5, `floorKey(5)` returns 4.
 
-3. **Get Operation (Lines 15-32):**
-   - **Key Check (Lines 16-18):** If key doesn't exist, return empty string.
-   - **Binary Search (Lines 22-30):** Find the largest timestamp <= query timestamp:
-     - **Mid Calculation (Line 24):** Calculate middle index.
-     - **Valid Timestamp (Lines 26-28):** If `midTimestamp <= timestamp`, this is a candidate. Update result and search right for a larger valid timestamp.
-     - **Invalid Timestamp (Lines 29-30):** If `midTimestamp > timestamp`, search left.
-   - **Return Result (Line 32):** Return the value associated with the largest valid timestamp.
+2. **ceilingKey(K key)** - Returns the least key greater than or equal to the given key, or null if there is no such key.
+   - This would give us the smallest timestamp that is ≥ the query timestamp.
+   - Not suitable for our problem as stated, but would be useful if we wanted the "next" value after a timestamp.
+   - Example: If we have timestamps [1, 4, 8] and query for timestamp 5, `ceilingKey(5)` returns 8.
 
-**Why binary search works:**
-- **Sorted list:** Timestamps are strictly increasing, so the list is sorted.
-- **Target:** We want the largest timestamp <= query timestamp.
-- **Efficiency:** Binary search gives O(log n) time instead of O(n) linear search.
+3. **Why we use floorKey and not ceilingKey:**
+   - The problem asks for "a value such that set was called previously, with timestamp_prev <= timestamp"
+   - `floorKey` directly implements this "less than or equal to" requirement
+   - `ceilingKey` would give us the "future" value, which doesn't match our requirements
 
-**TreeMap Alternative:**
-- **Simpler code:** `TreeMap.floorKey()` directly finds the largest key <= timestamp.
-- **Trade-off:** Slightly more overhead per operation, but cleaner code.
+4. **Edge cases handled by floorKey:**
+   - If the query timestamp is smaller than all stored timestamps, `floorKey` returns null (handled by our code to return "")
+   - If the query timestamp exactly matches a stored timestamp, `floorKey` returns that exact timestamp
+
+Using `floorKey` makes our code more concise and directly expresses the problem's requirements without having to implement custom binary search logic.
+
+### Practical Memory Aid: Direction of Search
+- Floor: Looking for the past or present (≤)
+  - Use when you need the most recent/largest value not exceeding a threshold
+  - Example: "What's the latest timestamp before or at 5:00 PM?"
+
+- Ceiling: Looking for the present or future (≥)
+  - Use when you need the next/smallest value not below a threshold
+  - Example: "What's the next available appointment at or after 5:00 PM?"
 
 **Example walkthrough:**
 - set("foo", "bar", 1) → map["foo"] = [(1, "bar")]
@@ -213,4 +222,3 @@ Problems that can be solved using similar data structure patterns:
 8. **588. Design In-Memory File System** - Design with Trie/HashMap
 9. **642. Design Search Autocomplete System** - Design with Trie
 10. **716. Max Stack** - Design with stack + heap
-

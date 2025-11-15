@@ -66,46 +66,41 @@ This is a **dynamic programming** problem. We need to check if `s3` can be forme
 
 ## Final Java Code & Learning Pattern
 
-### Top-Down / Memoized Version
+### Top-Down / Memoized Version (Starting from Index 0)
 
 ```java
 class Solution {
     public boolean isInterleave(String s1, String s2, String s3) {
-        int len1 = s1.length();
-        int len2 = s2.length();
-        int len3 = s3.length();
-        
-        if (len1 + len2 != len3) {
+        int l1 = s1.length(), l2 = s2.length(), l3 = s3.length();
+
+        if(l1 + l2 != l3){
             return false;
         }
-        
-        Boolean[][] memo = new Boolean[len1 + 1][len2 + 1];
-        return dp(s1, s2, s3, len1, len2, memo);
+
+        Boolean[][] memo = new Boolean[l1 + 1][l2 + 1];
+        return memoize(s1, s2, s3, 0, 0, memo);
     }
-    
-    private boolean dp(String s1, String s2, String s3, int i, int j, Boolean[][] memo) {
-        // Base case: both strings exhausted
-        if (i == 0 && j == 0) {
+
+    private boolean memoize(String s1, String s2, String s3, int i, int j, Boolean[][] memo){
+        if(i == s1.length() && j == s2.length()){
             return true;
         }
-        
-        // Check memoization
-        if (memo[i][j] != null) {
+
+        if(memo[i][i] != null){
             return memo[i][j];
         }
-        
+
         boolean result = false;
-        
-        // Check if we can use character from s1
-        if (i > 0 && s1.charAt(i - 1) == s3.charAt(i + j - 1)) {
-            result = dp(s1, s2, s3, i - 1, j, memo);
+        int k = i + j;
+
+        if(i < s1.length() && s1.charAt(i) == s3.charAt(k)){
+            result = memoize(s1, s2, s3, i + 1, j, memo);
         }
-        
-        // Check if we can use character from s2 (if s1 didn't work)
-        if (!result && j > 0 && s2.charAt(j - 1) == s3.charAt(i + j - 1)) {
-            result = dp(s1, s2, s3, i, j - 1, memo);
+
+        if(!result && j < s2.length() && s2.charAt(j) == s3.charAt(k)){
+            result = memoize(s1, s2, s3, i, j + 1, memo);
         }
-        
+
         memo[i][j] = result;
         return result;
     }
@@ -209,4 +204,3 @@ Problems that can be solved using similar DP patterns:
 8. **712. Minimum ASCII Delete Sum for Two Strings** - DP with costs
 9. **1312. Minimum Insertion Steps to Make a String Palindrome** - DP for palindrome
 10. **516. Longest Palindromic Subsequence** - DP for palindrome
-

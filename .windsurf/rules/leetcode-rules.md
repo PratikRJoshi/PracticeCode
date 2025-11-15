@@ -62,6 +62,7 @@ For every solution or modification request, your output content MUST be in raw m
       * Always explain the intuition behind generating the subproblems.
       * Always give the top-down / memoized version of the code.
       * Give the bottom-up version of the code and explain in which cases it time complexity would be better than the top-down approach.
+      * For both top-down and bottom-up approaches, add comment in the code explaining the reason behind allocating the size of the dp/memo array used. 
 
 8. ** Simlar Problems **
     * You should also add all the list of similar problems that can be solved following a solution pattern same as or very similar to the current problem's pattern.

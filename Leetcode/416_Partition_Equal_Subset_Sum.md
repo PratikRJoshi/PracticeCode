@@ -70,10 +70,10 @@ class Solution {
         
         int target = totalSum / 2;
         int n = nums.length;
-        // Memoization: memo[i][sum] = can we form sum using first i elements
+        // Memoization: memo[i][sum] = can we form sum using elements starting from index i
         Boolean[][] memo = new Boolean[n][target + 1];
         
-        return canFormSum(nums, n - 1, target, memo);
+        return canFormSum(nums, 0, target, memo);
     }
     
     private boolean canFormSum(int[] nums, int index, int sum, Boolean[][] memo) {
@@ -82,8 +82,8 @@ class Solution {
             return true;
         }
         
-        // Base case: no more elements or negative sum
-        if (index < 0 || sum < 0) {
+        // Base case: reached end of array or negative sum
+        if (index == nums.length || sum < 0) {
             return false;
         }
         
@@ -93,8 +93,8 @@ class Solution {
         }
         
         // Two choices: include nums[index] or exclude it
-        boolean include = canFormSum(nums, index - 1, sum - nums[index], memo);
-        boolean exclude = canFormSum(nums, index - 1, sum, memo);
+        boolean include = canFormSum(nums, index + 1, sum - nums[index], memo);
+        boolean exclude = canFormSum(nums, index + 1, sum, memo);
         
         memo[index][sum] = include || exclude;
         return memo[index][sum];
@@ -194,4 +194,3 @@ Problems that can be solved using similar 0/1 Knapsack DP patterns:
 8. **474. Ones and Zeroes** - 2D knapsack
 9. **879. Profitable Schemes** - 2D knapsack with constraints
 10. **1155. Number of Dice Rolls With Target Sum** - Counting ways
-

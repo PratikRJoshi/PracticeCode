@@ -78,52 +78,34 @@ import java.util.Stack;
 
 class Solution {
     public int evalRPN(String[] tokens) {
-        // Stack to store operands
-        Stack<Integer> stack = new Stack<>();
-        
-        // Process each token
-        for (String token : tokens) {
-            // Check if token is a number
-            if (!isOperator(token)) {
-                // Parse and push the number onto stack
-                stack.push(Integer.parseInt(token));
-            } else {
-                // Token is an operator, pop two operands
-                // Note: second popped is left operand, first popped is right operand
-                int right = stack.pop();
-                int left = stack.pop();
-                int result = 0;
-                
-                // Perform the operation based on operator
-                switch (token) {
+        Set<String> operators = new HashSet<>(Arrays.asList("+", "-", "/", "*"));
+        Stack<Integer> operands = new Stack<>();
+
+        for(String token : tokens) {
+            if(operators.contains(token)) {
+                int op1 = operands.pop();
+                int op2 = operands.pop();
+
+                switch(token) {
                     case "+":
-                        result = left + right;
+                        operands.push(op1 + op2);
                         break;
                     case "-":
-                        result = left - right;
+                        operands.push(op2 - op1);
                         break;
                     case "*":
-                        result = left * right;
+                        operands.push(op1 * op2);
                         break;
                     case "/":
-                        // Division truncates toward zero (Java integer division does this)
-                        result = left / right;
+                        operands.push(op2 / op1);
                         break;
                 }
-                
-                // Push the result back onto stack
-                stack.push(result);
+            } else {
+                operands.push(Integer.parseInt(token));
             }
         }
-        
-        // Final result is the only element left in stack
-        return stack.pop();
-    }
-    
-    // Helper method to check if token is an operator
-    private boolean isOperator(String token) {
-        return token.equals("+") || token.equals("-") || 
-               token.equals("*") || token.equals("/");
+
+        return operands.pop();
     }
 }
 ```
@@ -153,6 +135,61 @@ class Solution {
 - Negative numbers: Handled by `Integer.parseInt()`
 - Division truncation: Java integer division already truncates toward zero
 
+## Alternative Implementation: Array-Based Stack
+
+While the standard Java `Stack` class works well, we can optimize our solution by using an array-based stack implementation. This avoids the overhead of the `Stack` class (which extends `Vector`) and can lead to better performance.
+
+```java
+class Solution {
+    public int evalRPN(String[] tokens) {
+        // Use an array as stack with a pointer
+        int[] stack = new int[tokens.length];
+        int top = -1;
+        
+        for (String token : tokens) {
+            switch (token) {
+                case "+":
+                    stack[top - 1] = stack[top - 1] + stack[top];
+                    top--;
+                    break;
+                case "-":
+                    stack[top - 1] = stack[top - 1] - stack[top];
+                    top--;
+                    break;
+                case "*":
+                    stack[top - 1] = stack[top - 1] * stack[top];
+                    top--;
+                    break;
+                case "/":
+                    stack[top - 1] = stack[top - 1] / stack[top];
+                    top--;
+                    break;
+                default:
+                    // It's a number, push to stack
+                    stack[++top] = Integer.parseInt(token);
+            }
+        }
+        
+        return stack[0];
+    }
+}
+```
+
+**Key advantages of this approach:**
+
+1. **Performance**: Eliminates the overhead of Java's `Stack` class methods and object creation.
+2. **Memory efficiency**: Uses a single array instead of dynamically growing data structures.
+3. **Simplicity**: The code is more concise with the direct switch statement on tokens.
+4. **Speed**: Array access is faster than method calls on the `Stack` class.
+
+**Why this works:**
+- Since we know the maximum size of the stack won't exceed the number of tokens, we can allocate an array of that size.
+- For RPN expressions, the stack size will always be less than the number of tokens (specifically, at most (n+1)/2 for n tokens).
+- When we encounter an operator, we operate directly on the array elements and decrement the top pointer.
+- When we encounter a number, we increment the top pointer and store the number.
+
+This implementation is particularly efficient for large inputs and competitive programming scenarios where performance is critical.
+
 ## Complexity Analysis
 
 - **Time Complexity:** $O(n)$ where $n$ is the number of tokens. We process each token exactly once.
@@ -173,4 +210,3 @@ Problems that can be solved using similar stack-based evaluation techniques:
 8. **385. Mini Parser** - Stack for nested structure parsing
 9. **726. Number of Atoms** - Stack for chemical formula parsing
 10. **439. Ternary Expression Parser** - Stack for ternary operator evaluation
-

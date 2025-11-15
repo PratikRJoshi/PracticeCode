@@ -85,20 +85,20 @@ class Solution {
         
         int subsetSum = (target + totalSum) / 2;
         int n = nums.length;
-        // Memoization: memo[index][sum] = ways to form sum using first index elements
+        // Memoization: memo[index][sum] = ways to form sum using elements starting from index
         Integer[][] memo = new Integer[n][subsetSum + 1];
         
-        return countWays(nums, n - 1, subsetSum, memo);
+        return countWays(nums, 0, subsetSum, memo);
     }
     
     private int countWays(int[] nums, int index, int sum, Integer[][] memo) {
-        // Base case: sum 0 can be formed in 1 way (empty subset)
-        if (sum == 0 && index < 0) {
-            return 1;
+        // Base case: reached the end of array and sum is 0
+        if (index == nums.length) {
+            return sum == 0 ? 1 : 0;
         }
         
-        // Base case: no more elements or negative sum
-        if (index < 0 || sum < 0) {
+        // Base case: negative sum is not possible
+        if (sum < 0) {
             return 0;
         }
         
@@ -108,8 +108,8 @@ class Solution {
         }
         
         // Two choices: include nums[index] or exclude it
-        int include = countWays(nums, index - 1, sum - nums[index], memo);
-        int exclude = countWays(nums, index - 1, sum, memo);
+        int include = countWays(nums, index + 1, sum - nums[index], memo);
+        int exclude = countWays(nums, index + 1, sum, memo);
         
         memo[index][sum] = include + exclude;
         return memo[index][sum];
@@ -218,4 +218,3 @@ Problems that can be solved using similar counting DP or subset sum patterns:
 8. **1049. Last Stone Weight II** - Similar partition problem
 9. **1155. Number of Dice Rolls With Target Sum** - Counting with constraints
 10. **879. Profitable Schemes** - 2D counting DP
-
