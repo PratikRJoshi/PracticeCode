@@ -75,7 +75,6 @@ class Solution {
         // - Indices i and j can go up to s.length() and p.length() respectively
         // - This allows us to represent all possible subproblems from (0,0) to (s.length(), p.length())
         Boolean[][] memo = new Boolean[s.length() + 1][p.length() + 1];
-        Boolean[][] memo = new Boolean[s.length() + 1][p.length() + 1];
         return dp(0, 0, s, p, memo);
     }
     
@@ -87,9 +86,11 @@ class Solution {
         
         boolean result;
         
-        // Base case: reached the end of both strings
+        // Base case: if pattern is exhausted
         if (j == p.length()) {
-            result = (i == s.length());
+            // Success only if string is also exhausted
+            // Otherwise, we have leftover characters in s that can't be matched
+            return i == s.length();
         } else {
             // Check if current characters match
             boolean firstMatch = (i < s.length() && 
