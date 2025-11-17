@@ -56,53 +56,128 @@ import java.util.Stack;
 class Solution {
     public int largestRectangleArea(int[] heights) {
         // Stack to store indices of bars in increasing order of height
+        // We use indices instead of actual heights to calculate width later
         Stack<Integer> stack = new Stack<>();
         int maxArea = 0;
         int n = heights.length;
-        
+
         // Iterate through all bars
         for (int i = 0; i < n; i++) {
-            // While current bar is shorter than bar at top of stack,
-            // calculate area of rectangles ending at taller bars
+            // When we encounter a bar shorter than what's on top of our stack:
+            // This means we've found the right boundary for all taller bars in the stack
+            // We need to calculate the maximum rectangle area using each of those taller bars
             while (!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                // Pop the top bar and calculate area using it as the shortest bar
+                // Pop the tallest bar - this will be the height of our rectangle
                 int height = heights[stack.pop()];
-                // Width extends from the previous smaller bar (stack.peek()) 
-                // to current position (i), or from start if stack is empty
+
+                // Now we need to determine how wide this rectangle can be:
+                // - Right boundary is the current position (i) where height decreases
+                // - Left boundary is the next bar on the stack (which must be shorter)
+                //   or the start of the array if stack is empty
+
+                // If stack is empty, all bars to the left were taller,
+                // so rectangle extends from position 0 to i-1 (width = i)
+                // Otherwise, rectangle extends from position stack.peek()+1 to i-1
+                // (width = i - stack.peek() - 1)
                 int width = stack.isEmpty() ? i : i - stack.peek() - 1;
-                maxArea = Math.max(maxArea, height * width);
+
+                // Why subtract 1? Because:
+                // - i is the current position (right boundary + 1)
+                // - stack.peek() is the previous smaller bar position (left boundary - 1)
+                // - So the width is (right - left - 1) = (i - stack.peek() - 1)
+
+                // Calculate area and update maximum
+                int area = height * width;
+                maxArea = Math.max(maxArea, area);
             }
-            // Push current bar index onto stack
+
+            // After processing all taller bars, push current bar's index
+            // This maintains our monotonically increasing stack property
             stack.push(i);
         }
-        
+
         // Process remaining bars in stack
-        // These bars extend to the end of the histogram
+        // These bars extend to the end of the histogram since we never found a shorter bar
         while (!stack.isEmpty()) {
             int height = heights[stack.pop()];
-            // Width extends from previous smaller bar to end of array
+
+            // Similar width calculation as before, but now the right boundary
+            // is the end of the array (position n)
+            // If stack is empty, rectangle spans the entire array (width = n)
+            // Otherwise, it spans from stack.peek()+1 to n-1 (width = n - stack.peek() - 1)
             int width = stack.isEmpty() ? n : n - stack.peek() - 1;
-            maxArea = Math.max(maxArea, height * width);
+
+            int area = height * width;
+            maxArea = Math.max(maxArea, area);
         }
-        
+
         return maxArea;
     }
 }
 ```
 
-**Explanation of Key Code Sections:**
+**Visual Explanation of Width Calculation Using the Histogram Image:**
 
-1. **Stack Initialization (Line 5):** We use a stack to store indices, not heights. This allows us to calculate widths accurately by knowing the positions of bars.
+Let's use the following histogram as an example:
 
-2. **Main Iteration (Lines 9-19):** For each bar:
-   - **While loop condition (Line 11):** If the current bar is shorter than the bar at the top of the stack, we've found the right boundary for rectangles using taller bars.
-   - **Height extraction (Line 13):** We pop the taller bar and use its height as the rectangle height.
-   - **Width calculation (Line 15):** The width is the distance between the previous smaller bar (stack.peek()) and the current position. If stack is empty, the bar extends from the start.
-   - **Area update (Line 16):** We calculate the area and update the maximum.
+![Histogram Example](resources/LargestRectangleInHistogram.png)
 
-3. **Remaining Bars Processing (Lines 22-26):** After processing all bars, any remaining bars in the stack extend to the end of the histogram. We calculate their areas similarly, with width extending to `n`.
+In this histogram, we have heights = [2, 1, 5, 6, 2, 3] with indices 0 to 5.
 
-**Why we append 0 at the end (alternative approach):** Some solutions append a 0-height bar at the end to force processing of all remaining bars. Our approach explicitly handles this with a second while loop, which is clearer.
+Let's walk through the algorithm step by step:
+
+1. We start with an empty stack.
+
+2. At index 0 (height 2):
+    - Push index 0 onto stack.
+    - Stack: [0] (with height 2)
+
+3. At index 1 (height 1):
+    - Height 1 is less than heights[0] = 2, so we pop index 0.
+    - Calculate area: height = 2, width = 1 (since stack is empty), area = 2 * 1 = 2
+    - Push index 1 onto stack.
+    - Stack: [1] (with height 1)
+
+4. At index 2 (height 5):
+    - Height 5 is greater than heights[1] = 1, so we push index 2.
+    - Stack: [1, 2] (with heights 1, 5)
+
+5. At index 3 (height 6):
+    - Height 6 is greater than heights[2] = 5, so we push index 3.
+    - Stack: [1, 2, 3] (with heights 1, 5, 6)
+
+6. At index 4 (height 2):
+    - This is where the key width calculation happens!
+    - Height 2 is less than heights[3] = 6, so we pop index 3.
+    - Calculate area: height = 6, width = 4 - 2 - 1 = 1, area = 6 * 1 = 6
+    - Height 2 is still less than heights[2] = 5, so we pop index 2.
+    - Calculate area: height = 5, width = 4 - 1 - 1 = 2, area = 5 * 2 = 10
+    - Height 2 is greater than heights[1] = 1, so we stop popping.
+    - Push index 4 onto stack.
+    - Stack: [1, 4] (with heights 1, 2)
+
+   In the image, this corresponds to the blue rectangle formed with height 5 and width 2 (spanning from just after position 'l' to position 'i'-1). This gives us the largest rectangle so far with area 10.
+
+7. At index 5 (height 3):
+    - Height 3 is greater than heights[4] = 2, so we push index 5.
+    - Stack: [1, 4, 5] (with heights 1, 2, 3)
+
+8. After processing all bars, we handle the remaining indices in the stack:
+    - Pop index 5: height = 3, width = 6 - 4 - 1 = 1, area = 3 * 1 = 3
+    - Pop index 4: height = 2, width = 6 - 1 - 1 = 4, area = 2 * 4 = 8
+    - Pop index 1: height = 1, width = 6 (since stack is empty), area = 1 * 6 = 6
+
+9. The maximum area is 10, which corresponds to the rectangle with height 5 and width 2 in the image (marked with the blue outline).
+
+**Key Insight from the Image:**
+
+In the image, we can see:
+- The positions labeled as 'l', 'i', and 'r' correspond to the left boundary, current position, and right boundary.
+- When we encounter height 2 at position 'i', we need to calculate the area for the taller bars (heights 5 and 6).
+- For height 5, the width extends from just after position 'l' to position 'i'-1, giving width = i - l - 1.
+- This is exactly what our code does with `width = stack.isEmpty() ? i : i - stack.peek() - 1`.
+
+The blue rectangle in the image represents the largest rectangle with area 10 (height 5 × width 2).
 
 ## Complexity Analysis
 
@@ -124,4 +199,3 @@ Problems that can be solved using similar monotonic stack patterns:
 8. **402. Remove K Digits** - Stack to maintain increasing sequence
 9. **456. 132 Pattern** - Stack to track decreasing sequence
 10. **84. Largest Rectangle in Histogram** (this problem) - Classic monotonic stack problem
-

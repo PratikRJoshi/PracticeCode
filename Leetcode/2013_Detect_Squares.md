@@ -42,191 +42,143 @@ detectSquares.count([11, 10]); // return 2. You can form two squares
 
 ## Intuition/Main Idea
 
-To form an axis-aligned square with a given point `[x, y]` as a vertex, we need to find three other points that form a square. For a square, all four vertices must have coordinates that form a rectangle with equal sides.
+To detect squares, we need to efficiently store points and count potential squares that can be formed. The key insight is that for a given query point (px, py), we need to find other points that could form a square with it.
 
-**Key Insight:** For a point `[x, y]` to be part of a square, we need:
-1. Another point at the same x-coordinate: `[x, y1]`
-2. Another point at the same y-coordinate: `[x1, y]`
-3. The fourth point: `[x1, y1]`
+For a square to exist with (px, py) as one corner:
+1. We need a point (x, y) that is diagonal to our query point
+2. Then we need points at (px, y) and (x, py) to form the other two corners
 
-The side length is `|y - y1| = |x - x1|`.
-
-**Core Algorithm:**
-1. Use a map to count frequency of each point.
-2. For `count([x, y])`, iterate through all points with the same x-coordinate.
-3. For each such point `[x, y1]`, calculate side length `d = |y - y1|`.
-4. Check for points `[x ± d, y]` and `[x ± d, y1]` to form squares.
-5. Multiply frequencies to count all possible squares.
-
-**Why this works:** By fixing one vertex and one side, we can uniquely determine the other two vertices of the square. We count all combinations by multiplying frequencies.
+By checking all possible diagonal points and then verifying if the other two corners exist, we can count all possible squares.
 
 ## Code Mapping
 
 | Problem Requirement | Java Code Section (Relevant Lines) |
 |---------------------|-----------------------------------|
-| Store point frequencies | HashMap - Line 5 |
-| Add point to data structure | `add` method - Lines 9-12 |
-| Count squares with given vertex | `count` method - Lines 14-35 |
-| Find points with same x-coordinate | Iteration - Line 18 |
-| Calculate square side length | Distance calculation - Line 20 |
-| Check for other two vertices | Point existence checks - Lines 22-29 |
-| Count all combinations | Frequency multiplication - Lines 30-31 |
-| Return total count | Return statement - Line 33 |
+| Store points with duplicates | ArrayList and HashMap - Lines 3-4 |
+| Add point to data structure | `add` method - Lines 11-14 |
+| Count squares with given vertex | `count` method - Lines 16-28 |
+| Find diagonal points | Loop through coordinates - Lines 19-21 |
+| Check for square formation | Conditions in if statement - Lines 20-22 |
+| Count all possible squares | Frequency multiplication - Line 24 |
 
 ## Final Java Code & Learning Pattern
 
 ```java
-import java.util.HashMap;
-import java.util.Map;
-
 class DetectSquares {
-    // Map to store frequency of each point
-    // Key: "x,y" as string, Value: frequency count
-    private Map<String, Integer> pointCount;
-    
+
+    List<int[]> coordinates;
+    Map<String, Integer> freq;
+
     public DetectSquares() {
-        pointCount = new HashMap<>();
+        // Use ArrayList to store all points (including duplicates) for iteration
+        coordinates = new ArrayList<>(); 
+        // HashMap to efficiently look up point frequencies
+        freq = new HashMap<>(); 
     }
     
     public void add(int[] point) {
-        // Convert point to string key
-        String key = point[0] + "," + point[1];
-        // Increment frequency
-        pointCount.put(key, pointCount.getOrDefault(key, 0) + 1);
+        // Add point to our list of coordinates
+        coordinates.add(point);
+        // Create a unique key for the point and increment its frequency
+        String key = point[0] + "^" + point[1]; 
+        freq.put(key, freq.getOrDefault(key, 0) + 1);
     }
     
     public int count(int[] point) {
-        int x = point[0];
-        int y = point[1];
-        int totalSquares = 0;
+        int sum = 0;
+        int px = point[0], py = point[1];
         
-        // Iterate through all points with same x-coordinate
-        for (Map.Entry<String, Integer> entry : pointCount.entrySet()) {
-            String[] coords = entry.getKey().split(",");
-            int x1 = Integer.parseInt(coords[0]);
-            int y1 = Integer.parseInt(coords[1]);
+        // Iterate through all stored points to find potential diagonal points
+        for(int[] coord : coordinates) {
+            int x = coord[0], y = coord[1];
             
-            // Skip if not same x-coordinate or same point
-            if (x1 != x || (x1 == x && y1 == y)) {
+            // Skip points that:
+            // 1. Share the same x or y coordinate (we need diagonal points)
+            // 2. Don't form a square (distance in x ≠ distance in y)
+            if(px == x || py == y || Math.abs(px - x) != Math.abs(py - y))
                 continue;
-            }
             
-            // Calculate side length (distance in y-direction)
-            int sideLength = Math.abs(y - y1);
+            // At this point, we have:
+            // - Current point (px, py) from the count method
+            // - A diagonal point (x, y) from our stored coordinates
+            // - We need to check if the other two corners exist: (px, y) and (x, py)
             
-            // Check for two possible squares:
-            // Square 1: [x, y], [x, y1], [x + sideLength, y], [x + sideLength, y1]
-            // Square 2: [x, y], [x, y1], [x - sideLength, y], [x - sideLength, y1]
-            
-            // Check right side square
-            String rightTop = (x + sideLength) + "," + y;
-            String rightBottom = (x + sideLength) + "," + y1;
-            if (pointCount.containsKey(rightTop) && pointCount.containsKey(rightBottom)) {
-                totalSquares += entry.getValue() * 
-                               pointCount.get(rightTop) * 
-                               pointCount.get(rightBottom);
-            }
-            
-            // Check left side square
-            String leftTop = (x - sideLength) + "," + y;
-            String leftBottom = (x - sideLength) + "," + y1;
-            if (pointCount.containsKey(leftTop) && pointCount.containsKey(leftBottom)) {
-                totalSquares += entry.getValue() * 
-                               pointCount.get(leftTop) * 
-                               pointCount.get(leftBottom);
-            }
+            // Calculate how many squares can be formed using these points
+            // by multiplying the frequencies of the other two corners
+            sum += freq.getOrDefault(x + "^" + py, 0) * freq.getOrDefault(px + "^" + y, 0);
         }
-        
-        return totalSquares;
+
+        return sum;
     }
 }
 ```
 
-**Alternative Implementation (Using Point Class):**
+## Detailed Explanation
 
-```java
-import java.util.HashMap;
-import java.util.Map;
+### Data Structures Used
 
-class DetectSquares {
-    // Map to store frequency of each point
-    private Map<String, Integer> pointCount;
-    
-    public DetectSquares() {
-        pointCount = new HashMap<>();
-    }
-    
-    public void add(int[] point) {
-        String key = getKey(point[0], point[1]);
-        pointCount.put(key, pointCount.getOrDefault(key, 0) + 1);
-    }
-    
-    public int count(int[] point) {
-        int x = point[0], y = point[1];
-        int count = 0;
-        
-        // Check all points with same x-coordinate
-        for (int y1 = 0; y1 <= 1000; y1++) {
-            if (y1 == y) continue;  // Skip same point
-            
-            String key1 = getKey(x, y1);
-            if (!pointCount.containsKey(key1)) continue;
-            
-            int sideLength = Math.abs(y - y1);
-            int freq1 = pointCount.get(key1);
-            
-            // Check square to the right: [x, y], [x, y1], [x+d, y], [x+d, y1]
-            String key2 = getKey(x + sideLength, y);
-            String key3 = getKey(x + sideLength, y1);
-            if (pointCount.containsKey(key2) && pointCount.containsKey(key3)) {
-                count += freq1 * pointCount.get(key2) * pointCount.get(key3);
-            }
-            
-            // Check square to the left: [x, y], [x, y1], [x-d, y], [x-d, y1]
-            String key4 = getKey(x - sideLength, y);
-            String key5 = getKey(x - sideLength, y1);
-            if (pointCount.containsKey(key4) && pointCount.containsKey(key5)) {
-                count += freq1 * pointCount.get(key4) * pointCount.get(key5);
-            }
-        }
-        
-        return count;
-    }
-    
-    private String getKey(int x, int y) {
-        return x + "," + y;
-    }
-}
-```
+1. **List<int[]> coordinates**: 
+   - Stores all points including duplicates
+   - Used for iteration when counting squares
+   - Allows us to consider all possible diagonal points
 
-**Explanation of Key Code Sections:**
+2. **Map<String, Integer> freq**:
+   - Maps point coordinates to their frequency
+   - Key format: "x^y" (using ^ as a separator)
+   - Efficiently handles duplicate points by incrementing their count
 
-1. **Data Structure (Line 5):** We use a `HashMap` to store the frequency of each point. The key is a string representation `"x,y"` and the value is the count.
+### The `add` Method
 
-2. **Add Method (Lines 9-12):** When adding a point, we convert it to a string key and increment its frequency. Duplicate points are handled by increasing the count.
+The `add` method performs two operations:
+1. Adds the point to our list of coordinates
+2. Updates the frequency map with the new point
 
-3. **Count Method (Lines 14-35):** 
-   - **Iterate Points (Line 18):** We iterate through all stored points to find those with the same x-coordinate as the query point.
-   - **Skip Conditions (Lines 20-23):** Skip points that don't have the same x-coordinate or are the same point.
-   - **Calculate Side Length (Line 26):** The side length is the absolute difference in y-coordinates: `|y - y1|`.
-   - **Check Right Square (Lines 28-32):** Check if points `[x + sideLength, y]` and `[x + sideLength, y1]` exist. If both exist, we can form a square. Multiply frequencies to count all combinations.
-   - **Check Left Square (Lines 34-38):** Similarly check for a square to the left.
+This dual storage approach allows us to:
+- Iterate through all points efficiently (using the list)
+- Look up point frequencies in constant time (using the map)
 
-4. **Frequency Multiplication:** When counting squares, we multiply the frequencies of all four vertices because:
-   - If a point appears multiple times, each occurrence can form a different square.
-   - We need to count all combinations: `freq(point1) × freq(point2) × freq(point3) × freq(point4)`.
+### The `count` Method
 
-**Why this approach works:**
-- For an axis-aligned square, if we fix vertex `[x, y]` and another vertex `[x, y1]` (same x-coordinate), the other two vertices are uniquely determined: `[x ± d, y]` and `[x ± d, y1]` where `d = |y - y1|`.
-- By checking both left and right possibilities, we cover all squares that include the query point.
+The `count` method is the core of the solution:
+
+1. We start with the query point (px, py)
+2. We iterate through all stored points to find potential diagonal points
+3. For each point (x, y), we apply three important filters:
+   - Skip if it shares the same x-coordinate (px == x)
+   - Skip if it shares the same y-coordinate (py == y)
+   - Skip if it doesn't form a square (Math.abs(px - x) != Math.abs(py - y))
+4. For remaining points that pass these filters, we have a potential diagonal corner of a square
+5. We then check if the other two corners exist: (px, y) and (x, py)
+6. If they exist, we multiply their frequencies to count all possible squares
+
+### Why This Approach Works
+
+This approach efficiently finds all squares by:
+1. Identifying diagonal points first (which uniquely determine the square's size and orientation)
+2. Verifying the existence of the other two corners
+3. Accounting for duplicates by multiplying frequencies
+
+For example, with the query point (11, 10) and stored points [(3, 10), (11, 2), (3, 2)]:
+- We find the diagonal point (3, 2)
+- We check for points (11, 2) and (3, 10), which both exist
+- We multiply their frequencies to get the total count of squares
+
+### Handling Edge Cases
+
+The solution handles several edge cases:
+- Points with the same x or y coordinate (skipped as they can't form a diagonal)
+- Points that don't form a square (distances in x and y must be equal)
+- Missing corners (if either corner doesn't exist, no square is counted)
+- Duplicate points (correctly counted using the frequency map)
 
 ## Complexity Analysis
 
-- **Time Complexity:** 
-  - `add`: $O(1)$ - HashMap insertion is constant time.
-  - `count`: $O(n)$ where $n$ is the number of distinct points (or $O(1000)$ in the alternative implementation).
+- **Time Complexity**: 
+  - `add`: O(1) - Constant time to add to list and update map
+  - `count`: O(n) where n is the number of points added - We iterate through all points
 
-- **Space Complexity:** $O(n)$ where $n$ is the number of points added.
+- **Space Complexity**: O(n) where n is the number of points added
+  - We store all points in both the list and the map
 
 ## Similar Problems
 
@@ -242,4 +194,3 @@ Problems that can be solved using similar geometric and counting patterns:
 8. **1266. Minimum Time Visiting All Points** - Geometric path
 9. **1037. Valid Boomerang** - Collinearity check
 10. **1232. Check If It Is a Straight Line** - Line validation
-

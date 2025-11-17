@@ -86,6 +86,10 @@ class Solution {
         // If we have k nodes, reverse them
         if (count == k) {
             // Reverse the next k nodes
+            // We process the rest of the list first because:
+            // 1. We need the new head of the remaining list to connect our current group to
+            // 2. This builds the solution from the end to the beginning, ensuring proper connections
+            // 3. When we reverse the current group, we'll connect its tail to this already-processed part
             current = reverseKGroup(current, k);  // Process rest first
             
             // Reverse current group of k nodes
@@ -217,4 +221,3 @@ Problems that can be solved using similar linked list reversal patterns:
 8. **19. Remove Nth Node From End of List** - Remove node
 9. **82. Remove Duplicates from Sorted List II** - Remove duplicates
 10. **86. Partition List** - Partition linked list
-
