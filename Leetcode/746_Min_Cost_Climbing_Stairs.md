@@ -61,34 +61,39 @@ This is a classic **dynamic programming** problem. The key insight is that to re
 
 ## Final Java Code & Learning Pattern
 
-### Top-Down / Memoized Version
+### Top-Down / Memoized Version (Starting from Index 0)
 
 ```java
 class Solution {
     public int minCostClimbingStairs(int[] cost) {
         int n = cost.length;
         // Memoization array to store computed results
+        // Size is n because we need to store results for indices 0 to n-1
         Integer[] memo = new Integer[n];
-        // We can start from index 0 or 1, and top is beyond last step
-        // So we need min cost to reach either last or second-to-last step
-        return Math.min(minCost(cost, n - 1, memo), minCost(cost, n - 2, memo));
+        // We can start from index 0 or 1, so return the minimum
+        return Math.min(minCostToTop(cost, 0, memo), minCostToTop(cost, 1, memo));
     }
     
-    private int minCost(int[] cost, int i, Integer[] memo) {
-        // Base cases: starting positions have their own costs
-        if (i < 0) return 0;
-        if (i == 0 || i == 1) return cost[i];
+    private int minCostToTop(int[] cost, int index, Integer[] memo) {
+        int n = cost.length;
+        
+        // Base cases: if we've reached or passed the top
+        if (index >= n) {
+            return 0;
+        }
         
         // Check if already computed
-        if (memo[i] != null) return memo[i];
+        if (memo[index] != null) {
+            return memo[index];
+        }
         
-        // Recurrence: min cost to reach i is cost[i] + min of reaching i-1 or i-2
-        memo[i] = cost[i] + Math.min(
-            minCost(cost, i - 1, memo),
-            minCost(cost, i - 2, memo)
+        // Recurrence: cost at current step + min cost of taking 1 or 2 steps forward
+        memo[index] = cost[index] + Math.min(
+            minCostToTop(cost, index + 1, memo),
+            minCostToTop(cost, index + 2, memo)
         );
         
-        return memo[i];
+        return memo[index];
     }
 }
 ```
@@ -192,4 +197,3 @@ Problems that can be solved using similar dynamic programming patterns:
 8. **322. Coin Change** - DP with multiple choices
 9. **518. Coin Change 2** - DP with combination counting
 10. **279. Perfect Squares** - DP with multiple previous states
-
