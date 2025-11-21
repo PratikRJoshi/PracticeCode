@@ -128,6 +128,94 @@ class Solution {
 
 4. **Why this finds optimal path:** Dijkstra's algorithm guarantees that when we first reach the destination, we've found the path with the minimum maximum elevation. This is because we always process cells in order of increasing "cost" (maximum elevation).
 
+### Common Conceptual Questions & Explanations
+
+**Q1: How are we ensuring that each iteration check is within the limit of t as given in the problem?**
+
+**Answer: We're NOT explicitly checking against a time limit `t` in the Dijkstra's approach!**
+
+Here's why:
+
+**In the Dijkstra's Approach (Main Solution):**
+- **No explicit time limit**: We don't have a fixed `t` to check against
+- **Dynamic time tracking**: The `maxElevation` in the priority queue represents the **minimum time needed** to reach each cell
+- **Automatic constraint satisfaction**: Line 104 ensures we only move to cells we can actually reach:
+  ```java
+  int newMaxElevation = Math.max(maxElevation, grid[newRow][newCol]);
+  ```
+  This means if `grid[newRow][newCol] > maxElevation`, then `newMaxElevation = grid[newRow][newCol]`, which becomes the new minimum time needed.
+
+**In the Binary Search + BFS Approach (Alternative):**
+- **Explicit time limit**: Line 180 checks `grid[newRow][newCol] <= time`
+- **Fixed time testing**: We test if we can reach destination with a specific time `t` (the `mid` value)
+- **Constraint enforcement**: 
+  ```java
+  if (grid[0][0] > time) return false;  // Line 161
+  // and
+  grid[newRow][newCol] <= time         // Line 180
+  ```
+
+**Q2: Where are we calculating and returning the minimum time as asked in the requirement?**
+
+**In the Dijkstra's Approach:**
+**Lines 90-91 calculate and return the minimum time:**
+```java
+if (row == n - 1 && col == n - 1) {
+    return maxElevation;  // This IS the minimum time!
+}
+```
+
+**Why `maxElevation` is the minimum time:**
+- `maxElevation` represents the **maximum elevation encountered along the path** from start to current cell
+- Since we can only move when water level ≥ elevation, the **minimum time needed** equals the **maximum elevation along the path**
+- Dijkstra's guarantees this is optimal because we always process cells in order of increasing cost
+
+**In the Binary Search + BFS Approach:**
+**Line 152 returns the minimum time:**
+```java
+return left;  // This is the minimum time found by binary search
+```
+
+**How binary search finds it:**
+- We binary search on possible time values (from `grid[0][0]` to `n²-1`)
+- For each candidate time, we test if we can reach destination using BFS
+- The smallest time that allows us to reach destination is the answer
+
+**Key Insight: Understanding "Time equals Water Level"**
+
+From the problem statement: *"At time `t`, the depth of the water everywhere is `t`."*
+
+This means:
+- **Time 0**: Water level = 0 everywhere
+- **Time 5**: Water level = 5 everywhere  
+- **Time 10**: Water level = 10 everywhere
+
+**The Swimming Rule:** *"You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most `t`."*
+
+This means you can only enter a cell if: **Water Level ≥ Cell Elevation**
+
+**Visual Example:**
+Consider grid `[[0,2],[1,3]]`:
+
+- **At Time t = 0 (Water Level = 0):** Can only be at (0,0), stuck because 0 < 2 and 0 < 1
+- **At Time t = 1 (Water Level = 1):** Can reach (1,0) but not (0,1) or (1,1)  
+- **At Time t = 2 (Water Level = 2):** Can reach (0,1) but still not (1,1)
+- **At Time t = 3 (Water Level = 3):** Can reach all cells including destination (1,1)
+
+**Why "Minimum Time" = "Minimum Maximum Elevation Along Path":**
+
+Since you need **Water Level ≥ Elevation** for every cell in your path:
+- **Path: (0,0) → (1,0) → (1,1)** has elevations [0, 1, 3], so minimum time needed = 3
+- **Path: (0,0) → (0,1) → (1,1)** has elevations [0, 2, 3], so minimum time needed = 3
+
+The problem asks for "minimum time", but **time equals water level**, and **water level must be ≥ elevation** to move through a cell. Therefore:
+
+**Minimum Time = Minimum possible maximum elevation along any path**
+
+This is why:
+- Dijkstra's tracks `maxElevation` along paths and returns it when reaching destination
+- Binary search tests different time values and finds the minimum that works
+
 **Alternative Approach (Binary Search + BFS):**
 
 ```java
