@@ -59,10 +59,12 @@ For every solution or modification request, your output content MUST be in raw m
 
 7. ** Dynamic Programming Problems **
     * For every tree problem, add explanations for the following - 
-      * Always explain the intuition behind generating the subproblems.
-      * Always give the top-down / memoized version of the code.
-      * Give the bottom-up version of the code and explain in which cases it time complexity would be better than the top-down approach.
-      * For both top-down and bottom-up approaches, add comment in the code explaining the reason behind allocating the size of the dp/memo array used. 
+      * Always explain the intuition behind generating the subproblems. Preferably intuition based on the top-down approach.
+      * Always first give the top-down / memoized version of the code and explain the intution for the top-down approach.
+      * Then give the bottom-up version of the code and explain in which cases its time complexity would be better than the top-down approach.
+      * For both top-down and bottom-up approaches, add comment in the code explaining the reason behind allocating the size of the dp/memo array used.
+      * For the top-down approach, always try to write the code from 0th index to last index. If doing so is not possible or if doing so gives worse time complexity, then write the code from last index to 0th index.
+
 
 8. ** Simlar Problems **
     * You should also add all the list of similar problems that can be solved following a solution pattern same as or very similar to the current problem's pattern.

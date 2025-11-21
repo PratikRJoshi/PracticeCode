@@ -151,6 +151,123 @@ class Solution {
 - The merging operation is commutative and associative (max operation)
 - If all positions are achievable, we can always combine the triplets to form the target
 
+---
+
+## Alternative Solution: Simulate Merging All Triplets
+
+There's an even more elegant approach that simulates merging **all valid triplets** together and checks if the result equals the target. This eliminates the need for separate boolean flags.
+
+### The Key Insight: Merge Everything, Then Compare
+
+Instead of tracking which positions are achievable, we can:
+1. Filter valid triplets (same as before)
+2. **Simulate merging all valid triplets together** (taking max at each position)
+3. Check if the final result equals the target
+
+**Why this works:** Since merging is commutative and associative (`max(max(a, b), c) = max(a, max(b, c))`), merging all valid triplets gives us the **maximum achievable value** at each position. If that maximum equals the target, the target is achievable!
+
+### Alternative Java Code
+
+```java
+import java.util.Arrays;
+
+class Solution {
+    public boolean mergeTriplets(int[][] triplets, int[] target) {
+        int[] res = new int[3];  // Start with [0, 0, 0]
+        
+        for (int[] triplet : triplets) {
+            // Only process valid triplets (all values <= target)
+            if (triplet[0] <= target[0] && triplet[1] <= target[1] && triplet[2] <= target[2]) {
+                // Merge this triplet into result by taking max at each position
+                res = new int[]{
+                    Math.max(res[0], triplet[0]),
+                    Math.max(res[1], triplet[1]),
+                    Math.max(res[2], triplet[2])
+                };
+            }
+        }
+        
+        // Check if the merged result equals target
+        return Arrays.equals(res, target);
+    }
+}
+```
+
+### How It Works: Step-by-Step
+
+**Example:** `triplets = [[2,5,3],[1,8,4],[1,7,5]], target = [2,7,5]`
+
+```
+Initial: res = [0, 0, 0]
+
+Process [2,5,3]: valid ✓ (all ≤ target)
+  res = max([0,0,0], [2,5,3]) = [2, 5, 3]
+
+Process [1,8,4]: invalid ✗ (8 > 7), skip
+
+Process [1,7,5]: valid ✓ (all ≤ target)
+  res = max([2,5,3], [1,7,5]) = [2, 7, 5]
+
+Final: res = [2, 7, 5]
+Check: [2,7,5] == [2,7,5] ✓ → true
+```
+
+### Why This Approach Works
+
+**Mathematical Proof:**
+
+After processing all valid triplets:
+- `res[i] = max{ triplet[j][i] : triplet[j] is valid }`
+
+**If `target[i]` is achievable:**
+- At least one valid triplet has `triplet[j][i] == target[i]`
+- Therefore: `res[i] = target[i]` ✓
+
+**If `target[i]` is NOT achievable:**
+- All valid triplets have `triplet[j][i] < target[i]`
+- Therefore: `res[i] < target[i]` ✗
+
+**Result:** `res == target` if and only if all positions are achievable!
+
+### Why Can't `res` Exceed Target?
+
+This is a critical insight: `res[i]` can **never** exceed `target[i]` because:
+- We only merge triplets where `triplet[j][i] <= target[i]`
+- Taking max of values ≤ target gives us a value ≤ target
+- So `res[i] <= target[i]` always
+
+Therefore:
+- If `res[i] == target[i]`: we achieved the target (at least one triplet had this value)
+- If `res[i] < target[i]`: we cannot achieve the target (no triplet had this value)
+
+### Comparison: Two Approaches
+
+| Aspect | Approach 1 (Boolean Flags) | Approach 2 (Simulate Merging) |
+|--------|---------------------------|-------------------------------|
+| **Tracking** | 3 boolean flags | 1 result array |
+| **Logic** | Check if each position is achievable | Merge all triplets, then compare |
+| **Intuition** | "Can we achieve each position?" | "What's the best we can achieve?" |
+| **Code Lines** | ~15 lines | ~10 lines |
+| **Readability** | More explicit | More concise |
+
+**Both approaches are correct and have the same time/space complexity!**
+
+### Why Approach 2 is Elegant
+
+1. **Simulates the actual process**: It literally does what merging would do
+2. **Self-documenting**: The result array shows what's achievable
+3. **Fewer variables**: One array instead of three booleans
+4. **Single check**: One comparison instead of three AND operations
+
+### Edge Cases Handled
+
+- **No valid triplets**: `res = [0,0,0]`, won't equal target → correct
+- **All positions achievable**: `res = target` → correct
+- **Some positions not achievable**: `res ≠ target` → correct
+- **Triplet exceeds target**: Skipped, doesn't affect result → correct
+
+---
+
 ## Complexity Analysis
 
 - **Time Complexity:** $O(n)$ where $n$ is the number of triplets. We iterate through all triplets once.

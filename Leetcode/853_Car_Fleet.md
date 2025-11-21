@@ -149,6 +149,167 @@ class Solution {
 - If `time < prevTime`, the car reaches before the fleet ahead, so it catches up and joins.
 - Only when `time > prevTime` does the car form a new fleet.
 
+---
+
+## Alternative Solution: Using TreeMap
+
+We can use `TreeMap` to automatically maintain cars sorted by position, eliminating the need for manual sorting. This approach leverages TreeMap's built-in sorting capabilities.
+
+### The Key Insight: TreeMap Maintains Sorted Order
+
+`TreeMap` automatically keeps keys in sorted order. By using `Collections.reverseOrder()` as the comparator, we can:
+1. Create TreeMap sorted in descending order by position (farthest to nearest)
+2. Insert all cars into TreeMap (automatically sorted in descending order)
+3. Iterate normally - keys are already in the order we need
+4. Apply the same fleet formation logic
+
+**Advantages:**
+- No manual sorting needed - TreeMap handles it
+- No need for `descendingKeySet()` - normal iteration works
+- Cleaner code - direct position → speed mapping
+- Natural key-value relationship
+
+### Alternative Java Code Using TreeMap
+
+```java
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+
+class Solution {
+    public int carFleet(int target, int[] position, int[] speed) {
+        // TreeMap sorted in descending order by position (farthest to nearest)
+        Map<Integer, Double> m = new TreeMap<>(Collections.reverseOrder());
+        
+        // Store position -> speed mapping
+        for (int i = 0; i < position.length; i++) {
+            m.put(position[i], (double)speed[i]);
+        }
+        
+        int fleets = 0;
+        double prevTime = -1;  // Time for previous fleet to reach destination
+        
+        // Iterate in descending order of position (farthest to nearest)
+        // TreeMap is already sorted in descending order, so normal iteration works
+        for (int pos : m.keySet()) {
+            double spd = m.get(pos);
+            
+            // Calculate time for current car to reach destination
+            double time = (target - pos) / spd;
+            
+            // If current car takes longer than previous fleet, it forms a new fleet
+            if (time > prevTime) {
+                fleets++;
+                prevTime = time;
+            }
+            // If time <= prevTime, current car joins the previous fleet
+        }
+        
+        return fleets;
+    }
+}
+```
+
+### How TreeMap Works Here
+
+**TreeMap Properties:**
+- **Reverse Order Comparator**: `Collections.reverseOrder()` makes TreeMap sort keys in descending order
+- **Automatic Sorting**: Keys are automatically sorted in descending order (farthest to nearest)
+- **Efficient Operations**: Insertion and lookup are O(log n)
+- **Normal Iteration**: Since TreeMap is already in descending order, we can iterate normally
+
+**Step-by-Step Process:**
+
+1. **TreeMap Creation:**
+   ```java
+   Map<Integer, Double> m = new TreeMap<>(Collections.reverseOrder());
+   ```
+   - `Collections.reverseOrder()` creates a comparator that sorts in descending order
+   - TreeMap will maintain positions sorted from highest to lowest
+
+2. **Insertion Phase:**
+   ```java
+   m.put(position[i], (double)speed[i]);
+   ```
+   - TreeMap automatically sorts by position (descending order)
+   - If duplicate positions exist, the last speed overwrites (though positions are typically unique)
+   - Speed is stored as `Double` to avoid casting during division
+
+3. **Iteration Phase:**
+   ```java
+   for (int pos : m.keySet())
+   ```
+   - `keySet()` returns positions in descending order (already sorted that way)
+   - We process from farthest to nearest (same as sorted array approach)
+   - No need for `descendingKeySet()` since TreeMap is already in reverse order
+
+4. **Fleet Logic:**
+   - Same logic as before: compare time with previous fleet
+   - If `time > prevTime`, form new fleet
+
+### Example Walkthrough
+
+**Input:** `target = 12, position = [10,8,0,5,3], speed = [2,4,1,1,3]`
+
+```
+Step 1: Build TreeMap (with reverseOrder, so descending from the start)
+  Insert (10, 2) → TreeMap: {10=2.0}
+  Insert (8, 4)  → TreeMap: {10=2.0, 8=4.0}
+  Insert (0, 1)  → TreeMap: {10=2.0, 8=4.0, 5=1.0, 3=3.0, 0=1.0}
+  Insert (5, 1)  → TreeMap: {10=2.0, 8=4.0, 5=1.0, 3=3.0, 0=1.0}
+  Insert (3, 3)  → TreeMap: {10=2.0, 8=4.0, 5=1.0, 3=3.0, 0=1.0}
+  Note: TreeMap maintains descending order automatically
+
+Step 2: Process in descending order (normal iteration, already sorted)
+  Position 10: time = (12-10)/2 = 1.0 → Fleet 1, prevTime = 1.0
+  Position 8:  time = (12-8)/4 = 1.0  → time = prevTime, joins Fleet 1
+  Position 5:  time = (12-5)/1 = 7.0  → time > prevTime, Fleet 2, prevTime = 7.0
+  Position 3:  time = (12-3)/3 = 3.0  → time < prevTime, joins Fleet 2
+  Position 0:  time = (12-0)/1 = 12.0 → time > prevTime, Fleet 3, prevTime = 12.0
+
+Result: 3 fleets
+```
+
+### Comparison: Array Sorting vs TreeMap
+
+| Aspect | Array Sorting Approach | TreeMap Approach |
+|--------|----------------------|------------------|
+| **Sorting** | Manual `Arrays.sort()` | Automatic (TreeMap with `reverseOrder()`) |
+| **Data Structure** | 2D array `double[][]` | `Map<Integer, Double>` |
+| **Iteration** | Normal array iteration | Normal iteration (already in reverse order) |
+| **Code Lines** | ~35 lines | ~25 lines |
+| **Time Complexity** | O(n log n) | O(n log n) |
+| **Space Complexity** | O(n) | O(n) |
+| **Readability** | Explicit sorting step | More concise, natural key-value mapping |
+| **When to Use** | When you need array operations | When you need sorted map operations |
+
+### Why TreeMap is Elegant
+
+1. **Self-Documenting**: The map structure clearly shows position → speed relationship
+2. **Less Code**: No need to create pairs array or write comparator
+3. **Built-in Sorting**: TreeMap handles sorting automatically with `reverseOrder()`
+4. **Natural Iteration**: Normal `keySet()` iteration works - no need for `descendingKeySet()`
+5. **Type Safety**: Using `Double` for speed avoids casting during division
+
+### Handling Edge Cases
+
+- **Duplicate Positions**: If two cars have the same position, TreeMap will overwrite (last speed wins). However, constraints suggest positions are unique.
+- **Single Car**: Works correctly - one car forms one fleet
+- **All Cars Form One Fleet**: Correctly handled by the time comparison logic
+
+### Complexity Analysis (TreeMap Approach)
+
+- **Time Complexity:** $O(n \log n)$ where $n$ is the number of cars. 
+  - TreeMap insertion: $O(\log n)$ per car → $O(n \log n)$ total
+  - Iteration: $O(n)$
+  - Overall: $O(n \log n)$ (same as array sorting)
+
+- **Space Complexity:** $O(n)$ for storing the TreeMap entries.
+
+**Note:** Both approaches have the same time complexity. TreeMap is slightly more memory-efficient in terms of code clarity, but the actual space usage is similar.
+
+---
+
 ## Complexity Analysis
 
 - **Time Complexity:** $O(n \log n)$ where $n$ is the number of cars. The sorting step dominates the time complexity.
