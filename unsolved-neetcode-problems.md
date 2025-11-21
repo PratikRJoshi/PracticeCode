@@ -4,75 +4,31 @@ This file contains problems from the NeetCode 250 list that haven't been solved 
 
 ## Arrays & Hashing
 
-1. [Concatenation of Array](https://leetcode.com/problems/concatenation-of-array/)
-2. [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)
-3. [Valid Anagram](https://leetcode.com/problems/valid-anagram/)
-4. [Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix/)
-5. [Remove Element](https://leetcode.com/problems/remove-element/)
-6. [Design HashSet](https://leetcode.com/problems/design-hashset/)
-7. [Design HashMap](https://leetcode.com/problems/design-hashmap/)
-8. [Sort Colors](https://leetcode.com/problems/sort-colors/)
-9. [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
-10. [Word Pattern](https://leetcode.com/problems/word-pattern/)
-11. [Replace Elements with Greatest Element on Right Side](https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/)
-12. [Is Subsequence](https://leetcode.com/problems/is-subsequence/)
-13. [Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/)
+✅ **All problems in this category are solved!**
 
 ## Two Pointers
 
-1. [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
-2. [Move Zeroes](https://leetcode.com/problems/move-zeroes/)
-3. [Reverse String](https://leetcode.com/problems/reverse-string/)
-4. [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/)
-5. [Rotate Array](https://leetcode.com/problems/rotate-array/)
-6. [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/)
-7. [Remove Duplicates from Sorted Array II](https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/)
-8. [3Sum Closest](https://leetcode.com/problems/3sum-closest/)
+✅ **All problems in this category are solved!**
 
 ## Sliding Window
 
-1. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
-2. [Substring with Concatenation of All Words](https://leetcode.com/problems/substring-with-concatenation-of-all-words/)
-3. [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/)
-4. [Fruit Into Baskets](https://leetcode.com/problems/fruit-into-baskets/)
+✅ **All problems in this category are solved!**
 
 ## Stack
 
-1. [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
-2. [Simplify Path](https://leetcode.com/problems/simplify-path/)
-3. [Decode String](https://leetcode.com/problems/decode-string/)
-4. [Remove All Adjacent Duplicates In String](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/)
-5. [Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
-6. [Asteroid Collision](https://leetcode.com/problems/asteroid-collision/)
-7. [Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/)
-8. [Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)
+✅ **All problems in this category are solved!**
 
 ## Binary Search
 
-1. [Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
-2. [Search Insert Position](https://leetcode.com/problems/search-insert-position/)
-3. [Sqrt(x)](https://leetcode.com/problems/sqrtx/)
-4. [Successful Pairs of Spells and Potions](https://leetcode.com/problems/successful-pairs-of-spells-and-potions/)
-5. [Find Peak Element](https://leetcode.com/problems/find-peak-element/)
-6. [Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
+✅ **All problems in this category are solved!**
 
 ## Linked List
 
-1. [Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
-2. [Palindrome Linked List](https://leetcode.com/problems/palindrome-linked-list/)
-3. [Remove Linked List Elements](https://leetcode.com/problems/remove-linked-list-elements/)
+✅ **All problems in this category are solved!**
 
 ## Trees
 
-1. [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/)
-2. [Same Tree](https://leetcode.com/problems/same-tree/)
-3. [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
-4. [Binary Tree Zigzag Level Order Traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)
-5. [Maximum Width of Binary Tree](https://leetcode.com/problems/maximum-width-of-binary-tree/)
-6. [Convert Sorted Array to Binary Search Tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/)
-7. [Symmetric Tree](https://leetcode.com/problems/symmetric-tree/)
-8. [Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/)
-9. [Path Sum II](https://leetcode.com/problems/path-sum-ii/)
+✅ **All problems in this category are solved!**
 
 ## Heap / Priority Queue
 
