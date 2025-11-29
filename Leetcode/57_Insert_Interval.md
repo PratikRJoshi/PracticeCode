@@ -24,6 +24,7 @@ class Solution {
         }
         
         // [R2] Merge overlapping intervals with the new interval
+        // Does the current existing interval start before (or at the exact moment) the new interval ends? If yes, merge
         while (index < n && intervals[index][0] <= newInterval[1]) {
             // Update the new interval to include the current overlapping interval
             newInterval[0] = Math.min(newInterval[0], intervals[index][0]); // [R3] Update start of merged interval
