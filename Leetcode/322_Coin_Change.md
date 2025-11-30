@@ -1,70 +1,153 @@
-### 322. Coin Change
-### Problem Link: [Coin Change](https://leetcode.com/problems/coin-change/)
-### Intuition
-This problem asks us to find the minimum number of coins needed to make up a given amount, given a set of coin denominations. This is a classic dynamic programming problem.
+# 322. Coin Change
 
-The key insight is to build up the solution incrementally. For each amount from 1 to the target amount, we determine the minimum number of coins needed by considering all possible coin denominations. For each coin, we check if using it would lead to a better solution than what we've found so far.
+## Problem Description
+[Coin Change](https://leetcode.com/problems/coin-change/)
 
-We can formulate the recurrence relation as:
-`dp[amount] = min(dp[amount], dp[amount - coin] + 1)` for each coin in coins
+You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`.
+
+You may assume that you have an infinite number of each kind of coin.
+
+**Example 1:**
+```
+Input: coins = [1,2,5], amount = 11
+Output: 3
+Explanation: 11 = 5 + 5 + 1
+```
+
+**Example 2:**
+```
+Input: coins = [2], amount = 3
+Output: -1
+```
+
+**Example 3:**
+```
+Input: coins = [1], amount = 0
+Output: 0
+```
+
+**Constraints:**
+- `1 <= coins.length <= 12`
+- `1 <= coins[i] <= 2^31 - 1`
+- `0 <= amount <= 10^4`
+
+## Intuition/Main Idea
+This is a classic dynamic programming problem where we need to find the minimum number of coins required to make up a given amount. The key insight is to build solutions incrementally, starting from smaller amounts and using those solutions to solve for larger amounts.
+
+For each amount from 0 to the target amount, we determine the minimum number of coins needed by considering all available coin denominations. For each coin, we check if using it would lead to a better (smaller) solution than what we've found so far.
+
+The core recurrence relation is:
+```
+dp[amount] = min(dp[amount], dp[amount - coin] + 1) for each coin in coins
+```
 
 This means: the minimum number of coins to make up `amount` is the minimum of either the current value of `dp[amount]` or the minimum number of coins to make up `amount - coin` plus one more coin.
 
-### Java Reference Implementation
+## Code Mapping
+
+| Problem Requirement | Java Code Section (Relevant Lines) |
+|---------------------|-----------------------------------|
+| Handle edge cases (invalid inputs) | `if (amount < 0 || coins == null || coins.length == 0) { return -1; }` |
+| Base case (amount = 0) | `if (amount == 0) { return 0; }` |
+| Initialize DP array | `int[] dp = new int[amount + 1]; Arrays.fill(dp, amount + 1);` |
+| Set base case in DP | `dp[0] = 0;` |
+| Try each coin for each amount | Nested loops: `for (int currentAmount = 1; currentAmount <= amount; currentAmount++)` and `for (int coin : coins)` |
+| Update minimum coins needed | `dp[currentAmount] = Math.min(dp[currentAmount], dp[currentAmount - coin] + 1);` |
+| Return result with validation | `return dp[amount] > amount ? -1 : dp[amount];` |
+
+## Final Java Code & Learning Pattern
+
 ```java
 class Solution {
+    /**
+     * Finds the minimum number of coins needed to make up the given amount.
+     * 
+     * @param coins Array of coin denominations available
+     * @param amount Target amount to make up
+     * @return Minimum number of coins needed, or -1 if impossible
+     */
     public int coinChange(int[] coins, int amount) {
-        if (amount < 0 || coins == null || coins.length == 0) { // [R0] Handle edge cases
+        // Handle edge cases: negative amount, null or empty coins array
+        if (amount < 0 || coins == null || coins.length == 0) {
             return -1;
         }
         
-        if (amount == 0) { // [R1] Base case: 0 amount requires 0 coins
+        // Base case: 0 amount requires 0 coins
+        if (amount == 0) {
             return 0;
         }
         
-        // [R2] Initialize dp array with amount + 1 (representing "infinity")
+        // Create DP array where dp[i] represents the minimum coins needed for amount i
+        // Initialize with amount+1 (representing "infinity" - an amount larger than possible)
         int[] dp = new int[amount + 1];
         Arrays.fill(dp, amount + 1);
-        dp[0] = 0; // [R3] Base case: 0 amount requires 0 coins
         
-        // [R4] Build up the dp array from 1 to amount
+        // Base case: 0 amount requires 0 coins
+        dp[0] = 0;
+        
+        // Build up the dp array from 1 to amount (bottom-up approach)
         for (int currentAmount = 1; currentAmount <= amount; currentAmount++) {
-            // [R5] Try each coin denomination
+            // For each amount, try all possible coins
             for (int coin : coins) {
-                // [R6] Check if the coin can be used (not larger than current amount)
+                // Only use the coin if it's not larger than the current amount
                 if (coin <= currentAmount) {
-                    // [R7] Update dp[currentAmount] if using this coin leads to a better solution
+                    // The key DP state transition:
+                    // dp[currentAmount] = min(dp[currentAmount], dp[currentAmount - coin] + 1)
+                    // This means: either keep current minimum or use one coin + minimum for remaining amount
                     dp[currentAmount] = Math.min(dp[currentAmount], dp[currentAmount - coin] + 1);
                 }
             }
         }
         
-        // [R8] Check if a solution was found
+        // If dp[amount] is still amount+1, it means no solution was found
+        // Otherwise, return the minimum coins needed
         return dp[amount] > amount ? -1 : dp[amount];
     }
 }
 ```
 
-### Alternative Implementation (Top-down with Memoization)
+### Top-down (Memoization) Approach
+
 ```java
 class Solution {
+    /**
+     * Finds the minimum number of coins needed to make up the given amount.
+     * This is the top-down approach with memoization.
+     * 
+     * @param coins Array of coin denominations available
+     * @param amount Target amount to make up
+     * @return Minimum number of coins needed, or -1 if impossible
+     */
     public int coinChange(int[] coins, int amount) {
+        // Handle edge cases: negative amount, null or empty coins array
         if (amount < 0 || coins == null || coins.length == 0) {
             return -1;
         }
         
+        // Base case: 0 amount requires 0 coins
         if (amount == 0) {
             return 0;
         }
         
         // Initialize memoization array with -1 (representing "not calculated yet")
+        // Size is amount+1 to include all values from 0 to amount
         int[] memo = new int[amount + 1];
         Arrays.fill(memo, -1);
-        memo[0] = 0;
+        memo[0] = 0; // Base case: 0 amount requires 0 coins
         
         return coinChangeHelper(coins, amount, memo);
     }
     
+    /**
+     * Helper method for the recursive top-down approach.
+     * 
+     * @param coins Array of coin denominations
+     * @param amount Current amount to make change for
+     * @param memo Memoization array to avoid redundant calculations
+     * @return Minimum coins needed for current amount
+     */
     private int coinChangeHelper(int[] coins, int amount, int[] memo) {
         // If we've already calculated this amount, return the cached result
         if (memo[amount] != -1) {
@@ -76,114 +159,71 @@ class Solution {
         
         // Try each coin denomination
         for (int coin : coins) {
+            // Only use the coin if it's not larger than the current amount
             if (coin <= amount) {
+                // Recursively find minimum coins for amount - coin
                 int subproblem = coinChangeHelper(coins, amount - coin, memo);
                 
                 // If there's a valid solution for the subproblem
                 if (subproblem != -1) {
+                    // Update minimum if this path leads to a better solution
+                    // The key state transition: min_coins(amount) = 1 + min_coins(amount - coin)
                     minCoins = Math.min(minCoins, subproblem + 1);
                 }
             }
         }
         
         // Cache and return the result
+        // If minCoins is still Integer.MAX_VALUE, no solution was found
         memo[amount] = (minCoins == Integer.MAX_VALUE) ? -1 : minCoins;
         return memo[amount];
     }
 }
 ```
 
-### Understanding the Algorithm and Boundary Checks
+## Complexity Analysis
 
-1. **Dynamic Programming Approach:**
-   - We use a bottom-up approach, building solutions for smaller amounts first
-   - `dp[i]` represents the minimum number of coins needed to make amount `i`
-   - We initialize `dp[0] = 0` (base case: 0 amount requires 0 coins)
-   - For all other amounts, we initialize with `amount + 1` (representing "infinity")
+- **Time Complexity**: $O(amount \times n)$
+  - Bottom-up approach: We have two nested loops - one iterating through amounts (1 to `amount`) and one iterating through coins (n coins)
+  - Top-down approach: In the worst case, we might need to compute each amount from 1 to `amount`, and for each amount, we try all n coins
+  
+- **Space Complexity**: $O(amount)$
+  - We use a dp/memo array of size `amount + 1`
+  - The recursion call stack in the top-down approach could potentially add $O(amount)$ space in the worst case
 
-2. **Recurrence Relation:**
-   - For each amount `i` and each coin `c`:
-     - If `c <= i`, we can use this coin
-     - We update `dp[i] = min(dp[i], dp[i-c] + 1)`
-     - This means: either keep the current minimum or use one coin `c` plus the minimum coins needed for `i-c`
+## Dynamic Programming Specific Explanations
 
-3. **Final Check:**
-   - If `dp[amount] > amount`, it means no valid combination was found
-   - This is because the maximum number of coins needed is `amount` (all 1-value coins)
-   - In this case, we return -1
+### Subproblem Definition
+The subproblem for this dynamic programming solution is:
+- `dp[i]` = minimum number of coins needed to make amount `i`
 
-4. **Top-down Approach (Alternative):**
-   - Uses recursion with memoization to avoid redundant calculations
-   - Solves the problem by breaking it down into smaller subproblems
-   - Caches results to avoid recomputing the same subproblems
+### State Transition
+The state transition is:
+- `dp[i] = min(dp[i], dp[i - coin] + 1)` for each coin in coins
 
-### Requirement → Code Mapping
-- **R0 (Handle edge cases)**: `if (amount < 0 || coins == null || coins.length == 0) { return -1; }` - Return -1 for invalid inputs
-- **R1 (Base case)**: `if (amount == 0) { return 0; }` - 0 amount requires 0 coins
-- **R2 (Initialize dp array)**: Create and initialize dp array with "infinity" values
-- **R3 (Set base case)**: `dp[0] = 0;` - 0 amount requires 0 coins
-- **R4 (Build dp array)**: Iterate from 1 to amount to build solutions incrementally
-- **R5 (Try each coin)**: For each amount, try all possible coins
-- **R6 (Check if coin is usable)**: `if (coin <= currentAmount)` - Ensure coin is not larger than current amount
-- **R7 (Update dp value)**: `dp[currentAmount] = Math.min(dp[currentAmount], dp[currentAmount - coin] + 1);` - Update if better solution found
-- **R8 (Check for solution)**: `return dp[amount] > amount ? -1 : dp[amount];` - Return -1 if no solution, otherwise return minimum coins
+This transition means: To make amount `i`, we can either:
+1. Keep the current minimum number of coins for amount `i`
+2. Use one coin of value `coin` plus the minimum number of coins needed for amount `i - coin`
 
-### Complexity Analysis
-- **Time Complexity**: O(amount × n)
-  - We have two nested loops: one iterating through amounts (1 to `amount`) and one iterating through coins (n coins)
-  - For each amount, we consider all n coins
-  - Overall: O(amount × n)
+### Top-down vs Bottom-up Approach
+- **Top-down (Memoization)**: This approach starts from the target amount and recursively breaks it down into smaller subproblems. It's more intuitive because it follows the natural thought process of "How can I make this amount using these coins?"
+  
+- **Bottom-up (Tabulation)**: This approach builds the solution incrementally from the smallest subproblem (amount = 0) up to the target amount. It's generally more efficient because:
+  1. It avoids the overhead of recursive function calls
+  2. It processes each subproblem exactly once in a predetermined order
+  3. It doesn't have the risk of stack overflow for large inputs
 
-- **Space Complexity**: O(amount)
-  - We use a dp array of size `amount + 1`
-  - The space complexity is therefore O(amount)
+The bottom-up approach is particularly better for this problem when the amount is large and the number of coins is small, as it systematically builds solutions without redundant calculations.
 
-### Related Problems
-- **Coin Change 2** (Problem 518): Count the number of ways to make up an amount using given coins
-- **Minimum Cost For Tickets** (Problem 983): Similar DP problem with different constraints
-- **Perfect Squares** (Problem 279): Find the minimum number of perfect squares that sum to n
+### DP Array Size Explanation
+- We allocate `dp[amount + 1]` or `memo[amount + 1]` because:
+  1. We need to store solutions for all amounts from 0 to the target amount (inclusive)
+  2. The 0-indexed array needs one extra position to accommodate the amount value itself
 
-### Comparison with Coin Change 2 (Problem 518)
+## Similar Problems
 
-#### Problem Objective Difference
-- **Coin Change (322)**: Find the *minimum number* of coins needed to make up an amount
-- **Coin Change 2 (518)**: Count the *total number of ways* to make up an amount
-
-#### Key Implementation Differences
-
-1. **DP State Meaning**:
-   - **322**: `dp[i]` = minimum number of coins to make amount i
-   - **518**: `dp[i]` = number of different ways to make amount i
-
-2. **Initialization**:
-   - **322**: `dp[0] = 0`, others initialized to `amount + 1` (representing "infinity")
-   - **518**: `dp[0] = 1` (one way to make zero - use no coins), others initialized to `0`
-
-3. **Loop Order** (critical difference):
-   - **322**: 
-     ```java
-     for (int amount = 1; amount <= target; amount++) {
-         for (int coin : coins) {
-             // Update dp[amount]
-         }
-     }
-     ```
-   - **518**: 
-     ```java
-     for (int coin : coins) {
-         for (int amount = coin; amount <= target; amount++) {
-             // Update dp[amount]
-         }
-     }
-     ```
-   In 322, the loop order doesn't matter because we're finding the minimum. In 518, this specific order prevents counting the same combination in different orders.
-
-4. **Recurrence Relation**:
-   - **322**: `dp[amount] = Math.min(dp[amount], dp[amount - coin] + 1)`
-   - **518**: `dp[amount] += dp[amount - coin]`
-
-5. **Result Interpretation**:
-   - **322**: Return `-1` if no solution exists (`dp[amount] > amount`)
-   - **518**: Always return `dp[amount]` (could be 0 if no ways exist)
-
-These differences reflect the fundamental distinction between finding a minimum value (optimization problem) and counting all possibilities (combinatorial problem).
+- [518. Coin Change 2](https://leetcode.com/problems/coin-change-2/) - Count the number of ways to make up an amount using given coins
+- [279. Perfect Squares](https://leetcode.com/problems/perfect-squares/) - Find the minimum number of perfect squares that sum to n
+- [983. Minimum Cost For Tickets](https://leetcode.com/problems/minimum-cost-for-tickets/) - Similar DP problem with different constraints
+- [1049. Last Stone Weight II](https://leetcode.com/problems/last-stone-weight-ii/) - Can be solved using similar DP approach
+- [416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) - Similar DP pattern for subset problems
