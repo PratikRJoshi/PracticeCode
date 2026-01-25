@@ -51,99 +51,83 @@ For the second binary search, when we find the target, we continue searching in 
 |---------------------|-----------------------------------|
 | Find the starting position | `int first = findFirstPosition(nums, target);` |
 | Find the ending position | `int last = findLastPosition(nums, target);` |
-| Return [-1, -1] if target not found | `if (first > last) return new int[]{-1, -1};` |
-| O(log n) runtime complexity | Using binary search in both helper methods |
+| Return [-1, -1] if target not found | `if (first == -1) return new int[]{-1, -1};` |
+| O(log n) runtime complexity | Using insertion-point binary search in both helper methods |
 
 ## Final Java Code & Learning Pattern:
 
 ```java
 class Solution {
     public int[] searchRange(int[] nums, int target) {
-        // Find the first and last positions of the target
         int first = findFirstPosition(nums, target);
-        int last = findLastPosition(nums, target);
-        
-        // If target is not found (first > last), return [-1, -1]
-        if (first > last) {
+        if (first == -1) {
             return new int[]{-1, -1};
         }
-        
+
+        int last = findLastPosition(nums, target);
         return new int[]{first, last};
     }
-    
-    // Helper method to find the first position of the target
+
+    // First index i where nums[i] == target (or -1 if not found)
     private int findFirstPosition(int[] nums, int target) {
         int left = 0;
-        int right = nums.length - 1;
-        int result = -1;
-        
-        while (left <= right) {
+        int right = nums.length;
+
+        while (left < right) {
             int mid = left + (right - left) / 2;
-            
-            if (nums[mid] == target) {
-                // Found a match, but continue searching in the left half
-                // to find the first occurrence
-                result = mid;
-                right = mid - 1;
-            } else if (nums[mid] < target) {
+            if (nums[mid] < target) {
                 left = mid + 1;
             } else {
-                right = mid - 1;
+                right = mid;
             }
         }
-        
-        return result;
+
+        if (left == nums.length || nums[left] != target) {
+            return -1;
+        }
+        return left;
     }
-    
-    // Helper method to find the last position of the target
+
+    // Last index i where nums[i] == target (assumes target exists)
     private int findLastPosition(int[] nums, int target) {
         int left = 0;
-        int right = nums.length - 1;
-        int result = -1;
-        
-        while (left <= right) {
+        int right = nums.length;
+
+        while (left < right) {
             int mid = left + (right - left) / 2;
-            
-            if (nums[mid] == target) {
-                // Found a match, but continue searching in the right half
-                // to find the last occurrence
-                result = mid;
-                left = mid + 1;
-            } else if (nums[mid] < target) {
+            if (nums[mid] <= target) {
                 left = mid + 1;
             } else {
-                right = mid - 1;
+                right = mid;
             }
         }
-        
-        return result;
+
+        return left - 1;
     }
 }
 ```
 
-This solution uses two modified binary searches to find the first and last positions of the target:
+This solution uses an insertion-point binary search pattern:
 
-1. `findFirstPosition`: When we find the target, we update our result but continue searching in the left half to find any earlier occurrences.
-2. `findLastPosition`: When we find the target, we update our result but continue searching in the right half to find any later occurrences.
-3. If the target is not found in either search, the first position will be -1 and the last position will be -1, so we return [-1, -1].
-4. If the target is found, we return the first and last positions.
+1. `findFirstPosition` converges to the first index with `nums[i] >= target`, then validates equality.
+2. `findLastPosition` converges to the first index with `nums[i] > target`, then subtracts 1 to get the last `== target`.
+3. If `findFirstPosition` returns `-1`, the target does not exist and we return `[-1, -1]`.
 
 ## Binary Search Explanation:
 
 ### How to decide whether to use < or <= in the main loop condition:
-- We use `left <= right` because we want to include the case where `left` and `right` point to the same element. This ensures we check every element in the range.
+- In this approach we use `left < right` because `right` is exclusive (`right = nums.length`).
+- The loop maintains an insertion-point invariant, and terminates when the search range becomes empty (`left == right`).
 
 ### How to decide if the pointers should be set to mid + 1 or mid - 1 or mid:
-- When searching for the first position and we find a match, we set `right = mid - 1` to continue searching in the left half.
-- When searching for the last position and we find a match, we set `left = mid + 1` to continue searching in the right half.
-- When the current element is less than the target, we always set `left = mid + 1` because the target must be in the right half.
-- When the current element is greater than the target, we always set `right = mid - 1` because the target must be in the left half.
+- In `findFirstPosition`, when `nums[mid] < target`, the first `>= target` must be to the right, so `left = mid + 1`.
+- Otherwise `nums[mid] >= target`, so `mid` could still be the first valid position, and we keep it by setting `right = mid`.
+- In `findLastPosition`, when `nums[mid] <= target`, the first `> target` must be to the right, so `left = mid + 1`.
+- Otherwise `nums[mid] > target`, so `mid` could still be the first `> target`, and we keep it by setting `right = mid`.
 
 ### How to decide what would be the return value:
-- We use a `result` variable to keep track of the most recent match we've found.
-- If we never find a match, `result` remains -1.
-- For the first position, we return the leftmost match.
-- For the last position, we return the rightmost match.
+- `findFirstPosition` returns `left` after the loop, but only if it is in bounds and `nums[left] == target`, otherwise `-1`.
+- `findLastPosition` returns `left - 1` because `left` ends at the first index where `nums[left] > target`.
 
 ## Complexity Analysis:
 

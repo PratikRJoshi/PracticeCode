@@ -38,6 +38,7 @@ For every solution or modification request, your output content MUST be in raw m
 4.  **Final Java Code & Learning Pattern (Full Content):**
     * Provide the **complete, final, and accepted Java code** solution inside a single, marked Java code block.
     * The code should have detailed explanation for the whys behind the code lines that build up to the final solution code.
+    * The code should  make use of helpful variable names instead of smaller length variable names. 
 
 5.  **Complexity Analysis:**
     * State the **Time Complexity** using $O(...)$ notation.
@@ -59,6 +60,7 @@ For every solution or modification request, your output content MUST be in raw m
 
 7. ** Dynamic Programming Problems **
     * For every tree problem, add explanations for the following - 
+      * Always give the subproblem definition before giving the code. If the problem involves state transitions, explain the state transition in simple words that would allow me to come up with that or similar transition on my own. Write  the subproblem definition or state transitions at relevant places in the code to easily map it to the code lines.
       * Always explain the intuition behind generating the subproblems. Preferably intuition based on the top-down approach.
       * Always first give the top-down / memoized version of the code and explain the intution for the top-down approach.
       * Then give the bottom-up version of the code and explain in which cases its time complexity would be better than the top-down approach.
@@ -67,7 +69,8 @@ For every solution or modification request, your output content MUST be in raw m
 
 
 8. ** Simlar Problems **
-    * You should also add all the list of similar problems that can be solved following a solution pattern same as or very similar to the current problem's pattern.
+    * You should also add hyperlinks to all the list of similar problems that can be solved following a solution pattern same as or very similar to the current problem's pattern
+    * If no similar problems exist, then no need to deliberately add any problems to the list. However, do explain why any other seemingly similar problems are not actually similar.
 
 
 

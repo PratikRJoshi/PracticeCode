@@ -411,6 +411,50 @@ The loop is the moment “waiting ends” for zero or more elements; everything 
 
 ---
 
+## Binary Search Decision Guide
+
+### How to decide whether to use `<` or `<=` in the main loop condition:
+
+**Use `left <= right` when:**
+- You want to search the entire array including when `left == right`
+- You're looking for an exact match
+- This is the standard binary search pattern
+
+**Use `left < right` when:**
+- You want to stop when `left == right` and handle that case separately
+- You're doing a variant like finding insertion point or boundary
+
+**For this problem:** We use `left <= right` because we want to check every valid position, including when the search space narrows to a single element.
+
+### How to decide if pointers should be set to `mid + 1` or `mid - 1` or `mid`:
+
+**Standard pattern (this problem):**
+- When `nums[mid] < target`: `left = mid + 1` (exclude mid, search right)
+- When `nums[mid] > target`: `right = mid - 1` (exclude mid, search left)
+- When `nums[mid] == target`: return mid
+
+**Why `mid + 1` and `mid - 1`:**
+- We've already checked `nums[mid]`, so we can safely exclude it
+- This ensures the search space shrinks at each step
+- Prevents infinite loops
+
+**When to use `mid` instead:**
+- In variants like "find first occurrence" or "find insertion point"
+- When we want to keep `mid` in the search space for boundary detection
+
+### How to decide what would be the return value:
+
+**Standard binary search (this problem):**
+- Return `mid` when `nums[mid] == target`
+- Return `-1` when target not found (loop exits)
+
+**Variants:**
+- **Lower bound:** Return `left` (first position where target could be inserted)
+- **Upper bound:** Return `right + 1` or `left`
+- **Range search:** Return `[leftBound, rightBound]`
+
+---
+
 ### A Guide to Pointers in Linked Lists
 
 Here are the key principles for correctly positioning `slow` and `fast` pointers and handling null checks in linked list problems.
@@ -480,3 +524,126 @@ Don't use a helper when:
 - The function signature works perfectly for recursion
 - No additional state or different return types needed
 - A helper would only add unnecessary complexity
+
+---
+
+### Binary Search (and Related) Patterns: Problem Statement -> Final Code Mapping
+
+Use this checklist to translate a problem statement into code without missing key requirements or getting stuck on boundary conditions.
+
+#### 1) Identify the single thing you must output
+
+- If the statement says **"minimum possible X"**, **"maximum possible Y"**, or **"return the minimum radius"**, then your code must compute one final `answer` value.
+- If it asks for indices/range, decide early if you need:
+  - a single boundary index (lower bound style)
+  - two boundaries (first + last)
+  - a value (not an index)
+
+#### 2) Extract the "global knob" vs "per-item local need"
+
+- **Global knob**: one value shared across the whole input (e.g., radius `r`, capacity `cap`, max-per-store `x`).
+- **Local need**: per element/position requirement (e.g., distance to nearest heater, stores needed for a product, days needed for a capacity).
+
+Useful transformation:
+
+- Many problems become:
+  - `answer = max(localNeed[i])` (minimize a global knob that must satisfy all items)
+  - or `find minimum X such that feasible(X) == true` (binary search on answer)
+
+#### 3) Turn English constraints into a predicate or inequality
+
+- Look for words like:
+  - **"at most"** => `<=`
+  - **"at least"** => `>=`
+  - **"covers all"** => a loop that verifies all items, or a `max(...)`
+  - **"k operations"** / **"budget"** => a cost formula compared to `k`
+
+This is the step where you define your invariant clearly, e.g.:
+
+- Sliding window: maintain `windowCost <= k`
+- Binary search on answer: maintain that `hi` is feasible and `lo` is infeasible (or vice versa)
+
+#### 4) Choose the correct algorithm skeleton
+
+##### A) Boundary / peak / first-true search (lower bound pattern)
+
+Use when:
+
+- You are finding a boundary index (first >= target, first true, peak by slope, etc.)
+
+```java
+int left = 0;
+int right = arr.length; // right is exclusive
+while (left < right) {
+    int mid = left + (right - left) / 2;
+    if (condition(mid)) {
+        right = mid;     // mid might still be the answer
+    } else {
+        left = mid + 1;  // mid cannot be the answer
+    }
+}
+return left; // insertion point / first true
+```
+
+##### B) Binary search on answer (minimize X with monotonic feasibility)
+
+Use when:
+
+- you must return the minimum `X` such that `feasible(X)` is true
+- and `feasible(X)` is monotonic (once true, stays true as X increases; or the opposite)
+
+```java
+int low = minPossible;
+int high = maxPossible; // inclusive or exclusive, pick one and stick to it
+while (low < high) {
+    int mid = low + (high - low) / 2;
+    if (feasible(mid)) {
+        high = mid;
+    } else {
+        low = mid + 1;
+    }
+}
+return low;
+```
+
+##### C) Sliding window with a budget / cost constraint
+
+Use when:
+
+- you want the **largest** subarray/window satisfying `cost <= k`
+
+```java
+int start = 0;
+long windowSum = 0;
+int best = 0;
+
+for (int end = 0; end < nums.length; end++) {
+    windowSum += nums[end];
+
+    while (violatesConstraint(start, end, windowSum)) {
+        windowSum -= nums[start];
+        start++;
+    }
+
+    best = Math.max(best, end - start + 1);
+}
+return best;
+```
+
+#### 5) Write a "Code Mapping" before coding (even if only mentally)
+
+For each requirement, force a 1-to-1 mapping to a variable / helper / line:
+
+- **Requirement**: “uniform radius” -> **Variable**: `minRadius`
+- **Requirement**: “each house must be covered” -> **Computation**: `nearestDist` per house + `max(...)`
+- **Requirement**: “at most k operations” -> **Inequality**: `cost <= k` maintained by while loop
+
+#### 6) Boundary + overflow checklist
+
+- If you ever compute `value * length`, store in `long`.
+- If you use `mid + 1`, ensure `mid` cannot be the last index in that loop (often guaranteed by `left < right` and `right` being inclusive).
+- For lower bound patterns, prefer `right = arr.length` (exclusive) to avoid `mid - 1` bugs.
+- Always test:
+  - smallest input size
+  - edge boundaries (`target` less than all / greater than all)
+  - large values (overflow)

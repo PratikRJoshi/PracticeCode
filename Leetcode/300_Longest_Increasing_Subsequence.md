@@ -1,113 +1,201 @@
-### 300. Longest Increasing Subsequence
-### Problem Link: [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
-### Intuition
-This problem asks us to find the length of the longest subsequence of an array where all elements are in strictly increasing order. A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
+# 300. Longest Increasing Subsequence
+[Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
 
-The key insight is to use dynamic programming. For each element, we consider all previous elements and extend the longest increasing subsequence if possible. We maintain an array `dp` where `dp[i]` represents the length of the longest increasing subsequence ending at index `i`.
+## Problem Description
+Given an integer array `nums`, return the length of the longest strictly increasing subsequence.
 
-### Java Reference Implementation
+A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.
+
+**Example 1:**
+```
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+```
+
+**Example 2:**
+```
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+```
+
+**Example 3:**
+```
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+```
+
+**Constraints:**
+- 1 <= nums.length <= 2500
+- -10^4 <= nums[i] <= 10^4
+
+## Intuition/Main Idea
+This problem asks us to find the length of the longest subsequence where all elements are in strictly increasing order. The key insight is to use dynamic programming. For each element, we consider all previous elements and extend the longest increasing subsequence if possible. We maintain an array `dp` where `dp[i]` represents the length of the longest increasing subsequence ending at index `i`.
+
+Alternatively, a more efficient approach uses binary search to maintain an array of the smallest values that can end subsequences of different lengths.
+
+## Code Mapping
+
+| Problem Requirement | Java Code Section (Relevant Lines) |
+|---------------------|-----------------------------------|
+| Handle empty or null input | Lines 12-14: Check if array is null or empty |
+| Initialize DP array | Lines 17-18: Create and initialize DP array with 1s |
+| Find longest subsequence | Lines 22-28: Double loop to build DP table |
+| Return maximum length | Lines 30-31: Return the maximum length found |
+
+## Final Java Code & Learning Pattern
+
+### Dynamic Programming Approach (O(n²))
+
 ```java
 class Solution {
     public int lengthOfLIS(int[] nums) {
-        if (nums == null || nums.length == 0) { // [R0] Handle edge cases
+        if (nums == null || nums.length == 0) {
             return 0;
         }
         
         int n = nums.length;
-        int[] dp = new int[n]; // [R1] Initialize DP array
-        Arrays.fill(dp, 1); // [R2] Each element by itself forms a subsequence of length 1
+        // dp[i] represents the length of the longest increasing subsequence ending at index i
+        int[] dp = new int[n];
+        // Each element by itself forms a subsequence of length 1
+        Arrays.fill(dp, 1);
         
-        int maxLength = 1; // [R3] Initialize maximum length
+        int maxLength = 1;
         
-        for (int i = 1; i < n; i++) { // [R4] Iterate through the array
-            for (int j = 0; j < i; j++) { // [R5] Check all previous elements
-                if (nums[i] > nums[j]) { // [R6] If current element is greater than previous element
-                    dp[i] = Math.max(dp[i], dp[j] + 1); // [R7] Update LIS length at current position
+        // For each position, check all previous positions
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                // If current element is greater than previous element, we can extend the subsequence
+                if (nums[i] > nums[j]) {
+                    // Update LIS length at current position to be max of current or (previous + 1)
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
                 }
             }
-            maxLength = Math.max(maxLength, dp[i]); // [R8] Update maximum LIS length
+            // Keep track of the maximum LIS length found so far
+            maxLength = Math.max(maxLength, dp[i]);
         }
         
-        return maxLength; // [R9] Return the maximum length
+        return maxLength;
     }
 }
 ```
 
-### Alternative Implementation (Binary Search - O(n log n))
-The binary search approach is much more efficient but less intuitive than the dynamic programming solution. Here's how to understand it:
-
-1. **What the `tails` array represents**:
-    - `tails[i]` is the smallest value that can appear at the end of an increasing subsequence of length `i+1`.
-    - For example, if `tails[2] = 7`, it means the smallest possible value at the end of any increasing subsequence of length 3 is 7.
-
-2. **Why this works**:
-    - If we have increasing subsequences of lengths 1 to k, and their tails (last elements) are strictly increasing, then:
-        - For any new element `num`, if it's larger than all tails, we can extend the longest subsequence.
-        - If it's smaller than some tails, we can potentially make some existing subsequences more optimal by having a smaller tail value.
-
-3. **The algorithm step by step**:
-    - For each number in the array:
-        - Use binary search to find the position where this number should be placed in the `tails` array.
-        - If the number is larger than all tails, append it (creating a longer subsequence).
-        - Otherwise, replace the smallest tail that is greater than or equal to this number.
-
-4. **Example walkthrough**:
-    - For the array `[10, 9, 2, 5, 3, 7, 101, 18]`:
-        - Start with empty `tails` array, `size = 0`
-        - Process 10: `tails = [10]`, `size = 1`
-        - Process 9: Replace 10 with 9, `tails = [9]`, `size = 1`
-        - Process 2: Replace 9 with 2, `tails = [2]`, `size = 1`
-        - Process 5: 5 > 2, so append, `tails = [2, 5]`, `size = 2`
-        - Process 3: 3 > 2 but < 5, so replace 5, `tails = [2, 3]`, `size = 2`
-        - Process 7: 7 > 3, so append, `tails = [2, 3, 7]`, `size = 3`
-        - Process 101: 101 > 7, so append, `tails = [2, 3, 7, 101]`, `size = 4`
-        - Process 18: 18 < 101, so replace 101, `tails = [2, 3, 7, 18]`, `size = 4`
-        - Final answer: `size = 4`
+### Binary Search Approach (O(n log n))
 
 ```java
 class Solution {
     public int lengthOfLIS(int[] nums) {
-        List<Integer> result = new ArrayList<>();  // [BS0] Store the tails of increasing subsequences
-
-        for(int n : nums) {  // [BS1] Process each number in the array
-            // [BS2] Find the position where this number should be inserted or replaced
-            int pos = binarySearch(n, result);
+        // This list stores the smallest ending value for subsequences of each length
+        List<Integer> tails = new ArrayList<>();
+        
+        for (int num : nums) {
+            // Find the position where this number should be inserted or replaced
+            int pos = binarySearch(num, tails);
             
-            if(pos < result.size()) {  // [BS3] If position is within current result size
-                result.set(pos, n);    // [BS4] Replace the existing element (optimize the subsequence)
+            if (pos < tails.size()) {
+                // Replace the existing element (optimize the subsequence)
+                tails.set(pos, num);
             } else {
-                result.add(n);         // [BS5] Append to create a longer subsequence
+                // Append to create a longer subsequence
+                tails.add(num);
             }
         }
-
-        return result.size();  // [BS6] The size of result is the length of LIS
+        
+        // The size of tails is the length of LIS
+        return tails.size();
     }
-
+    
     /**
      * Binary search to find the position where num should be inserted
-     * Returns the index of the first element >= num, or result.size() if all elements < num
+     * Returns the index of the first element >= num, or tails.size() if all elements < num
      */
-    private int binarySearch(int num, List<Integer> result) {
-        int left = 0, right = result.size() - 1;  // [BS7] Initialize search boundaries
-
-        while(left <= right) {  // [BS8] Standard binary search loop
-            int mid = left + (right - left) / 2;  // [BS9] Calculate middle index safely
+    private int binarySearch(int num, List<Integer> tails) {
+        int left = 0, right = tails.size() - 1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
             
-            if(result.get(mid) == num) {  // [BS10] Found exact match
+            if (tails.get(mid) == num) {
                 return mid;
-            } else if(result.get(mid) < num) {  // [BS11] Target is in the right half
+            } else if (tails.get(mid) < num) {
                 left = mid + 1;
-            } else {  // [BS12] Target is in the left half
+            } else {
                 right = mid - 1;
             }
         }
-
-        return left;  // [BS13] Return insertion position (first element >= num)
+        
+        return left;
     }
 }
 ```
 
-/** 
-Time Complexity: O(nlogn) - We process n elements, each requiring O(log n) time for binary search
-Space Complexity: O(n) - In worst case, the result list can grow to size n
-*/
+## Dynamic Programming Explanations
+
+### Top-Down Approach (Memoization)
+The intuition behind the top-down approach is to start from each position and ask: "What is the longest increasing subsequence starting from here?" We can use recursion with memoization to avoid recalculating subproblems.
+
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int n = nums.length;
+        // memo[i] represents the length of LIS starting from index i
+        // Size n is allocated as we need to store results for each starting position
+        Integer[] memo = new Integer[n];
+        
+        int maxLength = 0;
+        for (int i = 0; i < n; i++) {
+            maxLength = Math.max(maxLength, findLIS(nums, i, memo));
+        }
+        
+        return maxLength;
+    }
+    
+    private int findLIS(int[] nums, int start, Integer[] memo) {
+        // If we've already computed this subproblem
+        if (memo[start] != null) {
+            return memo[start];
+        }
+        
+        // Base case: every element forms a subsequence of length 1
+        int maxLength = 1;
+        
+        // Try to extend the subsequence with elements after the current one
+        for (int next = start + 1; next < nums.length; next++) {
+            if (nums[next] > nums[start]) {
+                maxLength = Math.max(maxLength, 1 + findLIS(nums, next, memo));
+            }
+        }
+        
+        // Memoize and return
+        memo[start] = maxLength;
+        return maxLength;
+    }
+}
+```
+
+### Bottom-Up Approach
+The bottom-up approach builds the solution iteratively, starting from smaller subproblems. It's generally more efficient than top-down for this problem because we avoid the overhead of recursion and can directly compute the final answer.
+
+The time complexity is better in the bottom-up approach because we process each element exactly once in the outer loop and at most n times in the inner loop, giving us O(n²) without the overhead of function calls.
+
+## Complexity Analysis
+- **Time Complexity**: 
+  - DP Approach: $O(n^2)$ where n is the length of the array
+  - Binary Search Approach: $O(n \log n)$
+- **Space Complexity**: $O(n)$ for both approaches
+
+## Binary Search Explanations
+- We use `left <= right` in the loop condition to ensure we find the exact insertion position, even when the array is empty.
+- We set pointers to `mid + 1` or `mid - 1` to narrow down the search range, ensuring we don't get stuck in an infinite loop.
+- The return value is `left` because after the binary search completes, `left` points to the position where the element should be inserted to maintain the sorted order.
+
+## Similar Problems
+- [354. Russian Doll Envelopes](https://leetcode.com/problems/russian-doll-envelopes/)
+- [646. Maximum Length of Pair Chain](https://leetcode.com/problems/maximum-length-of-pair-chain/)
+- [673. Number of Longest Increasing Subsequences](https://leetcode.com/problems/number-of-longest-increasing-subsequences/)
+- [674. Longest Continuous Increasing Subsequence](https://leetcode.com/problems/longest-continuous-increasing-subsequence/)
+- [1048. Longest String Chain](https://leetcode.com/problems/longest-string-chain/)

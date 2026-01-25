@@ -101,48 +101,6 @@ class Solution {
 
 5. **Not Found (Line 22):** If we exit the loop without finding the target, return -1.
 
-## Binary Search Decision Guide
-
-### How to decide whether to use `<` or `<=` in the main loop condition:
-
-**Use `left <= right` when:**
-- You want to search the entire array including when `left == right`
-- You're looking for an exact match
-- This is the standard binary search pattern
-
-**Use `left < right` when:**
-- You want to stop when `left == right` and handle that case separately
-- You're doing a variant like finding insertion point or boundary
-
-**For this problem:** We use `left <= right` because we want to check every valid position, including when the search space narrows to a single element.
-
-### How to decide if pointers should be set to `mid + 1` or `mid - 1` or `mid`:
-
-**Standard pattern (this problem):**
-- When `nums[mid] < target`: `left = mid + 1` (exclude mid, search right)
-- When `nums[mid] > target`: `right = mid - 1` (exclude mid, search left)
-- When `nums[mid] == target`: return mid
-
-**Why `mid + 1` and `mid - 1`:**
-- We've already checked `nums[mid]`, so we can safely exclude it
-- This ensures the search space shrinks at each step
-- Prevents infinite loops
-
-**When to use `mid` instead:**
-- In variants like "find first occurrence" or "find insertion point"
-- When we want to keep `mid` in the search space for boundary detection
-
-### How to decide what would be the return value:
-
-**Standard binary search (this problem):**
-- Return `mid` when `nums[mid] == target`
-- Return `-1` when target not found (loop exits)
-
-**Variants:**
-- **Lower bound:** Return `left` (first position where target could be inserted)
-- **Upper bound:** Return `right + 1` or `left`
-- **Range search:** Return `[leftBound, rightBound]`
-
 ## Complexity Analysis
 
 - **Time Complexity:** $O(\log n)$ where $n$ is the length of the array. At each step, we eliminate half of the remaining elements.
