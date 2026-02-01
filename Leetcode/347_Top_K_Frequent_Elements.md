@@ -14,6 +14,10 @@ The heap approach is efficient and intuitive, while the bucket sort approach can
 ```java
 class Solution {
     public int[] topKFrequent(int[] nums, int k) {
+        // Example to visualize what the data structures contain (no single-digit values):
+        // nums = [11, 11, 11, 22, 22, 33, 44, 44], k = 2
+        // frequencyMap (after counting) = {11=3, 22=2, 33=1, 44=2}
+
         if (nums == null || nums.length == 0 || k <= 0) { // [R0] Handle edge cases
             return new int[0];
         }
@@ -23,6 +27,7 @@ class Solution {
         for (int num : nums) {
             frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);
         }
+        // Example: frequencyMap could look like {11=3, 22=2, 33=1, 44=2}
         
         // [R2] Use a min-heap to keep track of the k most frequent elements
         PriorityQueue<Integer> minHeap = new PriorityQueue<>(
@@ -32,18 +37,22 @@ class Solution {
         // [R3] Add elements to the heap
         for (int num : frequencyMap.keySet()) {
             minHeap.add(num);
+            // Example (conceptual): after adding, minHeap contains up to k elements
+            // with the highest frequencies. If k=2, it will end up holding something like {11, 22} or {11, 44}.
             
             // [R4] If heap size exceeds k, remove the element with the lowest frequency
             if (minHeap.size() > k) {
                 minHeap.poll();
             }
         }
+        // Example (after loop): minHeap holds the top-k frequent numbers (order inside heap is by smallest frequency).
         
         // [R5] Build the result array
         int[] result = new int[k];
         for (int i = k - 1; i >= 0; i--) {
             result[i] = minHeap.poll(); // [R6] Extract elements from the heap
         }
+        // Example: result could become [11, 22] (or [11, 44]) depending on map iteration order.
         
         return result; // [R7] Return the k most frequent elements
     }
@@ -54,6 +63,13 @@ class Solution {
 ```java
 class Solution {
     public int[] topKFrequent(int[] nums, int k) {
+        // Example to visualize what the data structures contain (no single-digit values):
+        // nums = [11, 11, 11, 22, 22, 33, 44, 44], k = 2
+        // frequencyMap (after counting) = {11=3, 22=2, 33=1, 44=2}
+        // buckets[3] = [11]
+        // buckets[2] = [22, 44]
+        // buckets[1] = [33]
+
         if (nums == null || nums.length == 0 || k <= 0) {
             return new int[0];
         }
@@ -73,6 +89,8 @@ class Solution {
             }
             buckets[frequency].add(num);
         }
+        // Example: buckets[3] might contain [11], buckets[2] might contain [22, 44], buckets[1] might contain [33].
+        // Many buckets are null because no number has that frequency.
         
         // Build the result array by taking elements from the highest frequency buckets
         int[] result = new int[k];
@@ -82,12 +100,18 @@ class Solution {
             if (buckets[i] != null) {
                 for (int num : buckets[i]) {
                     result[index++] = num;
+                    // Example when scanning from high freq to low freq:
+                    // i=3 -> take 11
+                    // i=2 -> take 22 (then stop if k=2)
                     if (index == k) {
                         break;
                     }
                 }
             }
         }
+
+        // Example: final result could be [11, 22] or [11, 44] depending on which element(s)
+        // from buckets[2] are iterated first.
         
         return result;
     }
@@ -113,6 +137,63 @@ class Solution {
    - We then iterate through the buckets from highest frequency to lowest
    - This approach has O(n) time complexity, which is better than the heap approach
    - However, it requires more space (O(n) for the buckets)
+
+#### Bucket Sort Approach (Plain English Walkthrough)
+
+##### What `buckets` contains
+`buckets` is an array of lists, where the **index is the frequency**:
+
+- `buckets[1]` contains all numbers that appear **1 time**
+- `buckets[2]` contains all numbers that appear **2 times**
+- ...
+- `buckets[f]` contains all numbers that appear **exactly f times**
+
+So `buckets[i]` is **not** “a list of size i”. It is “a list of numbers whose frequency is i”.
+
+##### Bucket creation (why size is `nums.length + 1`)
+The maximum possible frequency of any number is `nums.length` (if every element is the same), so we create:
+
+`List<Integer>[] buckets = new ArrayList[nums.length + 1];`
+
+Index `0` is unused (no element can appear 0 times), but this makes indexing by frequency convenient.
+
+##### Bucket population (how elements go into buckets)
+After building the frequency map, we do:
+
+- For each distinct number `num`
+- Let `frequency = frequencyMap.get(num)`
+- Put `num` into `buckets[frequency]`
+
+Example:
+
+`nums = [1,1,1,2,2,3]`
+
+Frequencies:
+
+- `1 -> 3`
+- `2 -> 2`
+- `3 -> 1`
+
+So buckets become:
+
+- `buckets[3] = [1]`
+- `buckets[2] = [2]`
+- `buckets[1] = [3]`
+
+Each bucket list can have 0, 1, or many elements depending on how many values share that frequency.
+
+##### Final loop over buckets (how we build the answer)
+We scan buckets from high frequency to low frequency, and keep collecting numbers until we have k of them:
+
+- Start from `i = buckets.length - 1`
+- If `buckets[i]` is not null, add all numbers in it to the result
+- Stop when we have collected `k` numbers
+
+Continuing the example above with `k = 2`:
+
+- Check `buckets[3] = [1]` -> take `1`
+- Check `buckets[2] = [2]` -> take `2`
+- Now we have 2 numbers -> stop
 
 4. **Edge Cases:**
    - Empty array: Return an empty array

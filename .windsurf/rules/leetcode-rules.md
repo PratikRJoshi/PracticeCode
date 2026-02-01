@@ -28,7 +28,7 @@ For every solution or modification request, your output content MUST be in raw m
     
 2.  **Intuition/Main Idea:**
     * Explain the core algorithm, data structure, or mathematical principle used.
-    * Keep it concise, focusing on the 'why' of the approach.
+    * Keep it detailed, focusing on the 'why the intuition works' and 'how to derive it step by step' of the approach.
 
 3.  **Code Mapping:**
     * Present a **Markdown Table** to map problem requirements and constraints.

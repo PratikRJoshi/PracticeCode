@@ -104,6 +104,6 @@ The LCS problem demonstrates a classic DP pattern that can be applied to many st
 
 This pattern can be adapted for variations like:
 - Finding the actual LCS (not just its length)
-- Longest Common Substring (consecutive characters)
-- Edit Distance
-- Shortest Common Supersequence
+- [718. Maximum Length of Repeated Subarray](https://leetcode.com/problems/maximum-length-of-repeated-subarray/) (Longest Common Substring style for arrays)
+- [72. Edit Distance](https://leetcode.com/problems/edit-distance/)
+- [1092. Shortest Common Supersequence](https://leetcode.com/problems/shortest-common-supersequence/)

@@ -1,5 +1,21 @@
 ### 252. Meeting Rooms
 ### Problem Link: [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/)
+
+### Problem Description
+Given an array of meeting time intervals `intervals` where `intervals[i] = [starti, endi]`, determine if a person could attend all meetings.
+
+A person can attend all meetings if and only if **no two meetings overlap**.
+
+#### Example 1
+- Input: `intervals = [[0,30],[5,10],[15,20]]`
+- Output: `false`
+- Explanation: The meeting `[0,30]` overlaps with `[5,10]` and `[15,20]`.
+
+#### Example 2
+- Input: `intervals = [[7,10],[2,4]]`
+- Output: `true`
+- Explanation: These meetings do not overlap.
+
 ### Intuition
 This problem asks us to determine if a person can attend all meetings. Given an array of meeting time intervals where each interval consists of a start and end time, we need to check if any of the meetings overlap.
 

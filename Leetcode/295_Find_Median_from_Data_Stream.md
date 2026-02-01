@@ -98,6 +98,42 @@ class MedianFinder {
    - If the min-heap has more elements than the max-heap, move the smallest element from the min-heap to the max-heap
    - This ensures that the max-heap has either the same number of elements as the min-heap or one more
 
+### Common Bug: Why an `else` in balancing can break (NPE)
+If balancing is written like this:
+
+```java
+if (maxHeap.size() - minHeap.size() > 1) {
+    minHeap.offer(maxHeap.poll());
+} else {
+    maxHeap.offer(minHeap.poll());
+}
+```
+
+The `else` runs even when the heaps are already balanced (for example right after inserting the first number):
+
+- After `addNum(1)`: `maxHeap = [1]`, `minHeap = []`
+- `maxHeap.size() - minHeap.size()` is `1` (not `> 1`)
+- so the `else` runs and calls `minHeap.poll()`
+- but `minHeap` is empty, so `poll()` returns `null`
+- `maxHeap.offer(null)` throws a `NullPointerException`
+
+Correct balancing must move elements only when one heap is actually too large:
+
+```java
+if (maxHeap.size() > minHeap.size() + 1) {
+    minHeap.offer(maxHeap.poll());
+} else if (minHeap.size() > maxHeap.size()) {
+    maxHeap.offer(minHeap.poll());
+}
+```
+
+### Minor improvement: safer max-heap comparator
+Instead of `(a, b) -> b - a` (can overflow), prefer:
+
+```java
+maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+```
+
 4. **Finding the Median:**
    - If both heaps have the same size, the median is the average of the top elements from both heaps
    - If the max-heap has one more element than the min-heap, the median is the top element of the max-heap

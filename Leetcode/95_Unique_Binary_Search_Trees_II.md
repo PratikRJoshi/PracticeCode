@@ -1,8 +1,8 @@
-# Unique Binary Search Trees II
+# 95. Unique Binary Search Trees II
+
+[LeetCode Link](https://leetcode.com/problems/unique-binary-search-trees-ii/)
 
 ## Problem Description
-
-**Problem Link:** [Unique Binary Search Trees II](https://leetcode.com/problems/unique-binary-search-trees-ii/)
 
 Given an integer `n`, return *all the structurally unique **BST's** (binary search trees), which has exactly `n` nodes of unique values from `1` to `n`*. Return the answer in **any order**.
 
@@ -37,14 +37,13 @@ This is a **recursive/backtracking** problem. We need to generate all unique BST
 
 ## Code Mapping
 
-| Problem Requirement | Java Code Section (Relevant Lines) |
-|---------------------|-----------------------------------|
-| Generate all BSTs | generateTrees method - Lines 5-6 |
-| Try each root | Root loop - Line 11 |
-| Generate left subtrees | Left recursion - Line 13 |
-| Generate right subtrees | Right recursion - Line 14 |
-| Combine subtrees | Combination loop - Lines 16-20 |
-| Return result | Return statement - Line 22 |
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+|---|---|
+| Generate all structurally unique BSTs | `generateTrees(start, end)` returns list of all trees for a range |
+| Each value `i` can be a root | Loop `for (int i = start; i <= end; i++)` |
+| Left subtree uses values `< i` | Recursively generate left trees from `[start..i-1]` |
+| Right subtree uses values `> i` | Recursively generate right trees from `[i+1..end]` |
+| Combine all left/right pairs | Nested loops over `leftTrees` and `rightTrees` |
 
 ## Final Java Code & Learning Pattern
 
@@ -101,23 +100,26 @@ class Solution {
 
 4. **Combine (Lines 16-20):** For each left subtree and each right subtree, create a new root node and attach them.
 
-**Why helper function is required:**
-- We need to generate trees for ranges `[start..end]`, not just `[1..n]`.
-- The helper function allows recursive generation for any range.
+## Tree Problems
 
-**Why global variable is not required:**
-- We build trees bottom-up and return lists, so no global state needed.
+### Why or why not a helper function is required
+- A helper is required because the recursive subproblem is “generate all BSTs for a value range `[start..end]`”, not just `[1..n]`.
 
-**What is calculated at current level:**
-- All possible BSTs for the range `[start..end]`.
-- Each BST uses a different value as root.
+### Why or why not a global variable is required
+- A global variable is not required because each recursion returns its list of trees and the parent combines them. No shared accumulation is needed.
 
-**What is returned to parent:**
-- List of all BSTs for the current range.
+### What all is calculated at the current level or node of the tree
+- For a chosen root value `i`, we compute:
+  - all possible left subtrees from `[start..i-1]`
+  - all possible right subtrees from `[i+1..end]`
+  - then combine every `(left, right)` pair under a new `TreeNode(i)`.
 
-**Recursive call order:**
-- Pre-order: choose root first, then recursively build left and right subtrees.
-- This ensures we build trees from bottom to top.
+### What is returned to the parent from the current level of the tree
+- The list of all unique BST roots that can be formed using exactly the values in `[start..end]`.
+
+### How to decide if a recursive call to children needs to be made before current node calculation or vice versa
+- You must generate children lists first because the current level’s work is the Cartesian product of `(leftSubtree, rightSubtree)` options.
+- So: pick root `i` -> recurse to get left options and right options -> then create roots and attach.
 
 ## Complexity Analysis
 
@@ -129,12 +131,12 @@ class Solution {
 
 Problems that can be solved using similar tree generation patterns:
 
-1. **95. Unique Binary Search Trees II** (this problem) - Generate all BSTs
-2. **96. Unique Binary Search Trees** - Count BSTs (DP)
-3. **894. All Possible Full Binary Trees** - Generate full binary trees
-4. **241. Different Ways to Add Parentheses** - Generate expressions
-5. **22. Generate Parentheses** - Generate parentheses
-6. **17. Letter Combinations of a Phone Number** - Generate combinations
-7. **77. Combinations** - Generate combinations
-8. **46. Permutations** - Generate permutations
+1. [95. Unique Binary Search Trees II](https://leetcode.com/problems/unique-binary-search-trees-ii/) (this problem)
+2. [96. Unique Binary Search Trees](https://leetcode.com/problems/unique-binary-search-trees/) (count BSTs / Catalan DP)
+3. [894. All Possible Full Binary Trees](https://leetcode.com/problems/all-possible-full-binary-trees/) (generate all tree shapes)
+4. [241. Different Ways to Add Parentheses](https://leetcode.com/problems/different-ways-to-add-parentheses/) (generate all structures)
+5. [22. Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) (generate all valid structures)
+6. [17. Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/) (generate combinations)
+7. [77. Combinations](https://leetcode.com/problems/combinations/) (generate combinations)
+8. [46. Permutations](https://leetcode.com/problems/permutations/) (generate permutations)
 

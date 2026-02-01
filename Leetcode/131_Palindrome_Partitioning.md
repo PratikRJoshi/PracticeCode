@@ -24,16 +24,32 @@ Output: [["a"]]
 
 ## Intuition/Main Idea
 
-This is a **backtracking** problem. We need to partition the string into palindromic substrings.
+This problem is a classic **backtracking over cut positions** problem.
 
-**Core Algorithm:**
-1. Use backtracking to try all possible partitions.
-2. For each position, try all possible substrings starting from that position.
-3. If a substring is a palindrome, add it to current partition and recurse.
-4. When we've processed the entire string, add the partition to results.
-5. Backtrack by removing the last added substring.
+### What we are building
+We are building a list called `current` where each element is a palindrome substring, and these substrings must concatenate to exactly form the original string `s`.
 
-**Why backtracking works:** We need to explore all possible ways to partition the string. Backtracking systematically tries all possibilities by building partial partitions and undoing choices when needed.
+### State / subproblem
+Let `start` be the first index that has not been partitioned yet.
+
+- Everything before `start` is already decided and stored in `current`.
+- Our job is to choose the **next palindrome piece** that begins at `start`.
+
+### Choice at each step
+From a fixed `start`, the only valid next moves are:
+
+- Try every possible ending index `end` from `start` to `s.length() - 1`.
+- If `s[start..end]` is a palindrome, choose it:
+  - append `s.substring(start, end + 1)` to `current`
+  - recurse to solve the rest starting at `end + 1`
+
+That `end + 1` is critical: it means “we have consumed `s[start..end]`, so the next unprocessed character is exactly the one after `end`.” Using `start + 1` would ignore how long the chosen substring was and would cause overlaps / missing characters.
+
+### Base case
+If `start == s.length()`, it means we have partitioned the entire string (no characters left). At this point `current` is a complete valid partition, so we add a copy to the result.
+
+### Palindrome checking optimization
+The naive palindrome check is `O(length of substring)` and happens many times. Since the same `(start, end)` palindrome queries repeat across backtracking paths, we can memoize `isPalindrome(start, end)` in a `Boolean[][] memo` to avoid recomputation.
 
 ## Code Mapping
 
@@ -158,15 +174,20 @@ class Solution {
         if (memo[start][end] != null) {
             return memo[start][end];
         }
-        
-        if (start >= end) {
-            return true;
+
+        int left = start;
+        int right = end;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                memo[start][end] = false;
+                return false;
+            }
+            left++;
+            right--;
         }
-        
-        boolean result = (s.charAt(start) == s.charAt(end)) && 
-                        isPalindrome(s, start + 1, end - 1, memo);
-        memo[start][end] = result;
-        return result;
+
+        memo[start][end] = true;
+        return true;
     }
 }
 ```

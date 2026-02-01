@@ -1,5 +1,21 @@
 ### 253. Meeting Rooms II
 ### Problem Link: [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
+
+### Problem Description
+Given an array of meeting time intervals `intervals` where `intervals[i] = [starti, endi]`, return the minimum number of conference rooms required.
+
+#### Example 1
+- Input: `intervals = [[0,30],[5,10],[15,20]]`
+- Output: `2`
+- Explanation: We need 2 rooms because:
+  - Room 1: `[0,30]`
+  - Room 2: `[5,10]` then `[15,20]`
+
+#### Example 2
+- Input: `intervals = [[7,10],[2,4]]`
+- Output: `1`
+- Explanation: These meetings do not overlap, so 1 room is enough.
+
 ### Intuition
 This problem asks us to find the minimum number of conference rooms required to hold all meetings. Given an array of meeting time intervals where each interval consists of a start and end time, we need to determine how many rooms we need to allocate so that all meetings can be held.
 

@@ -1,27 +1,55 @@
-### 1448. Count Good Nodes in Binary Tree
-### Problem Link: [Count Good Nodes in Binary Tree](https://leetcode.com/problems/count-good-nodes-in-binary-tree/)
+# 1448. Count Good Nodes in Binary Tree
 
-### Intuition/Main Idea
-This problem asks us to count the number of "good" nodes in a binary tree. A node is considered "good" if the path from the root to the node does not contain any node with a value greater than the current node's value.
+[LeetCode Link](https://leetcode.com/problems/count-good-nodes-in-binary-tree/)
 
-The key insight is to use a depth-first search (DFS) traversal while keeping track of the maximum value seen so far along the path from the root. As we traverse down the tree, we pass along the maximum value seen in the path. For each node, we check if its value is greater than or equal to this maximum. If it is, it's a "good" node and we increment our counter.
+## Problem Description
+You are given a binary tree `root`.
 
-This approach works because:
-1. We need to examine every node in the tree exactly once
-2. For each node, we only need to know the maximum value in the path from the root to that node
-3. We can efficiently track this maximum value by updating it as we traverse down the tree
+A node `X` in the tree is named **good** if in the path from the root to `X` there are no nodes with a value greater than `X`.
 
-### Code Mapping
+Return the number of **good** nodes in the binary tree.
 
-| Problem Requirement | Java Code Section (Relevant Lines) |
-|---------------------|-----------------------------------|
-| Count good nodes | `int goodNodes(TreeNode root)` |
-| Track maximum value in path | `dfs(root, Integer.MIN_VALUE)` |
-| Check if current node is good | `if (node.val >= maxSoFar)` |
-| Update count of good nodes | `int count = node.val >= maxSoFar ? 1 : 0;` |
-| Update maximum value for children | `int newMax = Math.max(maxSoFar, node.val);` |
+### Examples
 
-### Final Java Code & Learning Pattern
+#### Example 1
+- Input: `root = [3,1,4,3,null,1,5]`
+- Output: `4`
+
+#### Example 2
+- Input: `root = [3,3,null,4,2]`
+- Output: `3`
+
+#### Example 3
+- Input: `root = [1]`
+- Output: `1`
+
+---
+
+## Intuition/Main Idea
+A node is “good” if its value is at least the maximum value seen so far on the path from the root.
+
+So during DFS, we carry one piece of path state:
+
+- `maxSoFar`: maximum value on the current root-to-node path
+
+At each node:
+
+- If `node.val >= maxSoFar`, this node contributes `+1`.
+- Update the path maximum to `max(node.val, maxSoFar)` and continue to children.
+
+---
+
+## Code Mapping
+
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+|---|---|
+| Node is good if no ancestor is greater | `int isGood = node.val >= maxSoFar ? 1 : 0;` |
+| Need to consider the entire root-to-node path | Pass `maxSoFar` down the recursion |
+| Count good nodes in the full tree | `goodNodes(root)` returns `dfs(root, MIN_VALUE)` |
+
+---
+
+## Final Java Code & Learning Pattern (Full Content)
 
 ```java
 /**
@@ -39,84 +67,63 @@ This approach works because:
  *     }
  * }
  */
-// [Pattern: DFS with Path Maximum Tracking]
 class Solution {
     public int goodNodes(TreeNode root) {
-        // Start DFS from root with minimum possible value as initial maximum
         return dfs(root, Integer.MIN_VALUE);
     }
-    
+
     private int dfs(TreeNode node, int maxSoFar) {
-        // Base case: empty node
         if (node == null) {
             return 0;
         }
-        
-        // Check if current node is good (value >= maximum seen so far)
-        int count = node.val >= maxSoFar ? 1 : 0;
-        
-        // Update maximum value for the path
-        int newMax = Math.max(maxSoFar, node.val);
-        
-        // Recursively count good nodes in left and right subtrees
-        // and add them to the current count
-        count += dfs(node.left, newMax);
-        count += dfs(node.right, newMax);
-        
-        return count;
+
+        int isGood = node.val >= maxSoFar ? 1 : 0;
+        int updatedMax = Math.max(maxSoFar, node.val);
+
+        int leftGood = dfs(node.left, updatedMax);
+        int rightGood = dfs(node.right, updatedMax);
+
+        return isGood + leftGood + rightGood;
     }
 }
 ```
 
-### Alternative Implementation (Using a Global Variable)
+### Learning Pattern
+- When the condition for a node depends on “best/worst value seen on the path”, carry that value as a DFS parameter.
+- Make the recursion return the answer for the subtree, then combine: `selfContribution + left + right`.
 
-```java
-// [Pattern: DFS with Global Counter]
-class Solution {
-    private int goodCount = 0;
-    
-    public int goodNodes(TreeNode root) {
-        dfs(root, Integer.MIN_VALUE);
-        return goodCount;
-    }
-    
-    private void dfs(TreeNode node, int maxSoFar) {
-        if (node == null) {
-            return;
-        }
-        
-        // If current node is good, increment counter
-        if (node.val >= maxSoFar) {
-            goodCount++;
-        }
-        
-        // Update maximum and continue DFS
-        int newMax = Math.max(maxSoFar, node.val);
-        dfs(node.left, newMax);
-        dfs(node.right, newMax);
-    }
-}
-```
+---
 
-### Complexity Analysis
-- **Time Complexity**: $O(n)$ where n is the number of nodes in the binary tree. We visit each node exactly once.
-- **Space Complexity**: $O(h)$ where h is the height of the tree. This is the space used by the recursion stack. In the worst case (skewed tree), this could be $O(n)$, but for a balanced tree, it would be $O(\log n)$.
+## Complexity Analysis
+- Time Complexity: $O(n)$
+  - each node is visited once
+- Space Complexity: $O(h)$
+  - recursion stack where `h` is the height of the tree
 
-### Tree Problems Explanation
-- **Helper Function**: A helper function is required to carry the additional state (maximum value seen so far) during the traversal. This allows us to determine if each node is "good" based on its path from the root.
+---
 
-- **Global Variable**: In the first implementation, no global variable is needed as we directly return and accumulate the count through recursive calls. In the alternative implementation, we use a global variable `goodCount` to track the total number of good nodes, which simplifies the recursive function's return type to void.
+## Tree Problems
 
-- **Current Level Calculation**: At each node, we determine if it's a good node by comparing its value with the maximum value seen so far in the path from the root. This is a local decision made at each node based on the path information passed down from its ancestors.
+### Why or why not a helper function is required
+- A helper function is required because we must carry extra path state (`maxSoFar`) while traversing down the tree.
 
-- **Return Value**: In the first implementation, the DFS function returns the count of good nodes in the subtree rooted at the current node, including the current node if it's good. This allows us to accumulate counts as we return up the recursion stack. In the alternative implementation, we don't return anything from the helper function since we're using a global counter.
+### Why or why not a global variable is required
+- No global variable is required because each subtree can return its count, and the parent combines results.
 
-### Similar Problems
-1. **LeetCode 938: Range Sum of BST** - Traverse a BST and sum values in a given range.
-2. **LeetCode 1302: Deepest Leaves Sum** - Find the sum of values of the deepest leaves.
-3. **LeetCode 1315: Sum of Nodes with Even-Valued Grandparent** - Similar tree traversal with condition checking.
-4. **LeetCode 1379: Find a Corresponding Node of a Binary Tree in a Clone of That Tree** - Traverse two trees simultaneously.
-5. **LeetCode 863: All Nodes Distance K in Binary Tree** - Find all nodes at distance K from a target node.
-6. **LeetCode 236: Lowest Common Ancestor of a Binary Tree** - Find the lowest common ancestor of two nodes.
-7. **LeetCode 543: Diameter of Binary Tree** - Find the length of the longest path in a tree.
-8. **LeetCode 124: Binary Tree Maximum Path Sum** - Find the maximum path sum in a binary tree.
+### What all is calculated at the current level or node of the tree
+- Whether the current node is good: `node.val >= maxSoFar`.
+- The updated path maximum for children: `updatedMax = max(maxSoFar, node.val)`.
+
+### What is returned to the parent from the current level of the tree
+- The number of good nodes in the subtree rooted at the current node.
+
+### How to decide if a recursive call to children needs to be made before current node calculation or vice versa
+- Current node calculation must happen first because the children depend on the updated path maximum.
+- After that, recurse to children and sum up results.
+
+---
+
+## Similar Problems
+- [1026. Maximum Difference Between Node and Ancestor](https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/) (track min/max along path)
+- [112. Path Sum](https://leetcode.com/problems/path-sum/) (carry path state down DFS)
+- [129. Sum Root to Leaf Numbers](https://leetcode.com/problems/sum-root-to-leaf-numbers/) (carry accumulated path value)
