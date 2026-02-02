@@ -138,3 +138,96 @@ class Solution {
         board[row][col] = c;
     }
 }
+```
+
+---
+
+### Alternative Implementation (Trie node stores `char` + `isWord`)
+
+```java
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+class Solution {
+    private static final int[][] DIRECTIONS = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+    private Set<String> result;
+
+    static class TrieNode {
+        TrieNode[] children = new TrieNode[26];
+        char ch;
+        boolean isWord;
+
+        TrieNode(char ch) {
+            this.ch = ch;
+        }
+    }
+
+    public List<String> findWords(char[][] board, String[] words) {
+        TrieNode root = buildTrie(words);
+        result = new HashSet<>();
+
+        int rows = board.length;
+        int cols = board[0].length;
+
+        StringBuilder currentPath = new StringBuilder();
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                backtrack(board, row, col, root, currentPath);
+            }
+        }
+
+        return new ArrayList<>(result);
+    }
+
+    private TrieNode buildTrie(String[] words) {
+        TrieNode root = new TrieNode('\0');
+        for (String word : words) {
+            TrieNode node = root;
+            for (int index = 0; index < word.length(); index++) {
+                char c = word.charAt(index);
+                int childIndex = c - 'a';
+                if (node.children[childIndex] == null) {
+                    node.children[childIndex] = new TrieNode(c);
+                }
+                node = node.children[childIndex];
+            }
+            node.isWord = true;
+        }
+        return root;
+    }
+
+    private void backtrack(char[][] board, int row, int col, TrieNode node, StringBuilder currentPath) {
+        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) {
+            return;
+        }
+
+        char boardChar = board[row][col];
+        if (boardChar == '#') {
+            return;
+        }
+
+        TrieNode nextNode = node.children[boardChar - 'a'];
+        if (nextNode == null) {
+            return;
+        }
+
+        currentPath.append(nextNode.ch);
+
+        if (nextNode.isWord) {
+            result.add(currentPath.toString());
+            nextNode.isWord = false;
+        }
+
+        board[row][col] = '#';
+        for (int[] direction : DIRECTIONS) {
+            backtrack(board, row + direction[0], col + direction[1], nextNode, currentPath);
+        }
+        board[row][col] = boardChar;
+
+        currentPath.deleteCharAt(currentPath.length() - 1);
+    }
+}
+```
