@@ -16,75 +16,60 @@ A person can attend all meetings if and only if **no two meetings overlap**.
 - Output: `true`
 - Explanation: These meetings do not overlap.
 
-### Intuition
-This problem asks us to determine if a person can attend all meetings. Given an array of meeting time intervals where each interval consists of a start and end time, we need to check if any of the meetings overlap.
+### Intuition/Main Idea
+We only care about whether any two intervals overlap. The easiest way to detect overlap is to first sort all meetings by their start time. Once sorted, only adjacent meetings can conflict: if meeting `i` starts before meeting `i-1` ends, then those two overlap and the answer is immediately `false`.
 
-The key insight is to sort the intervals by their start times and then check if any meeting's start time is earlier than the previous meeting's end time. If such a case exists, it means the meetings overlap and the person cannot attend all of them.
+Sorting turns the problem into a single linear scan: as we move from left to right, each current meeting only needs to be compared with the one that ends right before it in the sorted order. If no adjacent pair overlaps, then no pair overlaps at all, so the person can attend every meeting.
 
-### Java Reference Implementation
+### Code Mapping
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+| --- | --- |
+| @Handle empty/single meeting cases | Early return when `intervals == null || intervals.length <= 1` |
+| @Order meetings by start time | `Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));` |
+| @Detect overlap between consecutive meetings | `if (intervals[i][0] < intervals[i - 1][1]) return false;` |
+| @Return true when no overlaps exist | `return true;` after the scan |
+
+### Final Java Code & Learning Pattern (Full Content)
 ```java
+import java.util.Arrays;
+
 class Solution {
     public boolean canAttendMeetings(int[][] intervals) {
-        if (intervals == null || intervals.length <= 1) { // [R0] Handle edge cases
-            return true; // No meetings or just one meeting, can attend all
+        // If there are 0 or 1 meetings, overlap is impossible.
+        if (intervals == null || intervals.length <= 1) {
+            return true;
         }
-        
-        // [R1] Sort intervals by start time
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-        
-        // [R2] Check for any overlapping meetings
-        for (int i = 1; i < intervals.length; i++) {
-            // [R3] If current meeting starts before previous meeting ends, there's an overlap
-            if (intervals[i][0] < intervals[i-1][1]) {
-                return false; // Cannot attend all meetings
+
+        // Sort by start time so only adjacent meetings can overlap.
+        Arrays.sort(intervals, (first, second) -> Integer.compare(first[0], second[0]));
+
+        // Scan adjacent meetings to detect any overlap.
+        for (int meetingIndex = 1; meetingIndex < intervals.length; meetingIndex++) {
+            int currentStart = intervals[meetingIndex][0];
+            int previousEnd = intervals[meetingIndex - 1][1];
+
+            // If current meeting starts before previous ends, overlap exists.
+            if (currentStart < previousEnd) {
+                return false;
             }
         }
-        
-        return true; // [R4] No overlaps found, can attend all meetings
+
+        // No overlaps were found.
+        return true;
     }
 }
 ```
 
-### Understanding the Algorithm and Boundary Checks
-
-1. **Sorting by Start Time:**
-   - We sort the intervals by their start times to process them in chronological order
-   - This allows us to easily compare adjacent meetings for potential overlaps
-
-2. **Overlap Check (`intervals[i][0] < intervals[i-1][1]`):**
-   - We check if the current meeting's start time is earlier than the previous meeting's end time
-   - If so, the meetings overlap and the person cannot attend both
-   - We use `<` (not `<=`) because:
-     - If meeting 1 ends at time t and meeting 2 starts at time t, they don't overlap
-     - The person can finish the first meeting and immediately start the second one
-
-3. **Edge Cases:**
-   - Empty array: No meetings, so the person can attend all (trivially true)
-   - Single meeting: Only one meeting, so no possibility of overlap (also true)
-
-4. **Loop Boundary (`i = 1` to `intervals.length`):**
-   - We start from the second meeting (index 1) since we're comparing with the previous meeting
-   - This avoids an out-of-bounds error when accessing `intervals[i-1]`
-
-### Requirement → Code Mapping
-- **R0 (Handle edge cases)**: `if (intervals == null || intervals.length <= 1) { return true; }` - Return true for empty arrays or single meetings
-- **R1 (Sort intervals)**: `Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));` - Sort by start time
-- **R2 (Check overlaps)**: `for (int i = 1; i < intervals.length; i++)` - Iterate through sorted intervals
-- **R3 (Detect overlap)**: `if (intervals[i][0] < intervals[i-1][1])` - Check if current meeting starts before previous ends
-- **R4 (Return result)**: `return true;` - If no overlaps found, can attend all meetings
+**Learning Pattern:**
+- When overlap depends on ordering, sort by the key that makes conflicts adjacent (here: start time).
+- After sorting, reduce the problem to a single pass comparing consecutive elements.
+- Use strict `<` for overlap because end time equal to next start time is allowed.
 
 ### Complexity Analysis
-- **Time Complexity**: O(n log n)
-  - Sorting the intervals takes O(n log n) time, where n is the number of meetings
-  - The subsequent linear scan through the sorted intervals takes O(n) time
-  - Overall, the time complexity is dominated by the sorting step: O(n log n)
+- **Time Complexity**: $O(n \log n)$ due to sorting, followed by a linear scan.
+- **Space Complexity**: $O(1)$ extra space if sorting in place (or $O(n)$ depending on sorting implementation).
 
-- **Space Complexity**: O(1) or O(n)
-  - If we're allowed to sort the input array in-place, the space complexity is O(1)
-  - If we need to create a copy of the input array for sorting, the space complexity is O(n)
-  - The sorting algorithm itself might use O(log n) space for the recursion stack
-
-### Related Problems
-- **Meeting Rooms II** (Problem 253): Find the minimum number of conference rooms required
-- **Merge Intervals** (Problem 56): Merge all overlapping intervals
-- **Insert Interval** (Problem 57): Insert a new interval into a set of non-overlapping intervals
+### Similar Problems
+- [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
+- [Merge Intervals](https://leetcode.com/problems/merge-intervals/)
+- [Insert Interval](https://leetcode.com/problems/insert-interval/)
