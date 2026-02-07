@@ -103,27 +103,42 @@ class WordDictionary {
     }
     
     private boolean searchHelper(String word, int index, TrieNode node) {
-        // Base case: reached end of word
+        // Mentor mental model:
+        // - `node`  = where you are in the trie right now
+        // - `index` = which character of `word` you are trying to match
+
+        // Base case: we have consumed the entire search string/pattern.
+        // This is a valid match ONLY if this trie node represents the end of a word.
         if (index == word.length()) {
             return node.isWord;
         }
-        
+
+        // Current character we need to match.
         char ch = word.charAt(index);
-        
-        // If current character is '.', try all possible children
+
+        // Case 1: '.' is a wildcard that can match ANY single character.
         if (ch == '.') {
+            // So we try every possible child from the current node.
+            // If any child path can match the rest of the pattern, we're done.
             for (TrieNode child : node.children) {
+                // Only recurse if the child exists.
                 if (child != null && searchHelper(word, index + 1, child)) {
                     return true;
                 }
             }
+            // None of the children worked => no match from this node.
             return false;
         } else {
-            // Regular character: follow specific path
+            // Case 2: normal letter.
+            // We must follow exactly one edge for this letter.
             int charIndex = ch - 'a';
+
+            // If that edge doesn't exist, this path is impossible.
             if (node.children[charIndex] == null) {
                 return false;
             }
+
+            // Otherwise, move down one level and match the next character.
             return searchHelper(word, index + 1, node.children[charIndex]);
         }
     }
