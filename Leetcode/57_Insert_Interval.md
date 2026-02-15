@@ -25,6 +25,16 @@ class Solution {
         
         // [R2] Merge overlapping intervals with the new interval
         // Does the current existing interval start before (or at the exact moment) the new interval ends? If yes, merge
+        // Simple English:
+        // - We're asking: "Has the next interval started yet AFTER my newInterval ends?"
+        // - If it has NOT started after (i.e., it starts <= newInterval end), then the two intervals overlap (or touch),
+        //   so they belong in the same merged interval.
+        // Quick example to remember:
+        // - newInterval = [2, 5]
+        // - next interval = [4, 7]
+        //   next start = 4, newInterval end = 5 -> 4 <= 5 (true) => overlap => merge
+        // - next interval = [6, 8]
+        //   next start = 6, newInterval end = 5 -> 6 <= 5 (false) => no overlap => stop merging
         while (index < n && intervals[index][0] <= newInterval[1]) {
             // Update the new interval to include the current overlapping interval
             newInterval[0] = Math.min(newInterval[0], intervals[index][0]); // [R3] Update start of merged interval

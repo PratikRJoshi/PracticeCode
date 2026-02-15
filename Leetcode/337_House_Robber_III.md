@@ -32,87 +32,144 @@ Explanation: Maximum amount of money the thief can rob = 4 + 5 = 9.
 
 ## Intuition/Main Idea
 
-This is a **tree DP** problem. We need to find the maximum money we can rob without robbing two directly connected nodes.
+This is a **tree dynamic programming** problem.
 
-**Core Algorithm:**
-1. For each node, we have two choices:
-   - Rob this node: can't rob children, can rob grandchildren.
-   - Don't rob this node: can rob children.
-2. Use DP where we return `[rob, notRob]` for each subtree.
-3. `rob = node.val + left[notRob] + right[notRob]`
-4. `notRob = max(left[rob], left[notRob]) + max(right[rob], right[notRob])`
+At every house (tree node), you have exactly two choices:
 
-**Why tree DP works:** The problem has overlapping subproblems - calculating maximum money for subtrees is needed multiple times. We can memoize results.
+- Rob this house.
+  - Then you are not allowed to rob its direct children.
+- Skip this house.
+  - Then you are free to rob (or skip) its children.
+
+The “tree DP” part comes from the fact that the best answer for a node depends on the best answers of its subtrees.
+
+### DP subproblem definition
+
+Let `best(node)` be the maximum money we can rob from the subtree rooted at `node`.
+
+Then:
+
+- If we **rob** `node`, we must **skip** both children, but we can consider the grandchildren.
+- If we **skip** `node`, we can independently take the best from left and right children.
+
+This gives a natural **top-down (memoized)** solution:
+
+- `best(node) = max(
+    node.val + best(node.left.left) + best(node.left.right) + best(node.right.left) + best(node.right.right),
+    best(node.left) + best(node.right)
+  )`
+
+However, an even cleaner formulation is a **bottom-up** DP where for each node we compute two values:
+
+- `robCurrent`   = best if we rob this node
+- `skipCurrent`  = best if we skip this node
+
+Recurrence (post-order):
+
+- `robCurrent  = node.val + left.skipCurrent + right.skipCurrent`
+- `skipCurrent = max(left.robCurrent, left.skipCurrent) + max(right.robCurrent, right.skipCurrent)`
+
+### Tree problem requirements (how to reason about recursion)
+
+- **Why a helper function is required**
+  - We need to compute multiple values for each node (e.g., rob/skip), which a helper can return as a pair.
+- **Why a global variable is not required**
+  - Each node’s answer can be computed from its children and returned upward; no shared state is needed.
+- **What is calculated at the current node**
+  - Either:
+    - `best(node)` in the memoized approach, or
+    - `(robCurrent, skipCurrent)` in the bottom-up approach.
+- **What is returned to the parent**
+  - Memoized: `best(node)`.
+  - Bottom-up: the pair `(robCurrent, skipCurrent)`.
+- **Order of recursion (children first vs current first)**
+  - Bottom-up requires **post-order** (compute children first), because current node depends on children values.
 
 ## Code Mapping
 
-| Problem Requirement | Java Code Section (Relevant Lines) |
-|---------------------|-----------------------------------|
-| DP for rob/notRob | Return array - Line 6 |
-| Base case: null | Null check - Lines 8-11 |
-| Recurse on children | Recursive calls - Lines 13-14 |
-| Calculate rob value | Rob calculation - Line 17 |
-| Calculate notRob value | NotRob calculation - Line 18 |
-| Return result | Return statement - Line 19 |
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+|------------------------|-----------------------------------|
+| Max money without robbing parent-child on same night | `best(node)` = max(rob current, skip current) (top-down) (lines 12-33) |
+| Efficiently avoid recomputing subtree answers | Memoization map keyed by `TreeNode` (lines 12-33) |
+| Bottom-up tree DP alternative (rob/skip per node) | Helper returns `int[]{robCurrent, skipCurrent}` (lines 35-64) |
+| Base case for null children | Return `{0, 0}` for null node (line 38) |
 
-## Final Java Code & Learning Pattern
-
-### Top-Down / Memoized Version
+## Final Java Code & Learning Pattern (Full Content)
 
 ```java
+import java.util.HashMap;
+import java.util.Map;
+
 class Solution {
     public int rob(TreeNode root) {
-        int[] result = robHelper(root);
-        return Math.max(result[0], result[1]);
+        // DP (top-down/memoized): best amount from this subtree.
+        Map<TreeNode, Integer> memo = new HashMap<>();
+        return robMemo(root, memo);
     }
-    
-    private int[] robHelper(TreeNode node) {
-        // [rob, notRob]
+
+    // Top-down definition:
+    // robMemo(node) returns the best amount we can rob from the subtree rooted at node.
+    private int robMemo(TreeNode node, Map<TreeNode, Integer> memo) {
         if (node == null) {
-            return new int[]{0, 0};
+            return 0;
         }
-        
-        int[] left = robHelper(node.left);
-        int[] right = robHelper(node.right);
-        
-        // Rob current node: can't rob children
-        int rob = node.val + left[1] + right[1];
-        
-        // Don't rob current node: can rob children (choose max for each)
-        int notRob = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
-        
-        return new int[]{rob, notRob};
+
+        if (memo.containsKey(node)) {
+            return memo.get(node);
+        }
+
+        // Option 1: Rob current node.
+        // Then we must skip its children, so we jump to grandchildren.
+        int moneyIfRobCurrent = node.val;
+        if (node.left != null) {
+            moneyIfRobCurrent += robMemo(node.left.left, memo);
+            moneyIfRobCurrent += robMemo(node.left.right, memo);
+        }
+        if (node.right != null) {
+            moneyIfRobCurrent += robMemo(node.right.left, memo);
+            moneyIfRobCurrent += robMemo(node.right.right, memo);
+        }
+
+        // Option 2: Skip current node.
+        // Then we are free to take the best from its children.
+        int moneyIfSkipCurrent = robMemo(node.left, memo) + robMemo(node.right, memo);
+
+        int best = Math.max(moneyIfRobCurrent, moneyIfSkipCurrent);
+        memo.put(node, best);
+        return best;
+    }
+
+    // Bottom-up alternative:
+    // For each node, return:
+    // - result[0] = best if we rob current node
+    // - result[1] = best if we skip current node
+    private int[] robBottomUp(TreeNode node) {
+        if (node == null) {
+            return new int[] {0, 0};
+        }
+
+        int[] left = robBottomUp(node.left);
+        int[] right = robBottomUp(node.right);
+
+        int robCurrent = node.val + left[1] + right[1];
+        int skipCurrent = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+
+        return new int[] {robCurrent, skipCurrent};
     }
 }
 ```
 
-**Explanation of Key Code Sections:**
+### Dynamic Programming notes (top-down vs bottom-up)
 
-1. **Base Case (Lines 8-11):** If node is null, return `[0, 0]` (no money to rob).
+- **Top-down / memoized**
+  - Subproblem: `robMemo(node)` = best amount for subtree rooted at `node`.
+  - State transition: choose `max(rob current + grandchildren, skip current + children)`.
+  - Memoization avoids recomputing the same subtree results.
 
-2. **Recurse on Children (Lines 13-14):** Get results for left and right subtrees.
-
-3. **Rob Current Node (Line 17):** If we rob current node, we can't rob children, so add `left[1] + right[1]`.
-
-4. **Don't Rob Current Node (Line 18):** If we don't rob current node, we can rob children. For each child, choose the maximum of robbing or not robbing.
-
-**Why helper function is required:**
-- We need to return two values (rob and notRob) for each node.
-- The helper function allows us to return an array with both values.
-
-**Why global variable is not required:**
-- We calculate values bottom-up and return them, so no global state needed.
-
-**What is calculated at current node:**
-- Maximum money if we rob this node.
-- Maximum money if we don't rob this node.
-
-**What is returned to parent:**
-- Array `[rob, notRob]` for the current subtree.
-
-**Recursive call order:**
-- Post-order traversal: calculate children's values first, then calculate current node's values.
-- This ensures we have all necessary information before making decisions.
+- **Bottom-up**
+  - Subproblem: for each node return `(robCurrent, skipCurrent)`.
+  - Transition is purely from children to parent (post-order).
+  - This is often simpler and avoids a hash map.
 
 ## Complexity Analysis
 
@@ -122,14 +179,9 @@ class Solution {
 
 ## Similar Problems
 
-Problems that can be solved using similar tree DP patterns:
-
-1. **337. House Robber III** (this problem) - Tree DP with constraints
-2. **198. House Robber** - Array DP
-3. **213. House Robber II** - Circular array DP
-4. **740. Delete and Earn** - Similar DP pattern
-5. **124. Binary Tree Maximum Path Sum** - Tree DP
-6. **543. Diameter of Binary Tree** - Tree DP
-7. **968. Binary Tree Cameras** - Tree DP with cameras
-8. **979. Distribute Coins in Binary Tree** - Tree DP with coins
+- [House Robber](https://leetcode.com/problems/house-robber/) - 1D DP version
+- [House Robber II](https://leetcode.com/problems/house-robber-ii/) - circular constraint
+- [Delete and Earn](https://leetcode.com/problems/delete-and-earn/) - similar “pick vs skip” DP idea
+- [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) - tree DP with post-order aggregation
+- [Binary Tree Cameras](https://leetcode.com/problems/binary-tree-cameras/) - tree DP with state per node
 
