@@ -68,8 +68,11 @@ For every solution or modification request, your output content MUST be in raw m
       * For both top-down and bottom-up approaches, add comment in the code explaining the reason behind allocating the size of the dp/memo array used.
       * For the top-down approach, always try to write the code from 0th index to last index. If doing so is not possible or if doing so gives worse time complexity, then write the code from last index to 0th index.
 
+8. ** LinkedList Problems **
+    * For every problem, explain the reason behind each new additional pointer initialization.
+    * For any loops used to solve the problem, explain how the loop check conditions are determined to be the correct and simplest.
 
-8. ** Simlar Problems **
+9. ** Simlar Problems **
     * You should also add hyperlinks to all the list of similar problems that can be solved following a solution pattern same as or very similar to the current problem's pattern
     * If no similar problems exist, then no need to deliberately add any problems to the list. However, do explain why any other seemingly similar problems are not actually similar.
 

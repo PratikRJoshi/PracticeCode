@@ -1,164 +1,193 @@
-### 143. Reorder List
-### Problem Link: [Reorder List](https://leetcode.com/problems/reorder-list/)
-### Intuition
-This problem asks us to reorder a linked list such that the new order is: L₀ → Lₙ → L₁ → Lₙ₋₁ → L₂ → Lₙ₋₂ → ... where the original list is L₀ → L₁ → ... → Lₙ.
+# Reorder List
 
-The key insight is to break this problem into three steps:
-1. Find the middle of the linked list
-2. Reverse the second half of the linked list
-3. Merge the two halves by alternating nodes
+## Problem Description
 
-This approach allows us to solve the problem in O(n) time and O(1) space without using any extra data structures.
+**Problem Link:** [Reorder List](https://leetcode.com/problems/reorder-list/)
 
-### Java Reference Implementation
+You are given the head of a singly linked list `L0 -> L1 -> ... -> Ln`.
+
+Reorder the list to become:
+
+`L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...`
+
+You **must do this in-place** (i.e., modify the list nodes’ pointers). You may not change the values in the nodes.
+
+**Example 1:**
+```
+Input:  1 -> 2 -> 3 -> 4
+Output: 1 -> 4 -> 2 -> 3
+```
+
+**Example 2:**
+```
+Input:  1 -> 2 -> 3 -> 4 -> 5
+Output: 1 -> 5 -> 2 -> 4 -> 3
+```
+
+## Intuition/Main Idea
+
+### Build the intuition (mentor-style)
+
+The target ordering is “take one from the front, then one from the back, repeat”.
+
+In an array, grabbing the back is easy (`nums[n - 1]`), but in a singly linked list, we cannot walk backward.
+
+So we need a trick to access the “back half” in forward direction.
+
+The standard linked-list pattern here is:
+
+1. **Find the middle** of the list.
+2. **Reverse the second half**.
+3. **Merge the two halves alternatingly**.
+
+After reversal, the original “back” nodes become the “front” of the reversed second half, so we can interleave nodes in one forward pass.
+
+### Why the intuition works
+
+Let the list be split as:
+
+- First half: `L0 -> L1 -> ... -> Lk`
+- Second half: `Lk+1 -> ... -> Ln`
+
+If we reverse the second half, it becomes:
+
+- Reversed second: `Ln -> Ln-1 -> ... -> Lk+1`
+
+Now, if we alternate nodes:
+
+- Take one from first half (`L0`), then one from reversed second (`Ln`), then `L1`, then `Ln-1`, ...
+
+This matches exactly the required ordering.
+
+### LinkedList pointers & loop conditions (what to pay attention to)
+
+#### Pointer initializations (and why each exists)
+
+- `slow` and `fast`: used to find the middle in **one pass**.
+- `secondHalfHead`: the head of the reversed second half, so we can merge from the back-forward order.
+- `firstPointer` and `secondPointer`: two runners during merge (one on each half).
+- Temporary `nextFirst` / `nextSecond`: because we are about to rewire `next` pointers, we must save where to continue.
+
+#### Loop condition choices
+
+- Middle finding loop: `while (fast.next != null && fast.next.next != null)`
+  - This stops `slow` at the “end of the first half”.
+  - It also avoids null pointer access when jumping `fast` by 2.
+- Merge loop: `while (secondPointer != null)`
+  - The second half is the shorter or equal half.
+  - Once second half is fully merged, the remaining first-half node (only possible when odd length) is already in correct place.
+
+## Code Mapping
+
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+|------------------------|-----------------------------------|
+| Reorder in-place (no extra nodes) | Only pointer rewiring; no new nodes allocated (entire code) |
+| Must follow `L0, Ln, L1, Ln-1, ...` pattern | Reverse second half then alternate merge (lines 18-63) |
+| Handle small lists safely | Early return when `head == null` or `head.next == null` (lines 10-13) |
+| Avoid cycles / preserve list termination | Cut at middle (`slow.next = null`) and careful merge wiring (lines 29-63) |
+
+## Final Java Code & Learning Pattern (Full Content)
+
 ```java
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- * }
- */
 class Solution {
     public void reorderList(ListNode head) {
-        if (head == null || head.next == null) { // [R0] Handle edge cases
+        // Edge cases:
+        // - empty list: nothing to reorder
+        // - single node: already in required order
+        if (head == null || head.next == null) {
             return;
         }
-        
-        // [R1] Step 1: Find the middle of the linked list
+
+        // ------------------------------------------------------------
+        // Step 1) Find the middle of the list using slow/fast pointers.
+        // ------------------------------------------------------------
+        // Why we need two pointers:
+        // - slow moves 1 step, fast moves 2 steps
+        // - when fast reaches the end, slow is at the middle
         ListNode slow = head;
         ListNode fast = head;
+
+        // Loop condition reasoning:
+        // - We check fast.next and fast.next.next because fast moves by 2.
+        // - This places slow at the end of the first half for both even/odd lengths.
         while (fast.next != null && fast.next.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
-        
-        // [R2] Step 2: Reverse the second half of the linked list
-        ListNode secondHalf = reverseList(slow.next);
-        slow.next = null; // Break the list into two halves
-        
-        // [R3] Step 3: Merge the two halves by alternating nodes
-        mergeAlternating(head, secondHalf);
-    }
-    
-    // [R4] Helper method to reverse a linked list
-    private ListNode reverseList(ListNode head) {
-        ListNode prev = null;
-        ListNode curr = head;
-        
-        while (curr != null) {
-            ListNode nextTemp = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = nextTemp;
+
+        // ------------------------------------------------------------
+        // Step 2) Reverse the second half.
+        // ------------------------------------------------------------
+        // secondHalfStart is the first node of the second half.
+        // We will reverse it so the last node becomes accessible in forward direction.
+        ListNode secondHalfStart = slow.next;
+
+        // Important to cut the list here:
+        // If we don't set slow.next = null, merging can accidentally create cycles.
+        slow.next = null;
+
+        ListNode secondHalfHead = reverse(secondHalfStart);
+
+        // ------------------------------------------------------------
+        // Step 3) Merge alternating nodes: first half, reversed second half.
+        // ------------------------------------------------------------
+        ListNode firstPointer = head;
+        ListNode secondPointer = secondHalfHead;
+
+        // Merge loop condition reasoning:
+        // - second half is shorter or equal.
+        // - once second half is exhausted, the remaining first node (only in odd length)
+        //   is already in correct final position.
+        while (secondPointer != null) {
+            // Save next pointers before rewiring.
+            ListNode nextFirst = firstPointer.next;
+            ListNode nextSecond = secondPointer.next;
+
+            // Place one node from second half after one node from first half.
+            firstPointer.next = secondPointer;
+            secondPointer.next = nextFirst;
+
+            // Advance both pointers.
+            firstPointer = nextFirst;
+            secondPointer = nextSecond;
         }
-        
+    }
+
+    private ListNode reverse(ListNode head) {
+        // Standard iterative reversal.
+        // Pointer initialization reasoning:
+        // - prev starts as null because the new tail must point to null.
+        ListNode prev = null;
+        ListNode current = head;
+
+        while (current != null) {
+            // Save where we would go next before changing current.next.
+            ListNode next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+
+        // prev becomes the new head of the reversed list.
         return prev;
     }
-    
-    // [R5] Helper method to merge two lists by alternating nodes
-    private void mergeAlternating(ListNode list1, ListNode list2) {
-        while (list1 != null && list2 != null) {
-            ListNode list1Next = list1.next;
-            ListNode list2Next = list2.next;
-            
-            list1.next = list2;
-            list2.next = list1Next;
-            
-            list1 = list1Next;
-            list2 = list2Next;
-        }
-    }
 }
 ```
 
-### Alternative Implementation (Using a Stack)
-```java
-class Solution {
-    public void reorderList(ListNode head) {
-        if (head == null || head.next == null) {
-            return;
-        }
-        
-        // Use a stack to store all nodes
-        Stack<ListNode> stack = new Stack<>();
-        ListNode curr = head;
-        while (curr != null) {
-            stack.push(curr);
-            curr = curr.next;
-        }
-        
-        int count = stack.size();
-        curr = head;
-        
-        // Reorder the list
-        for (int i = 0; i < count / 2; i++) {
-            ListNode nextNode = curr.next;
-            ListNode lastNode = stack.pop();
-            
-            curr.next = lastNode;
-            lastNode.next = nextNode;
-            
-            curr = nextNode;
-        }
-        
-        // Set the last node's next to null to avoid cycles
-        curr.next = null;
-    }
-}
-```
+## Complexity Analysis
 
-### Understanding the Algorithm and Linked List Operations
+**Time Complexity:** $O(n)$
 
-1. **Finding the Middle of the List:**
-   - We use the slow and fast pointer technique (also known as the tortoise and hare algorithm)
-   - The slow pointer moves one step at a time, while the fast pointer moves two steps
-   - When the fast pointer reaches the end, the slow pointer is at the middle
-   - This is an efficient way to find the middle in a single pass
+- Find middle: $O(n)$
+- Reverse second half: $O(n)$
+- Merge: $O(n)$
 
-2. **Reversing the Second Half:**
-   - We reverse the second half of the list using the standard linked list reversal algorithm
-   - This involves changing the next pointers to point to the previous node
-   - After reversal, the second half starts from the end of the original list
+**Space Complexity:** $O(1)$
 
-3. **Merging the Two Halves:**
-   - We merge the first half and the reversed second half by alternating nodes
-   - For each node in the first half, we insert a node from the second half after it
-   - This creates the desired L₀ → Lₙ → L₁ → Lₙ₋₁ → ... pattern
+- We only use a constant number of pointers.
 
-4. **Edge Cases:**
-   - Empty list: Nothing to reorder
-   - Single node: Nothing to reorder
-   - Two nodes: Simply swap the next pointers
+## Similar Problems
 
-5. **Alternative Approach:**
-   - Using a stack allows us to access the nodes from the end easily
-   - However, it requires O(n) extra space
-   - The three-step approach is more space-efficient
-
-### Requirement → Code Mapping
-- **R0 (Handle edge cases)**: `if (head == null || head.next == null) { return; }` - Nothing to reorder for empty or single-node lists
-- **R1 (Find middle)**: Use slow and fast pointers to find the middle of the list
-- **R2 (Reverse second half)**: Reverse the second half of the list and break the original list
-- **R3 (Merge halves)**: Merge the two halves by alternating nodes
-- **R4 (Reverse list helper)**: Helper method to reverse a linked list
-- **R5 (Merge lists helper)**: Helper method to merge two lists by alternating nodes
-
-### Complexity Analysis
-- **Time Complexity**: O(n)
-  - Finding the middle: O(n/2) = O(n)
-  - Reversing the second half: O(n/2) = O(n)
-  - Merging the two halves: O(n/2) = O(n)
-  - Overall: O(n)
-
-- **Space Complexity**: O(1)
-  - We only use a constant amount of extra space for pointers
-  - The alternative stack-based approach uses O(n) space
-
-### Related Problems
-- **Reverse Linked List** (Problem 206): Used as a subroutine in this problem
-- **Palindrome Linked List** (Problem 234): Also uses the find middle + reverse technique
-- **Rotate List** (Problem 61): Another problem involving rearrangement of linked lists
+- [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/)
+- [Palindrome Linked List](https://leetcode.com/problems/palindrome-linked-list/)
+- [Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list/)
