@@ -24,7 +24,7 @@ You should solve the requested problem with the following rules -
 For every solution or modification request, your output content MUST be in raw markdown format and must strictly follow these four sections in order:
 
 1. **Problem Description**
-    * Every file should start with the Problem title, hyperlink to the problem on Leetcode website, problem description, examples explaining the problem.
+    * Every file should start with the Problem title, hyperlink to the problem on Leetcode website, problem description, examples explaining the problem. If the problem does not exist currently in the local current repository, then perform a search on leetcode.com to find the problem statement to solve.
     
 2.  **Intuition/Main Idea:**
     * Explain the core algorithm, data structure, or mathematical principle used.
