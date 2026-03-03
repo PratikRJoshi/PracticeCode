@@ -112,6 +112,11 @@ class Solution {
     
     private int dp(String s, String t, int i, int j, Integer[][] memo) {
         // Base case: t is exhausted (found a match)
+        // IMPORTANT: This check must come BEFORE the s-exhausted check below.
+        // When both i==0 and j==0 simultaneously (s and t are consumed together),
+        // this represents a valid complete match and must return 1.
+        // If the s-exhausted check (return 0) ran first, it would incorrectly
+        // discard this valid match. Example: s="a", t="a" → dp(0,0) must return 1.
         if (j == 0) {
             return 1;
         }

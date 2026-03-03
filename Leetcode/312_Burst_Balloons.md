@@ -32,24 +32,49 @@ Output: 10
 
 ## Intuition/Main Idea
 
-This is a **dynamic programming** problem that requires thinking about the problem in reverse. Instead of thinking "which balloon to burst first," we think "which balloon to burst last."
+### Building the Intuition Incrementally
 
-**Core Insight:**
-- **Key Idea**: If we think about which balloon to burst **last** in a range `[i, j]`, we can divide the problem into two **independent** subproblems: `[i, k-1]` and `[k+1, j]`
-- **Why "last" instead of "first"**: 
-  - If we burst `k` **first**: The adjacent balloons change, making left and right subproblems **dependent** on each other
-  - If we burst `k` **last**: The boundaries `i-1` and `j+1` remain constant, making left and right subproblems **independent**
-- **Boundary Handling**: We add balloons with value 1 at both ends to simplify edge cases
+**Step 1: The Naive Approach — Try Bursting Each Balloon First**
 
-**Why DP works:**
-- **Overlapping subproblems**: Multiple ranges share the same subranges
-- **Optimal substructure**: The optimal solution for a range depends on optimal solutions for smaller ranges
-- **Interval DP pattern**: We process ranges from smallest to largest
+The most natural instinct is: try bursting each balloon first and recurse on the remaining array. If we burst balloon `k` first in range `[i, j]`, we get `nums[k-1] * nums[k] * nums[k+1]` coins, then recurse on `[i, k-1]` and `[k+1, j]`.
+
+The problem: **after bursting `k`, the neighbors of future balloons change**. Specifically, the left boundary of `[k+1, j]` is now `nums[i]` (since `k` is gone), but which `nums[i]` depends on what was burst in the left subproblem. This makes the two subproblems **dependent** on each other — we cannot solve them independently.
+
+**Step 2: The Key Reversal — Think "Last to Burst" Instead**
+
+Flip the thinking: instead of "which balloon do I burst first?" ask "which balloon do I burst **last** in the range `[i, j]`?"
+
+If balloon `k` is the **last** one burst in `[i, j]`:
+- All other balloons in `[i, j]` are already gone when `k` is burst.
+- The only neighbors of `k` at that moment are the balloons **outside** the range: `balloons[i-1]` and `balloons[j+1]`.
+- These outside balloons are fixed and do not change regardless of the order we burst balloons inside `[i, j]`.
+
+This means:
+- Coins from bursting `k` last = `balloons[i-1] * balloons[k] * balloons[j+1]` (constant, known upfront)
+- Left subproblem `[i, k-1]`: burst all balloons between `i` and `k-1` with boundaries `balloons[i-1]` and `balloons[k]` (both fixed because `k` hasn't been burst yet)
+- Right subproblem `[k+1, j]`: burst all balloons between `k+1` and `j` with boundaries `balloons[k]` and `balloons[j+1]` (both fixed)
+
+**The two subproblems are now completely independent** — neither depends on the order the other is solved.
+
+**Step 3: Why the Boundaries Are Fixed**
+
+The crucial insight: when `k` is the last to burst in `[i, j]`, balloon `k` acts as a **wall** between the two subranges. While solving `[i, k-1]`, balloon `k` is still alive (it's the last), so it is always the right boundary of `[i, k-1]`. Symmetrically, `k` is always the left boundary of `[k+1, j]`. Neither subrange "sees" the other side.
+
+**Step 4: Why Add Boundary Balloons With Value 1?**
+
+At the edges of the array, bursting the first or last balloon would need `nums[-1]` and `nums[n]`, which are out of bounds. The problem says to treat them as `1`. Rather than special-casing every boundary balloon, we physically add `1` at both ends, making the recurrence uniform: `balloons[i-1]` and `balloons[j+1]` always exist.
+
+**Why the Intuition Works — The Core Principle:**
+
+The "last to burst" framing works because it decouples subproblems. The subproblem `dp(left, right)` = max coins from bursting all balloons in `[left, right]` has:
+- **Optimal substructure**: The best answer for `[left, right]` is built from the best answers for `[left, k-1]` and `[k+1, right]`.
+- **Overlapping subproblems**: The same range `[left, right]` is queried multiple times across different parent ranges.
+- **Interval DP pattern**: We must process smaller ranges before larger ones (bottom-up), or memoize to avoid recomputation (top-down).
 
 ## Code Mapping
 
-| Problem Requirement | Java Code Section (Relevant Lines) |
-|---------------------|-----------------------------------|
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+|------------------------|-----------------------------------|
 | Add boundary balloons with value 1 | Array extension - Top-down: Lines 68-73, Bottom-up: Lines 117-122 |
 | DP for range maximum coins | Memo/DP array allocation - Top-down: Line 76, Bottom-up: Line 125 |
 | Base case: empty range | Base case check - Top-down: Line 83-85 |
@@ -340,13 +365,12 @@ class Solution {
 
 Problems that can be solved using similar interval DP patterns:
 
-1. **312. Burst Balloons** (this problem) - Interval DP with last element thinking
-2. **516. Longest Palindromic Subsequence** - Interval DP
-3. **1039. Minimum Score Triangulation of Polygon** - Interval DP
-4. **1547. Minimum Cost to Cut a Stick** - Interval DP
-5. **1000. Minimum Cost to Merge Stones** - Interval DP with constraints
-6. **1130. Minimum Cost Tree From Leaf Values** - Interval DP
-7. **375. Guess Number Higher or Lower II** - Interval DP
-8. **486. Predict the Winner** - Interval DP game theory
-9. **664. Strange Printer** - Interval DP
-10. **87. Scramble String** - Interval DP variant
+1. **516. Longest Palindromic Subsequence** - Interval DP
+2. **1039. Minimum Score Triangulation of Polygon** - Interval DP
+3. **1547. Minimum Cost to Cut a Stick** - Interval DP
+4. **1000. Minimum Cost to Merge Stones** - Interval DP with constraints
+5. **1130. Minimum Cost Tree From Leaf Values** - Interval DP
+6. **375. Guess Number Higher or Lower II** - Interval DP
+7. **486. Predict the Winner** - Interval DP game theory
+8. **664. Strange Printer** - Interval DP
+9. **87. Scramble String** - Interval DP variant

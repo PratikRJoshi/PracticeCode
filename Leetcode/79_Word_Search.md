@@ -1,116 +1,210 @@
 ### 79. Word Search
+
 Problem: https://leetcode.com/problems/word-search/description/
 
 ---
 
-### Main Idea & Intuition
+### Problem Description
 
-The problem asks us to find if a given word exists in a 2D grid of characters. The key insight is to use a backtracking approach to explore all possible paths in the grid.
+Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.
 
-#### Core Concept: Backtracking
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The **same letter cell may not be used more than once**.
 
-1. **Explore all paths**: Try every possible path starting from each cell
-2. **Backtrack when invalid**: If a path is invalid, backtrack and try a different path
-3. **Mark visited cells**: Use a boolean matrix or modify the original board to keep track of visited cells to avoid cycles
+**Example 1:**
+```
+board = [["A","B","C","E"],
+         ["S","F","C","S"],
+         ["A","D","E","E"]]
+word = "ABCCED"
+Output: true
+```
 
-#### Understanding the Backtracking Process
+**Example 2:**
+```
+board = [["A","B","C","E"],
+         ["S","F","C","S"],
+         ["A","D","E","E"]]
+word = "SEE"
+Output: true
+```
 
-1. **Base case**: If we've found all characters of the word, return true
-2. **Explore neighbors**: Try moving in all four directions (up, down, left, right)
-3. **Backtrack**: If a path is invalid, backtrack and try a different path
-4. **Mark visited**: Mark cells as visited to avoid cycles
-5. **Unmark visited**: Unmark cells when backtracking to explore other paths
+**Example 3:**
+```
+board = [["A","B","C","E"],
+         ["S","F","C","S"],
+         ["A","D","E","E"]]
+word = "ABCB"
+Output: false  (can't reuse B at [0][1])
+```
 
-### Code Implementation with Detailed Comments
+---
+
+### Intuition / Main Idea
+
+#### Step 1 — Recognise what kind of search this is
+
+We need to find a path of cells in a grid such that the characters along that path spell out the target word. Two properties make this a classic **backtracking** problem:
+
+1. At every cell, we have up to 4 choices (up / right / down / left).
+2. A cell **cannot be reused** within the same path — so we need to track which cells are already "on our current path."
+
+#### Step 2 — Why backtracking?
+
+Backtracking is essentially **DFS with an undo step**. We:
+1. *Choose* a cell to extend the current path.
+2. *Explore* deeper (recurse).
+3. *Undo* (un-mark the cell) so the same cell is available for other paths tried from higher up in the recursion.
+
+Without the undo step this would just be plain DFS, which would incorrectly forbid a cell forever once visited, even though it may be valid for a completely different starting path.
+
+#### Step 3 — Building the algorithm incrementally
+
+**Start simple:** For every cell in the grid, ask: "Can the word begin here?"
+- If `board[i][j] == word[0]`, launch a DFS from `(i, j)`.
+
+**Inside the DFS — what do we need to know?**
+- *Where are we?* → `(row, col)`
+- *How far have we matched?* → `wordIndex` (index into `word`)
+- *Which cells are currently in use?* → `visited[row][col]`
+
+**Base cases:**
+- `wordIndex == word.length()` → matched all characters → return `true`.
+- Out of bounds, or `board[row][col] != word[wordIndex]`, or cell already visited → dead end → return `false`.
+
+**Recursive step:**
+1. Mark `visited[row][col] = true` (cell is now part of the current path).
+2. Try all 4 neighbours with `wordIndex + 1`.
+3. If any neighbour returns `true`, propagate `true` upward.
+4. Otherwise, **backtrack**: set `visited[row][col] = false` so future paths can reuse it.
+
+#### Step 4 — Why a separate `visited` array?
+
+The alternative is to overwrite `board[row][col]` with a sentinel (e.g., `'#'`) and restore it on backtrack. Both approaches work. Using a separate `boolean[][] visited` keeps the board **immutable**, which is:
+- Safer (no risk of accidentally not restoring the board).
+- Clearer to read — the visited state is explicitly separated from the board data.
+
+The trade-off is $O(M \times N)$ extra space instead of $O(1)$, but the recursion stack is already $O(L)$, so this is acceptable.
+
+#### Why does the algorithm always find the correct answer?
+
+The outer double `for` loop tries **every cell** as a potential starting point. The inner DFS exhaustively explores every valid path from that start. The `visited` flag ensures we never reuse a cell in the same path. Together these two guarantees mean we will find the word if and only if a valid path exists.
+
+---
+
+### Code Mapping
+
+| Problem Requirement | Java Code Section |
+|---|---|
+| Try every cell as a starting point | Outer `for` loops in `exist()` |
+| Only start when first character matches | `if (board[i][j] == word.charAt(0))` guard before calling `backtrack` |
+| Track cells used in the current path | `boolean[][] visited` array passed to `backtrack` |
+| Base case: full word matched | `if (wordIndex == word.length()) return true` |
+| Base case: out of bounds / wrong char / already visited | Three-part guard at the top of `backtrack` |
+| Explore all 4 neighbours | `for (int[] direction : DIRECTIONS)` loop |
+| Mark cell before recursing | `visited[row][col] = true` before recursive calls |
+| Undo mark on backtrack | `visited[row][col] = false` after the loop returns `false` |
+
+---
+
+### Final Java Code
 
 ```java
 class Solution {
     // Four possible movement directions: up, right, down, left
     private static final int[][] DIRECTIONS = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
-    
+
     public boolean exist(char[][] board, String word) {
         int rows = board.length;
         int cols = board[0].length;
-        
-        // Try each cell as a starting point
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                // If the first character matches, start backtracking from this cell
-                if (board[i][j] == word.charAt(0) && backtrack(board, word, i, j, 0)) {
+
+        // visited[i][j] = true means cell (i,j) is already part of the current DFS path.
+        // We allocate it once here and pass it down so all recursive calls share the same array.
+        boolean[][] visited = new boolean[rows][cols];
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                // Only launch a DFS from cells whose character matches the first letter.
+                // This is an early-exit optimisation: no point starting if word[0] doesn't match.
+                if (board[row][col] == word.charAt(0) && backtrack(board, word, row, col, 0, visited)) {
                     return true;
                 }
             }
         }
-        
-        // No valid path found
+
+        // Exhausted all starting cells without finding the word.
         return false;
     }
-    
+
     /**
-     * Backtracking function to explore all possible paths
-     * 
-     * @param board  The 2D grid of characters
-     * @param word   The word we're searching for
-     * @param row    Current row position
-     * @param col    Current column position
-     * @param index  Current index in the word we're matching
-     * @return       True if we can find the remaining part of the word starting from this position
+     * DFS + backtracking: tries to match word[wordIndex..] starting at (row, col).
+     *
+     * @param board      The 2D character grid (never modified).
+     * @param word       The target word.
+     * @param row        Current row in the grid.
+     * @param col        Current column in the grid.
+     * @param wordIndex  Index of the character in word we are trying to match at this step.
+     * @param visited    Shared boolean grid marking cells on the current DFS path.
+     * @return           true if the remaining suffix word[wordIndex..] can be matched.
      */
-    private boolean backtrack(char[][] board, String word, int row, int col, int index) {
-        // Base case 1: We've matched all characters in the word
-        if (index == word.length()) {
+    private boolean backtrack(char[][] board, String word, int row, int col, int wordIndex, boolean[][] visited) {
+
+        // Base case: every character has been matched — the word exists!
+        if (wordIndex == word.length()) {
             return true;
         }
-        
-        // Base case 2: Out of bounds or character doesn't match
-        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || 
-            board[row][col] != word.charAt(index)) {
+
+        // Guard 1: boundary check — cell must be inside the grid.
+        // Guard 2: character check — cell must match the current character we need.
+        // Guard 3: visited check — cell must not already be on the current path.
+        if (row < 0 || row >= board.length
+                || col < 0 || col >= board[0].length
+                || board[row][col] != word.charAt(wordIndex)
+                || visited[row][col]) {
             return false;
         }
-        
-        // Mark the current cell as visited by replacing with a special character
-        // This is more efficient than using a separate visited matrix
-        char originalChar = board[row][col];
-        board[row][col] = '#'; // Use any character that won't appear in the input
-        
-        // Try all four directions (up, right, down, left)
+
+        // Mark this cell as part of the current path BEFORE recursing into neighbours.
+        // This prevents any deeper call from re-using the same cell within this path.
+        visited[row][col] = true;
+
+        // Explore all four neighbours, trying to match the next character.
         for (int[] direction : DIRECTIONS) {
-            int newRow = row + direction[0];
-            int newCol = col + direction[1];
-            
-            // Recursive call to explore this path
-            if (backtrack(board, word, newRow, newCol, index + 1)) {
-                // If we found a valid path, propagate the success back up
+            int nextRow = row + direction[0];
+            int nextCol = col + direction[1];
+
+            if (backtrack(board, word, nextRow, nextCol, wordIndex + 1, visited)) {
+                // A valid path was found — propagate success upward immediately.
+                // NOTE: we intentionally do NOT unmark visited here because we are
+                // returning true; no further backtracking is needed.
                 return true;
             }
         }
-        
-        // Backtrack: restore the original character for other paths to explore
-        board[row][col] = originalChar;
-        
-        // No valid path found from this position
+
+        // BACKTRACK: no neighbour led to a valid path.
+        // Unmark so that other DFS paths (starting from different cells) can use this cell.
+        visited[row][col] = false;
+
         return false;
     }
 }
 ```
 
+---
+
 ### Complexity Analysis
 
-*   **Time Complexity**: `O(N * 3^L)` where:
-    *   `N` is the number of cells in the board (rows × columns)
-    *   `L` is the length of the word
-    *   For each starting position, we potentially explore 4 directions for the first character, but only 3 directions for subsequent characters (since we can't go back to where we came from)
-    *   More precisely, we can think of this as a 4-way branching decision tree of depth L, but since we mark cells as visited, we effectively have only 3 choices at each step after the first
+- **Time Complexity**: $O(M \times N \times 3^L)$
+    - $M \times N$ — we try every cell as a starting point.
+    - $3^L$ — at each recursive step (depth up to $L$, the word length), we explore at most **3** new neighbours (not 4, because the cell we came from is already marked `visited` and will be rejected immediately). So the DFS tree has branching factor 3 and depth $L$.
 
-*   **Space Complexity**:
-    *   **Recursion Stack**: `O(L)` where L is the length of the word. This represents the maximum depth of the recursion.
-    *   **Board Modification**: `O(1)` additional space since we modify the board in-place to mark visited cells instead of using a separate visited matrix.
-    *   If we had used a separate visited matrix, the space complexity would have been `O(N)` where N is the number of cells in the board.
+- **Space Complexity**: $O(M \times N + L)$
+    - $O(M \times N)$ for the `visited` boolean array.
+    - $O(L)$ for the recursion call stack, which goes at most $L$ levels deep (one level per character matched).
 
-*   **Optimization Notes**:
-    *   The in-place modification of the board to mark visited cells is a space optimization that avoids the need for a separate visited matrix.
-    *   Early termination when the first character doesn't match saves unnecessary backtracking.
-    *   Checking boundary conditions and character matching before recursive calls prevents unnecessary stack frames.
-        I'll update the time and space complexity section in
-        Leetcode/LC79.md
-        with a more detailed analysis. Let me try again with a complete edit.
+---
+
+### Similar Problems
+
+- [212. Word Search II](https://leetcode.com/problems/word-search-ii/) — same DFS/backtracking on a grid, but now find *all* words from a list simultaneously (use a Trie to prune).
+- [200. Number of Islands](https://leetcode.com/problems/number-of-islands/) — DFS/BFS on a grid, marking visited cells.
+- [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/) — DFS/BFS flood-fill on a grid with a visited marker.
