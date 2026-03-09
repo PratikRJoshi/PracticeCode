@@ -29,7 +29,11 @@ class SolutionBellmanFord {
         Arrays.fill(prices, Integer.MAX_VALUE);
         prices[src] = 0;
 
-        // We run the relaxation loop k+1 times (for k stops)
+        // We run the relaxation loop k+1 times (for k stops).
+        // Why i <= k (not i < k)?
+        // - With at most k stops, a valid route can use at most k+1 flights.
+        // - Bellman-Ford after t iterations allows paths with up to t flights.
+        // - So we need k+1 iterations total: i = 0..k.
         for (int i = 0; i <= k; i++) {
             // Use a temp array to store new prices for this iteration
             int[] tempPrices = Arrays.copyOf(prices, n);

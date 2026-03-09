@@ -158,7 +158,9 @@ class Solution {
     public int minCostConnectPoints(int[][] points) {
         int n = points.length;
         boolean[] visited = new boolean[n];
-        // Min-heap: [distance, pointIndex]
+        // Min-heap entry format: [distance, pointIndex]
+        // pointIndex is the index in points[] (the point's ID), not the x/y coordinate itself.
+        // Meaning of one entry: "we can connect points[pointIndex] with this distance cost".
         PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
         
         // Start from point 0

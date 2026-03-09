@@ -1,75 +1,104 @@
 ### 57. Insert Interval
 ### Problem Link: [Insert Interval](https://leetcode.com/problems/insert-interval/)
-### Intuition
-This problem asks us to insert a new interval into a sorted list of non-overlapping intervals and merge any overlapping intervals. It's an extension of the Merge Intervals problem (Problem 56).
+### Intuition/Main Idea
+The English requirement is:
 
-The key insight is to handle three cases:
-1. Intervals that come before the new interval (no overlap)
-2. Intervals that overlap with the new interval (need to merge)
-3. Intervals that come after the new interval (no overlap)
+> "Insert `newInterval` into sorted non-overlapping `intervals`, and merge if necessary."
 
-We can process the intervals in order, adding non-overlapping intervals directly to the result and merging overlapping ones with the new interval.
+This translates to three chronological phases:
+1. Add all intervals fully before `newInterval`.
+2. Merge all intervals that overlap with `newInterval`.
+3. Add all remaining intervals after the merged block.
 
-### Java Reference Implementation
+Because input intervals are already sorted and non-overlapping, each interval belongs to exactly one of these phases, and we can process in one left-to-right pass.
+
+### English Requirement → Code Translation
+| English Requirement | Code Translation |
+| --- | --- |
+| "Intervals before new interval are unchanged" | `while (index < n && intervals[index][1] < newInterval[0])` |
+| "Overlapping intervals must be merged" | `while (index < n && intervals[index][0] <= newInterval[1])` |
+| "Merged interval start is smallest start" | `newInterval[0] = Math.min(newInterval[0], intervals[index][0])` |
+| "Merged interval end is largest end" | `newInterval[1] = Math.max(newInterval[1], intervals[index][1])` |
+| "Intervals after merged block stay unchanged" | `while (index < n)` append remaining |
+
+### Code Mapping
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+| --- | --- |
+| @Insert into sorted non-overlapping intervals | One linear scan with pointer `index` |
+| @Keep non-overlapping left intervals | First `while` loop (`end < mergedStart`) |
+| @Merge all overlapping intervals | Second `while` loop (`start <= mergedEnd`) |
+| @Update merged boundaries correctly | `Math.min` for start and `Math.max` for end |
+| @Preserve right-side intervals | Third `while` loop appending leftovers |
+| @Return merged final list | `result.toArray(new int[result.size()][])` |
+
+### Final Java Code & Learning Pattern (Full Content)
 ```java
+import java.util.ArrayList;
+import java.util.List;
+
 class Solution {
     public int[][] insert(int[][] intervals, int[] newInterval) {
-        List<int[]> result = new ArrayList<>(); // [R0] Initialize result list
+        List<int[]> result = new ArrayList<>();
         int index = 0;
         int n = intervals.length;
-        
-        // [R1] Add all intervals that come before the new interval
+
+        // Loop 1 condition: index < n && intervals[index][1] < newInterval[0]
+        // English meaning:
+        // - index < n: there are still intervals to inspect.
+        // - intervals[index][1] < mergedStart: current interval ends strictly before new interval starts,
+        //   so there is no overlap and we can keep it as-is.
         while (index < n && intervals[index][1] < newInterval[0]) {
-            result.add(intervals[index++]);
-        }
-        
-        // [R2] Merge overlapping intervals with the new interval
-        // Does the current existing interval start before (or at the exact moment) the new interval ends? If yes, merge
-        // Simple English:
-        // - We're asking: "Has the next interval started yet AFTER my newInterval ends?"
-        // - If it has NOT started after (i.e., it starts <= newInterval end), then the two intervals overlap (or touch),
-        //   so they belong in the same merged interval.
-        // Quick example to remember:
-        // - newInterval = [2, 5]
-        // - next interval = [4, 7]
-        //   next start = 4, newInterval end = 5 -> 4 <= 5 (true) => overlap => merge
-        // - next interval = [6, 8]
-        //   next start = 6, newInterval end = 5 -> 6 <= 5 (false) => no overlap => stop merging
-        while (index < n && intervals[index][0] <= newInterval[1]) {
-            // Update the new interval to include the current overlapping interval
-            newInterval[0] = Math.min(newInterval[0], intervals[index][0]); // [R3] Update start of merged interval
-            newInterval[1] = Math.max(newInterval[1], intervals[index][1]); // [R3] Update end of merged interval
+            result.add(intervals[index]);
             index++;
         }
-        
-        // [R4] Add the merged interval
-        result.add(newInterval);
-        
-        // [R5] Add all intervals that come after the new interval
-        while (index < n) {
-            result.add(intervals[index++]);
+
+        // Loop 2 (the one you asked about): index < n && intervals[index][0] <= newInterval[1]
+        // How to derive this yourself from English:
+        // 1) We want to keep merging "as long as current interval overlaps newInterval".
+        // 2) Overlap test between [aStart, aEnd] and [bStart, bEnd] is:
+        //      aStart <= bEnd && bStart <= aEnd
+        // 3) Here, loop 1 already removed all intervals that end before newInterval starts,
+        //    so bStart <= aEnd is already guaranteed for current index.
+        // 4) So only one check remains necessary in loop 2:
+        //      currentStart <= newIntervalEnd  -> intervals[index][0] <= newInterval[1]
+        // Intuition sentence to remember:
+        // "Has the next interval started before my merged interval has ended?"
+        // If yes, they still touch/overlap -> keep merging.
+        while (index < n && intervals[index][0] <= newInterval[1]) {
+            // Expand newInterval to absorb current overlapping interval.
+            // Start becomes minimum start, end becomes maximum end.
+            newInterval[0] = Math.min(newInterval[0], intervals[index][0]);
+            newInterval[1] = Math.max(newInterval[1], intervals[index][1]);
+            index++;
         }
-        
-        // [R6] Convert list to array and return
+
+        // After loop 2, newInterval itself is the final merged interval block.
+        result.add(newInterval);
+
+        // Loop 3 condition: index < n
+        // English meaning: append every remaining interval; by now they are guaranteed to be
+        // strictly after newInterval[1] and therefore non-overlapping with the merged block.
+        while (index < n) {
+            result.add(intervals[index]);
+            index++;
+        }
+
         return result.toArray(new int[result.size()][]);
     }
 }
 ```
 
-### Requirement → Code Mapping
-- **R0 (Initialize result)**: `List<int[]> result = new ArrayList<>();` - Create a list to store the result
-- **R1 (Add non-overlapping intervals before)**: First while loop adds intervals that come before the new interval
-- **R2 (Merge overlapping intervals)**: Second while loop merges intervals that overlap with the new interval
-- **R3 (Update merged interval)**: `newInterval[0] = Math.min(...); newInterval[1] = Math.max(...);` - Update the bounds of the merged interval
-- **R4 (Add merged interval)**: `result.add(newInterval);` - Add the merged interval to the result
-- **R5 (Add non-overlapping intervals after)**: Third while loop adds intervals that come after the new interval
-- **R6 (Convert and return)**: `return result.toArray(new int[result.size()][]);` - Convert the list to an array and return
+**Learning Pattern:**
+- For sorted, non-overlapping interval insertions, split into **left / overlap / right** phases.
+- Use boundary comparisons to decide phase transitions.
+- Merge by expanding `[start, end]` using `min` and `max`.
 
 ### Complexity Analysis
-- **Time Complexity**: O(n) - We process each interval once
-- **Space Complexity**: O(n) - We create a new array to store the result
+- **Time Complexity:** $O(n)$ — each interval is visited once.
+- **Space Complexity:** $O(n)$ — output list may contain all intervals plus the inserted one.
 
-### Relation to Other Problems
-This problem is related to:
-- **Merge Intervals** (Problem 56): Similar but focuses on merging existing intervals rather than inserting a new one
-- **Range Module** (Problem 715): More complex version involving adding, removing, and querying ranges
+### Similar Problems
+- [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/)
+- [252. Meeting Rooms](https://leetcode.com/problems/meeting-rooms/)
+- [253. Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
+- [759. Employee Free Time](https://leetcode.com/problems/employee-free-time/)

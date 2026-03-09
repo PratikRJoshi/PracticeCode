@@ -60,6 +60,8 @@ import java.util.TreeMap;
 class Solution {
     public boolean isNStraightHand(int[] hand, int groupSize) {
         // Count frequency of each card value
+        // TreeMap keeps keys sorted, so we can always pick the smallest remaining card (firstKey)
+        // to greedily start each consecutive group; HashMap does not provide this ordering.
         TreeMap<Integer, Integer> count = new TreeMap<>();
         for (int card : hand) {
             count.put(card, count.getOrDefault(card, 0) + 1);

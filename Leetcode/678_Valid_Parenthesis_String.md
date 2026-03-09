@@ -132,31 +132,95 @@ class Solution {
 
 **Alternative Approach (Two-Pass):**
 
+### Intuition Behind the Two-Pass Approach
+
+A valid parenthesis string must satisfy two conditions simultaneously:
+1. **Every `)` has a matching `(` somewhere to its left.**
+2. **Every `(` has a matching `)` somewhere to its right.**
+
+`'*'` can act as either `(`, `)`, or empty. The two-pass approach checks each condition independently by being maximally optimistic about what `'*'` does:
+
+**Pass 1 — Left to Right (treat `'*'` as `'('`):**
+- We scan left to right and assume every `'*'` is a `'('` (the most helpful it can be for condition 1).
+- Track `balance` = count of unmatched `(` seen so far.
+- If `balance` ever goes negative, it means there are more `)` than `(` and `*` combined to the left — impossible regardless of how we assign `*`. Return `false`.
+- This pass answers: *"Can every `)` find a `(` or `*` to its left to match with?"*
+
+**Pass 2 — Right to Left (treat `'*'` as `')'`):**
+- We scan right to left and assume every `'*'` is a `')'` (the most helpful it can be for condition 2).
+- Track `balance` = count of unmatched `)` seen so far (scanning from the right).
+- If `balance` ever goes negative, there are more `(` than `)` and `*` combined to the right — impossible. Return `false`.
+- This pass answers: *"Can every `(` find a `)` or `*` to its right to match with?"*
+
+**Why do both passes together guarantee validity?**
+
+Each pass independently verifies one necessary condition using the most favorable possible assignment for `*`. If both pass, then:
+- There exists *some* assignment of `*`s that satisfies condition 1 (from pass 1's witness).
+- There exists *some* assignment of `*`s that satisfies condition 2 (from pass 2's witness).
+
+It can be proven (via a matching argument) that if no prefix has more `)` than `(+*`, and no suffix has more `(` than `)+*`, then a valid simultaneous assignment always exists — these two conditions are both necessary and sufficient.
+
+**Why is `balance < 0` the right check (and not checking at the end)?**
+
+Parenthesis validity is a prefix condition: at every point while scanning, you cannot have more closers than openers seen so far. Checking only at the end would miss cases like `")("`  where the string ends balanced but is invalid mid-way. Catching `balance < 0` immediately at the point it goes negative is the correct invariant.
+
+**Example walkthrough for `s = "(*))"`:**
+
+*Pass 1 (L→R, `*` treated as `(`)`:*
+| i | char | balance | note |
+|---|------|---------|------|
+| 0 | `(` | 1 | open |
+| 1 | `*` | 2 | treated as `(` |
+| 2 | `)` | 1 | close |
+| 3 | `)` | 0 | close |
+→ balance never went negative → pass 1 ✓
+
+*Pass 2 (R→L, `*` treated as `)`)`:*
+| i | char | balance | note |
+|---|------|---------|------|
+| 3 | `)` | 1 | close (scanning right→left) |
+| 2 | `)` | 2 | close |
+| 1 | `*` | 3 | treated as `)` |
+| 0 | `(` | 2 | open decrements balance |
+→ balance never went negative → pass 2 ✓
+
+Both passes pass → return `true` ✓
+
 ```java
 class Solution {
     public boolean checkValidString(String s) {
-        // Left to right: treat '*' as '('
+        // Pass 1: Left to right, treating every '*' as '('
+        // This checks: can every ')' be matched by a '(' or '*' to its left?
+        // balance = number of unmatched '(' seen so far (assuming '*' = '(')
         int balance = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '(' || s.charAt(i) == '*') {
-                balance++;
+                balance++;  // '(' opens, '*' treated as '(' — both increase potential matches
             } else {
-                balance--;
+                balance--;  // ')' must be matched by something to the left
             }
+            // Even with every '*' acting as '(', we still have more ')' than openers
+            // No valid assignment can fix this — impossible to recover
             if (balance < 0) return false;
         }
-        
-        // Right to left: treat '*' as ')'
+
+        // Pass 2: Right to left, treating every '*' as ')'
+        // This checks: can every '(' be matched by a ')' or '*' to its right?
+        // balance = number of unmatched ')' seen so far (scanning from the right)
         balance = 0;
         for (int i = s.length() - 1; i >= 0; i--) {
             if (s.charAt(i) == ')' || s.charAt(i) == '*') {
-                balance++;
+                balance++;  // ')' closes, '*' treated as ')' — both increase potential matches from right
             } else {
-                balance--;
+                balance--;  // '(' must be matched by something to the right
             }
+            // Even with every '*' acting as ')', we still have more '(' than closers
+            // No valid assignment can fix this — impossible to recover
             if (balance < 0) return false;
         }
-        
+
+        // Both conditions satisfied: every ')' can find a match to its left,
+        // and every '(' can find a match to its right
         return true;
     }
 }
