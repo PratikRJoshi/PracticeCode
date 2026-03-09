@@ -1,0 +1,38 @@
+name: Update Parent Submodule
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  update-parent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout parent repository
+        uses: actions/checkout@v4
+        with:
+          repository: PratikRJoshi/InterviewPractice
+          token: ${{ secrets.PARENT_REPO_TOKEN }}
+          path: parent-repo
+
+      - name: Update submodule reference and push
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          cd parent-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git submodule update --init PracticeCode
+          cd PracticeCode
+          git fetch origin
+          git checkout "$COMMIT_SHA"
+          cd ..
+
+          git add PracticeCode
+          if git diff --staged --quiet; then
+            echo "Submodule already at latest commit, nothing to update"
+          else
+            git commit -m "chore: update PracticeCode submodule to $COMMIT_SHA"
+            git push
+          fi
