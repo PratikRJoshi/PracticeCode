@@ -1,0 +1,93 @@
+# Salesforce Dropped Cases
+
+## 1) Problem Description
+
+Given request events `requests[i] = [time, count]`, queue behavior is:
+
+- queue capacity = `max_cases`
+- each second, process `rate` cases from queue
+- if incoming causes queue to exceed capacity, overflow is dropped
+
+Return total dropped cases.
+
+## 2) Intuition/Main Idea
+
+Sort requests by time and simulate only event times.
+
+Between two events at times `prevTime` and `currentTime`, queue shrinks by:
+
+```text
+(currentTime - prevTime) * rate
+```
+
+Then add incoming requests and drop overflow above `max_cases`.
+
+### Why this intuition works
+
+- Queue only changes continuously by fixed-rate draining and discrete arrivals.
+- No need to simulate every second explicitly.
+
+### How to derive it step by step
+
+1. Sort events by time.
+2. Maintain `queueSize`, `previousTime`, `dropped`.
+3. Before each event, drain based on elapsed time.
+4. Add incoming count.
+5. If queue exceeds capacity, record overflow and cap queue.
+
+## 3) Code Mapping
+
+| Problem Requirement (@) | Java Code Section (Relevant Lines) |
+| --- | --- |
+| @ProcessRatePerSecond | draining by elapsed time multiplication |
+| @QueueCapacityEnforced | overflow check `queueSize - maxCases` |
+| @CountDroppedOverflow | accumulate into `droppedCases` |
+| @UnorderedRequests | initial sort by event time |
+
+## 4) Final Java Code & Learning Pattern (Full Content)
+
+```java
+import java.util.*;
+
+class Result {
+
+    public static long getNumberOfDroppedCases(List<List<Integer>> requests, int maxCases, int rate) {
+        requests.sort(Comparator.comparingInt(event -> event.get(0)));
+
+        long queueSize = 0L;
+        long droppedCases = 0L;
+        long previousTime = requests.get(0).get(0);
+
+        for (List<Integer> request : requests) {
+            long currentTime = request.get(0);
+            long incomingCases = request.get(1);
+
+            long elapsed = currentTime - previousTime;
+            queueSize = Math.max(0L, queueSize - elapsed * rate);
+
+            queueSize += incomingCases;
+            if (queueSize > maxCases) {
+                droppedCases += queueSize - maxCases;
+                queueSize = maxCases;
+            }
+
+            previousTime = currentTime;
+        }
+
+        return droppedCases;
+    }
+}
+```
+
+Learning Pattern:
+- In queue systems with fixed drain rate and sparse events, jump directly across time gaps.
+
+## 5) Complexity Analysis
+
+- Time Complexity: $O(n \log n)$ due to sorting
+- Space Complexity: $O(1)$ extra (excluding sort internals)
+
+## Similar Problems
+
+- [LeetCode 1094: Car Pooling](https://leetcode.com/problems/car-pooling/) (capacity overflow over timeline)
+- [LeetCode 253: Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) (event timeline simulation)
