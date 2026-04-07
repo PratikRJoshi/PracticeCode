@@ -113,6 +113,69 @@ In BFS, we process (record) the current node's value first, then enqueue its chi
 
 ## Final Java Code & Learning Pattern
 
+### Simpler Solution — Single Queue + TreeMap
+
+The cleanest way to express this: bundle each node with its column index in one queue entry (`int[]` pair), and use a `TreeMap` so the keys stay sorted automatically — no min/max tracking needed.
+
+```java
+class Solution {
+
+    public List<List<Integer>> verticalOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+
+        if (root == null) {
+            return result;
+        }
+
+        // TreeMap keeps column keys sorted left-to-right automatically
+        Map<Integer, List<Integer>> columnMap = new TreeMap<>();
+
+        // Single queue: each int[] entry is {node-value-placeholder, column}
+        // We pair the TreeNode and its column together using a queue of Object[]
+        Queue<Object[]> queue = new LinkedList<>();
+        queue.offer(new Object[]{root, 0}); // {TreeNode, columnIndex}
+
+        while (!queue.isEmpty()) {
+            Object[] entry = queue.poll();
+            TreeNode currentNode = (TreeNode) entry[0];
+            int currentColumn = (int) entry[1];
+
+            // Add this node's value to the correct column bucket
+            columnMap.computeIfAbsent(currentColumn, k -> new ArrayList<>())
+                     .add(currentNode.val);
+
+            // Enqueue left child first → preserves left-to-right order within a column
+            if (currentNode.left != null) {
+                queue.offer(new Object[]{currentNode.left, currentColumn - 1});
+            }
+
+            // Enqueue right child second
+            if (currentNode.right != null) {
+                queue.offer(new Object[]{currentNode.right, currentColumn + 1});
+            }
+        }
+
+        // TreeMap already sorted by column key — just collect values in order
+        result.addAll(columnMap.values());
+
+        return result;
+    }
+}
+```
+
+**Why this is simpler:**
+- **One queue, one entry per node** — no parallel queues; the `Object[]` pair `{node, column}` keeps everything together, making the code easier to read.
+- **`TreeMap` auto-sorts** — `columnMap.values()` is already in column order (left to right). No min/max tracking, no manual loop from `minColumn` to `maxColumn`.
+- **`computeIfAbsent`** — creates the list on first access and adds in one line, replacing the two-step `putIfAbsent` + `get`.
+
+**Trade-off vs. the optimised solution below:**
+- `TreeMap` costs $O(\log N)$ per insertion instead of $O(1)$, making overall time $O(N \log N)$ vs. $O(N)$.
+- For the given constraint of ≤ 100 nodes, this is completely negligible in practice.
+
+---
+
+### Optimised Solution — Parallel Queues + HashMap + Min/Max Tracking
+
 ```java
 class Solution {
 
