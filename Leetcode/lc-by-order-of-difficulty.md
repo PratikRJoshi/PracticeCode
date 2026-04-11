@@ -151,11 +151,48 @@ private boolean isValidBST(TreeNode root, long min, long max) {
 
 ---
 
+### 6. Lowest Common Ancestor of a Binary Tree (LeetCode 236)
+**Difficulty:** Medium  
+**Pattern:** Bottom-up recursion with early returns and split detection  
+**Key Concepts:**
+- Return node if current node is p or q (early return)
+- If both left and right return non-null → current node is LCA (split point)
+- If only one side returns non-null → that subtree contains both nodes
+- Combines bottom-up recursion with decision logic
+- Time: O(n), Space: O(h)
+
+**Solution:**
+```java
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if(root == null) return null;
+    
+    // If current node is p or q, return it
+    if(root == p || root == q) return root;
+    
+    // Search in left and right subtrees
+    TreeNode left = lowestCommonAncestor(root.left, p, q);
+    TreeNode right = lowestCommonAncestor(root.right, p, q);
+    
+    // If both sides return non-null, this is the split point (LCA)
+    if(left != null && right != null) return root;
+    
+    // Otherwise, return whichever side found something (or null if both null)
+    return left != null ? left : right;
+}
+```
+
+**Key Insight:**
+- When `left` and `right` are both non-null, it means p and q are in different subtrees
+- The current node is where their paths diverge → it's the LCA
+- A node can be its own ancestor (if p is ancestor of q, return p)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
 - **Pattern:** Return information to parent
-- **Used in:** Max Depth, Min Depth, Diameter, Max Path Sum
+- **Used in:** Max Depth, Min Depth, Diameter, Max Path Sum, LCA
 - **Structure:** 
   ```
   if(node == null) return base_value;
@@ -194,10 +231,24 @@ private boolean isValidBST(TreeNode root, long min, long max) {
 - **Used in:** Max Path Sum
 - **When to use:** When you want to optionally exclude a subtree if it hurts the answer
 
-### 5. Edge Case Handling
+### 5. Early Return with Split Detection
+- **Pattern:** Return immediately when condition is met, then analyze subtree results
+- **Used in:** LCA
+- **Structure:**
+  ```
+  if(node matches condition) return node;  // Early return
+  left = recurse(left);
+  right = recurse(right);
+  if(left != null && right != null) return node;  // Split detected
+  return non-null side;
+  ```
+- **When to use:** When finding a node that splits two targets, or when the current node itself is a target
+
+### 6. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
+- **Node as own ancestor:** A node can be ancestor of itself (important for LCA)
 
 ---
 
@@ -219,12 +270,22 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems:**
-- Lowest Common Ancestor of a Binary Tree (LeetCode 236) - Combines bottom-up and information passing
-- Path Sum variants (LeetCode 112, 113) - Backtracking with trees
+- Path Sum II (LeetCode 113) - Backtracking with trees to find all paths
 - Serialize and Deserialize Binary Tree (LeetCode 297) - Tree traversal and reconstruction
+- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
+- Kth Smallest Element in a BST (LeetCode 230) - Inorder traversal application
 
 **Related Topics to Explore:**
 - Binary Tree Traversals (Inorder, Preorder, Postorder)
+- Backtracking with path tracking
 - Morris Traversal (O(1) space)
 - Level Order Traversal (BFS)
 - Tree construction from traversals
+
+**Patterns Mastered:**
+- ✅ Bottom-up recursion (return info to parent)
+- ✅ Global answer tracking
+- ✅ Top-down constraint passing
+- ✅ Handling negative values
+- ✅ Early return with split detection
+- ✅ Edge case handling
