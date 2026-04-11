@@ -7,7 +7,7 @@
 
 ## Problems Solved (In Order)
 
-### 1. Maximum Depth of Binary Tree (LeetCode 104)
+### 1. [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
 **Difficulty:** Easy  
 **Pattern:** Bottom-up recursion  
 **Key Concepts:**
@@ -16,19 +16,9 @@
 - Recursive case: `1 + max(left_depth, right_depth)`
 - Time: O(n), Space: O(h) where h = height
 
-**Solution:**
-```java
-public int maxDepth(TreeNode root) {
-    if(root == null) return 0;
-    int left = maxDepth(root.left);
-    int right = maxDepth(root.right);
-    return 1 + Math.max(left, right);
-}
-```
-
 ---
 
-### 2. Minimum Depth of Binary Tree (LeetCode 111)
+### 2. [Minimum Depth of Binary Tree](https://leetcode.com/problems/minimum-depth-of-binary-tree/)
 **Difficulty:** Easy  
 **Pattern:** Bottom-up recursion with edge case handling  
 **Key Concepts:**
@@ -37,24 +27,9 @@ public int maxDepth(TreeNode root) {
 - Simplified logic: `if(left == 0 || right == 0) return 1 + left + right`
 - Time: O(n), Space: O(h)
 
-**Solution:**
-```java
-public int minDepth(TreeNode root) {
-    if(root == null) return 0;
-    int left = minDepth(root.left);
-    int right = minDepth(root.right);
-    
-    if(left == 0 || right == 0) {
-        return 1 + left + right;
-    } else {
-        return 1 + Math.min(left, right);
-    }
-}
-```
-
 ---
 
-### 3. Diameter of Binary Tree (LeetCode 543)
+### 3. [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)
 **Difficulty:** Easy  
 **Pattern:** Track global answer, return local contribution  
 **Key Concepts:**
@@ -64,30 +39,9 @@ public int minDepth(TreeNode root) {
 - Use global variable to track max diameter
 - Time: O(n), Space: O(h)
 
-**Solution:**
-```java
-int max = 0;
-
-public int diameterOfBinaryTree(TreeNode root) {
-    dfs(root);
-    return max;
-}
-
-private int dfs(TreeNode node) {
-    if(node == null) return 0;
-    
-    int left = dfs(node.left);
-    int right = dfs(node.right);
-    
-    max = Math.max(max, left + right);  // Update diameter
-    
-    return 1 + Math.max(left, right);   // Return height
-}
-```
-
 ---
 
-### 4. Binary Tree Maximum Path Sum (LeetCode 124)
+### 4. [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
 **Difficulty:** Hard  
 **Pattern:** Track global answer with negative value handling  
 **Key Concepts:**
@@ -98,30 +52,9 @@ private int dfs(TreeNode node) {
 - Initialize max to `Integer.MIN_VALUE` (not 0!)
 - Time: O(n), Space: O(h)
 
-**Solution:**
-```java
-int max = Integer.MIN_VALUE;
-
-public int maxPathSum(TreeNode root) {
-    dfs(root);
-    return max;
-}
-
-private int dfs(TreeNode node) {
-    if(node == null) return 0;
-    
-    int left = Math.max(0, dfs(node.left));   // Ignore negative
-    int right = Math.max(0, dfs(node.right)); // Ignore negative
-    
-    max = Math.max(max, left + right + node.val);  // Path through node
-    
-    return node.val + Math.max(left, right);       // Max gain to parent
-}
-```
-
 ---
 
-### 5. Validate Binary Search Tree (LeetCode 98)
+### 5. [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/)
 **Difficulty:** Medium  
 **Pattern:** Top-down recursion with constraint passing  
 **Key Concepts:**
@@ -132,59 +65,17 @@ private int dfs(TreeNode node) {
 - Use `Long.MIN_VALUE`/`Long.MAX_VALUE` to handle edge cases
 - Time: O(n), Space: O(h)
 
-**Solution:**
-```java
-public boolean isValidBST(TreeNode root) {
-    if(root == null) return true;
-    return isValidBST(root.left, Long.MIN_VALUE, root.val) 
-            && isValidBST(root.right, root.val, Long.MAX_VALUE);
-}
-
-private boolean isValidBST(TreeNode root, long min, long max) {
-    if(root == null) return true;
-    
-    return (root.val > min && root.val < max) 
-            && isValidBST(root.left, min, root.val) 
-            && isValidBST(root.right, root.val, max);
-}
-```
-
 ---
 
-### 6. Lowest Common Ancestor of a Binary Tree (LeetCode 236)
+### 6. [Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 **Difficulty:** Medium  
 **Pattern:** Bottom-up recursion with early returns and split detection  
 **Key Concepts:**
 - Return node if current node is p or q (early return)
 - If both left and right return non-null → current node is LCA (split point)
 - If only one side returns non-null → that subtree contains both nodes
-- Combines bottom-up recursion with decision logic
+- Node can be its own ancestor (if p is ancestor of q, return p)
 - Time: O(n), Space: O(h)
-
-**Solution:**
-```java
-public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-    if(root == null) return null;
-    
-    // If current node is p or q, return it
-    if(root == p || root == q) return root;
-    
-    // Search in left and right subtrees
-    TreeNode left = lowestCommonAncestor(root.left, p, q);
-    TreeNode right = lowestCommonAncestor(root.right, p, q);
-    
-    // If both sides return non-null, this is the split point (LCA)
-    if(left != null && right != null) return root;
-    
-    // Otherwise, return whichever side found something (or null if both null)
-    return left != null ? left : right;
-}
-```
-
-**Key Insight:**
-- When `left` and `right` are both non-null, it means p and q are in different subtrees
-- The current node is where their paths diverge → it's the LCA
-- A node can be its own ancestor (if p is ancestor of q, return p)
 
 ---
 
