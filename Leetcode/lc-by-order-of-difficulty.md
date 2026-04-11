@@ -91,6 +91,18 @@
 
 ---
 
+### 8. [Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)
+**Difficulty:** Medium  
+**Pattern:** Inorder DFS traversal with early termination  
+**Key Concepts:**
+- Inorder traversal of BST visits nodes in ascending sorted order
+- Use instance variables to share countdown (`level`) and result across recursive calls
+- Early termination: stop recursing once kth node is found (`level == 0`)
+- Java primitives are pass-by-value — use instance variables, not parameters, for shared state
+- Time: O(n), Space: O(n) worst case; O(h + k) time, O(h) space for balanced trees
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -163,7 +175,23 @@
   ```
 - **When to use:** Finding all paths/combinations in trees, need to track current state
 
-### 7. Edge Case Handling
+### 7. Inorder Traversal with Early Termination
+- **Pattern:** Use inorder DFS (left, process, right) to visit BST nodes in sorted order, stop early when target is found
+- **Used in:** Kth Smallest Element in BST
+- **Structure:**
+  ```
+  function dfs(node):
+      if(node == null || found) return;
+      dfs(left);
+      countdown--;
+      if(countdown == 0):
+          result = node.val;
+          return;
+      dfs(right);
+  ```
+- **When to use:** When you need sorted-order access to BST nodes, or need the kth element
+
+### 8. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -190,17 +218,16 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems:**
-- Path Sum II (LeetCode 113) - Backtracking with trees to find all paths
+- Construct Binary Tree from Preorder and Inorder Traversal (LeetCode 105) - Tree construction from traversals
 - Serialize and Deserialize Binary Tree (LeetCode 297) - Tree traversal and reconstruction
 - Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
-- Kth Smallest Element in a BST (LeetCode 230) - Inorder traversal application
+- Flatten Binary Tree to Linked List (LeetCode 114) - In-place tree modification
 
 **Related Topics to Explore:**
-- Binary Tree Traversals (Inorder, Preorder, Postorder)
-- Backtracking with path tracking
+- Tree construction from traversals
 - Morris Traversal (O(1) space)
 - Level Order Traversal (BFS)
-- Tree construction from traversals
+- In-place tree modification
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -208,4 +235,6 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Top-down constraint passing
 - ✅ Handling negative values
 - ✅ Early return with split detection
+- ✅ Backtracking with path tracking
+- ✅ Inorder traversal with early termination
 - ✅ Edge case handling
