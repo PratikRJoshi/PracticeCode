@@ -79,6 +79,18 @@
 
 ---
 
+### 7. [Path Sum II](https://leetcode.com/problems/path-sum-ii/)
+**Difficulty:** Medium  
+**Pattern:** Backtracking with path tracking  
+**Key Concepts:**
+- Track current path during recursion (add node before recursing)
+- Backtrack by removing last node after exploring children
+- Clone path list when adding to result (avoid reference issues)
+- Valid path: root to leaf where sum equals target
+- Time: O(n), Space: O(h) where h = height
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -135,11 +147,28 @@
   ```
 - **When to use:** When finding a node that splits two targets, or when the current node itself is a target
 
-### 6. Edge Case Handling
+### 6. Backtracking with Path Tracking
+- **Pattern:** Build path incrementally, explore, then undo (backtrack)
+- **Used in:** Path Sum II
+- **Structure:**
+  ```
+  function dfs(node, path, result):
+      if(node == null) return;
+      path.add(node.val);              // Add to path
+      if(is_valid_endpoint):
+          result.add(clone(path));      // Clone before adding!
+      dfs(left, path, result);
+      dfs(right, path, result);
+      path.remove(last);                // Backtrack
+  ```
+- **When to use:** Finding all paths/combinations in trees, need to track current state
+
+### 7. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
 - **Node as own ancestor:** A node can be ancestor of itself (important for LCA)
+- **Cloning paths:** Always clone when adding to result to avoid reference issues
 
 ---
 
