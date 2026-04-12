@@ -129,6 +129,21 @@
 
 ---
 
+### 13. [Construct Binary Tree from Inorder and Postorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+**Difficulty:** Medium  
+**Pattern:** Recursive tree construction with divide and conquer (postorder variant)  
+**Key Concepts:**
+- Mirror of preorder+inorder (problem #9): root is last element in postorder (not first)
+- Inorder split logic is identical: find root, everything left is left subtree, right is right subtree
+- `inorderLen = rootInInorder - instart` bridges both arrays — same number of nodes in each subtree
+- Postorder ranges: left = `[poststart, poststart+inorderLen-1]`, right = `[poststart+inorderLen, postend-1]`
+- Build **right subtree before left** (consuming postorder from the back)
+- HashMap for O(1) root lookup in inorder array
+- Index visualization trick: draw arrays side by side, use inorderLen as a ruler
+- Time: O(n), Space: O(n)
+
+---
+
 ### 11. [Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/)
 **Difficulty:** Medium  
 **Pattern:** Iterative in-place tree rewiring (Morris-like)  
@@ -245,7 +260,7 @@
 
 ### 8. Recursive Tree Construction (Divide and Conquer)
 - **Pattern:** Use traversal properties to identify root, split into subtrees, recurse
-- **Used in:** Construct Binary Tree from Preorder and Inorder, Serialize and Deserialize
+- **Used in:** Construct Binary Tree from Preorder and Inorder, Serialize and Deserialize, Construct Binary Tree from Inorder and Postorder
 - **Structure:**
   ```
   function build(preorder, preStart, preEnd, inorder, inStart, inEnd, map):
@@ -303,7 +318,8 @@ All problems follow similar complexity patterns for tree recursion:
 
 **Upcoming Problems:**
 - Binary Tree Right Side View (LeetCode 199) - Level order traversal variant (BFS)
-- Construct Binary Tree from Inorder and Postorder Traversal (LeetCode 106) - Variant of tree construction
+- Sum Root to Leaf Numbers (LeetCode 129) - Top-down DFS with accumulated value
+- Path Sum III (LeetCode 437) - Prefix sum + DFS combination
 - Binary Tree Level Order Traversal (LeetCode 102) - Core BFS pattern
 - Populating Next Right Pointers (LeetCode 116) - BFS with sibling linking
 
