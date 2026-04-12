@@ -103,6 +103,18 @@
 
 ---
 
+### 9. [Construct Binary Tree from Preorder and Inorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+**Difficulty:** Medium  
+**Pattern:** Recursive tree construction with divide and conquer  
+**Key Concepts:**
+- Preorder's first element is always the root
+- Find root in inorder array to split into left/right subtrees
+- Left subtree size (`rootInInorder - inStart`) maps inorder indices to preorder indices
+- Use HashMap for O(1) root lookup in inorder array (avoid O(n^2) linear scan)
+- Time: O(n), Space: O(n)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -191,7 +203,23 @@
   ```
 - **When to use:** When you need sorted-order access to BST nodes, or need the kth element
 
-### 8. Edge Case Handling
+### 8. Recursive Tree Construction (Divide and Conquer)
+- **Pattern:** Use traversal properties to identify root, split into subtrees, recurse
+- **Used in:** Construct Binary Tree from Preorder and Inorder
+- **Structure:**
+  ```
+  function build(preorder, preStart, preEnd, inorder, inStart, inEnd, map):
+      if(preStart > preEnd) return null;
+      root = new Node(preorder[preStart]);
+      rootIndex = map.get(root.val);
+      leftSize = rootIndex - inStart;
+      root.left = build(preStart+1, preStart+leftSize, inStart, rootIndex-1);
+      root.right = build(preStart+leftSize+1, preEnd, rootIndex+1, inEnd);
+      return root;
+  ```
+- **When to use:** Reconstructing a tree from two traversal orderings
+
+### 9. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -218,16 +246,16 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems:**
-- Construct Binary Tree from Preorder and Inorder Traversal (LeetCode 105) - Tree construction from traversals
-- Serialize and Deserialize Binary Tree (LeetCode 297) - Tree traversal and reconstruction
-- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
+- Serialize and Deserialize Binary Tree (LeetCode 297) - Tree serialization and reconstruction
 - Flatten Binary Tree to Linked List (LeetCode 114) - In-place tree modification
+- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
+- Construct Binary Tree from Inorder and Postorder Traversal (LeetCode 106) - Variant of tree construction
 
 **Related Topics to Explore:**
-- Tree construction from traversals
 - Morris Traversal (O(1) space)
 - Level Order Traversal (BFS)
 - In-place tree modification
+- Tree serialization/deserialization
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -237,4 +265,5 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Early return with split detection
 - ✅ Backtracking with path tracking
 - ✅ Inorder traversal with early termination
+- ✅ Recursive tree construction (divide and conquer)
 - ✅ Edge case handling
