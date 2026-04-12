@@ -115,6 +115,20 @@
 
 ---
 
+### 10. [Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+**Difficulty:** Hard  
+**Pattern:** Preorder DFS serialization with mutable list deserialization  
+**Key Concepts:**
+- Serialize: preorder DFS appending values and "null" markers with a delimiter
+- Deserialize: consume tokens from a LinkedList (O(1) remove from front)
+- Every token (value or "null") must include the delimiter for consistent splitting
+- Remove consumed token before recursing — applies to both null and value cases
+- Don't short-circuit serialize for null root — let the recursive helper handle it
+- LinkedList chosen over ArrayList for O(1) `remove(0)` (avoids O(n^2))
+- Time: O(n), Space: O(n)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -205,7 +219,7 @@
 
 ### 8. Recursive Tree Construction (Divide and Conquer)
 - **Pattern:** Use traversal properties to identify root, split into subtrees, recurse
-- **Used in:** Construct Binary Tree from Preorder and Inorder
+- **Used in:** Construct Binary Tree from Preorder and Inorder, Serialize and Deserialize
 - **Structure:**
   ```
   function build(preorder, preStart, preEnd, inorder, inStart, inEnd, map):
@@ -246,16 +260,15 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems:**
-- Serialize and Deserialize Binary Tree (LeetCode 297) - Tree serialization and reconstruction
 - Flatten Binary Tree to Linked List (LeetCode 114) - In-place tree modification
 - Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
 - Construct Binary Tree from Inorder and Postorder Traversal (LeetCode 106) - Variant of tree construction
+- Count Good Nodes in Binary Tree (LeetCode 1448) - Top-down DFS with max tracking
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
 - Level Order Traversal (BFS)
 - In-place tree modification
-- Tree serialization/deserialization
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -266,4 +279,5 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Backtracking with path tracking
 - ✅ Inorder traversal with early termination
 - ✅ Recursive tree construction (divide and conquer)
+- ✅ Preorder DFS serialization/deserialization
 - ✅ Edge case handling
