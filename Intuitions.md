@@ -88,6 +88,21 @@ This approach avoids global state, which is often considered better practice in 
     ```
 *   **When to use it:** When you absolutely must avoid side effects and global state. As you can see, the logic to combine results from the children becomes more complicated.
 
+### Practical Examples of Each Scenario
+
+**Global variable needed** (return value ≠ answer):
+- Diameter of Binary Tree: return height to parent, track max diameter globally
+- Binary Tree Maximum Path Sum: return single-side max to parent, track global max sum
+
+**Global variable NOT needed** (return value = answer):
+- Max Depth: return height, that IS the answer
+- Count Good Nodes: return count of good nodes, parent sums left + right + self
+- Sum Root to Leaf Numbers: return sum of numbers, parent sums left + right
+- LCA: return the found node, parent checks both sides
+- Path Sum II: build path top-down, collect at leaves (uses backtracking, not global)
+
+The rule of thumb: use a global variable when your recursion needs to **return value X to the parent** but **track answer Y separately**. If X and Y are the same thing, just return it — no global needed.
+
 ### Summary
 
 | Condition                                                                    | Your Best Bet                                      | Why                                                                                             |
