@@ -129,6 +129,32 @@
 
 ---
 
+### 11. [Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/)
+**Difficulty:** Medium  
+**Pattern:** Iterative in-place tree rewiring (Morris-like)  
+**Key Concepts:**
+- Flatten to right-skewed chain in preorder order, in-place (void return)
+- For each node with a left child: find rightmost of left subtree, attach current right subtree there, move left to right, null out left
+- Outer loop: `while(root != null)`, advance `root = root.right`
+- Inner loop: walk `temp.right` to find rightmost — each node visited at most twice across entire run
+- No recursion needed — pure iterative pointer manipulation
+- Time: O(n), Space: O(1)
+
+---
+
+### 12. [Count Good Nodes in Binary Tree](https://leetcode.com/problems/count-good-nodes-in-binary-tree/)
+**Difficulty:** Medium  
+**Pattern:** Top-down DFS with max tracking (constraint passing)  
+**Key Concepts:**
+- Pass the max value seen so far on the root-to-node path as a parameter
+- A node is "good" if `node.val >= maxSoFar`
+- At each node: count = (good ? 1 : 0) + left count + right count
+- Update max before recursing: `Math.max(max, node.val)`
+- Root is always good (initial max = root.val)
+- Time: O(n), Space: O(h)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -157,7 +183,7 @@
 
 ### 3. Top-Down Constraint Passing
 - **Pattern:** Pass constraints/bounds down the tree
-- **Used in:** Validate BST
+- **Used in:** Validate BST, Count Good Nodes
 - **Structure:**
   ```
   function validate(node, constraint1, constraint2):
@@ -233,7 +259,23 @@
   ```
 - **When to use:** Reconstructing a tree from two traversal orderings
 
-### 9. Edge Case Handling
+### 10. In-Place Tree Rewiring (Iterative Pointer Manipulation)
+- **Pattern:** Iteratively rewire tree pointers without recursion or extra space
+- **Used in:** Flatten Binary Tree to Linked List
+- **Structure:**
+  ```
+  while(current != null):
+      if(current.left != null):
+          find rightmost of left subtree
+          rightmost.right = current.right
+          current.right = current.left
+          current.left = null
+      current = current.right
+  ```
+- **When to use:** Restructuring a tree in-place with O(1) space, related to Morris Traversal
+- **Key insight:** Despite nested loops, O(n) time because each node is visited at most twice total
+
+### 11. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -260,10 +302,10 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems:**
-- Flatten Binary Tree to Linked List (LeetCode 114) - In-place tree modification
-- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant
+- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant (BFS)
 - Construct Binary Tree from Inorder and Postorder Traversal (LeetCode 106) - Variant of tree construction
-- Count Good Nodes in Binary Tree (LeetCode 1448) - Top-down DFS with max tracking
+- Binary Tree Level Order Traversal (LeetCode 102) - Core BFS pattern
+- Populating Next Right Pointers (LeetCode 116) - BFS with sibling linking
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
@@ -280,4 +322,5 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Inorder traversal with early termination
 - ✅ Recursive tree construction (divide and conquer)
 - ✅ Preorder DFS serialization/deserialization
+- ✅ In-place tree rewiring (iterative pointer manipulation)
 - ✅ Edge case handling
