@@ -273,6 +273,19 @@
 
 ---
 
+### 23. [Clone Graph](https://leetcode.com/problems/clone-graph/)
+**Difficulty:** Medium  
+**Pattern:** Graph DFS with HashMap for visited tracking and clone mapping  
+**Key Concepts:**
+- HashMap<Node, Node> maps original → clone (serves as both visited set and clone lookup)
+- DFS through original graph; if node already in map, return its clone (cycle breaker)
+- Create clone, add to map, then recursively clone each neighbor and add to clone's neighbor list
+- Pass original neighbor to recursive call, not map.get(neighbor)
+- Using node reference (not int value) as key avoids collisions when nodes share values
+- Time: O(V + E), Space: O(V)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -422,6 +435,24 @@
   ```
 - **When to use:** When the answer depends on connectivity to boundaries
 
+### 15. Graph DFS with Clone Mapping
+- **Pattern:** DFS traversal with HashMap mapping original nodes to cloned nodes
+- **Used in:** Clone Graph
+- **Structure:**
+  ```
+  map = HashMap<Node, Node>
+
+  function dfs(node, map):
+      if node == null: return null
+      if map.contains(node): return map.get(node)
+      clone = new Node(node.val)
+      map.put(node, clone)
+      for neighbor in node.neighbors:
+          clone.neighbors.add(dfs(neighbor, map))
+      return clone
+  ```
+- **When to use:** Deep copying graph structures where cycles exist; any problem requiring visited tracking + result caching per node
+
 ### 14. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
@@ -449,7 +480,6 @@ All problems follow similar complexity patterns for tree recursion:
 ## Next Steps
 
 **Upcoming Problems (Graph DFS):**
-- Clone Graph (LeetCode 133) - Adjacency list DFS with HashMap for cycle handling
 - Course Schedule (LeetCode 207) - DFS cycle detection in directed graph
 - Course Schedule II (LeetCode 210) - Topological sort via DFS
 - Word Search (LeetCode 79) - Grid DFS + backtracking
@@ -474,4 +504,5 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ BST property-based traversal
 - ✅ Grid DFS (island pattern / in-place marking)
 - ✅ Reverse border DFS (reachability from boundaries)
+- ✅ Graph DFS with clone mapping (visited + cache via HashMap)
 - ✅ Edge case handling
