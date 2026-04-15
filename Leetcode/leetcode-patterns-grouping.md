@@ -137,14 +137,14 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [ ] 79. Word Search
 - [ ] 127. Word Ladder
-- [ ] 130. Surrounded Regions
+- [x] 130. Surrounded Regions
 - [ ] 133. Clone Graph
-- [ ] 200. Number of Islands
+- [x] 200. Number of Islands
 - [ ] 207. Course Schedule
 - [ ] 210. Course Schedule II
 - [ ] 329. Longest Increasing Path in a Matrix
-- [ ] 417. Pacific Atlantic Water Flow
-- [ ] 695. Max Area of Island
+- [x] 417. Pacific Atlantic Water Flow
+- [x] 695. Max Area of Island
 - [ ] 743. Network Delay Time
 - [ ] 778. Swim in Rising Water
 - [ ] 994. Rotting Oranges
@@ -153,21 +153,21 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 11. Binary Tree
 
-- [ ] 98. Validate Binary Search Tree
-- [ ] 100. Same Tree
-- [ ] 102. Binary Tree Level Order Traversal
-- [ ] 104. Maximum Depth of Binary Tree
-- [ ] 105. Construct Binary Tree from Preorder and Inorder Traversal
-- [ ] 110. Balanced Binary Tree
-- [ ] 124. Binary Tree Maximum Path Sum
-- [ ] 199. Binary Tree Right Side View
-- [ ] 226. Invert Binary Tree
-- [ ] 230. Kth Smallest Element in a BST
-- [ ] 235. Lowest Common Ancestor of a Binary Search Tree
-- [ ] 297. Serialize and Deserialize Binary Tree
-- [ ] 543. Diameter of Binary Tree
-- [ ] 572. Subtree of Another Tree
-- [ ] 1448. Count Good Nodes in Binary Tree
+- [x] 98. Validate Binary Search Tree
+- [x] 100. Same Tree
+- [x] 102. Binary Tree Level Order Traversal
+- [x] 104. Maximum Depth of Binary Tree
+- [x] 105. Construct Binary Tree from Preorder and Inorder Traversal
+- [x] 110. Balanced Binary Tree
+- [x] 124. Binary Tree Maximum Path Sum
+- [x] 199. Binary Tree Right Side View
+- [x] 226. Invert Binary Tree
+- [x] 230. Kth Smallest Element in a BST
+- [x] 235. Lowest Common Ancestor of a Binary Search Tree
+- [x] 297. Serialize and Deserialize Binary Tree
+- [x] 543. Diameter of Binary Tree
+- [x] 572. Subtree of Another Tree
+- [x] 1448. Count Good Nodes in Binary Tree
 
 ---
 

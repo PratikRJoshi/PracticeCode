@@ -1,7 +1,7 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Date:** 2026-04-11  
-**Topic:** Tree Problems - Recursive Patterns
+**Session Dates:** 2026-04-11, 2026-04-13  
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS
 
 ---
 
@@ -170,6 +170,109 @@
 
 ---
 
+### 14. [Same Tree](https://leetcode.com/problems/same-tree/)
+**Difficulty:** Easy  
+**Pattern:** Simultaneous tree traversal  
+**Key Concepts:**
+- Compare two trees node by node recursively
+- Both null → true, one null → false, vals differ → false
+- Recurse on both left and right pairs
+- Time: O(n), Space: O(h)
+
+---
+
+### 15. [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/)
+**Difficulty:** Easy  
+**Pattern:** Top-down recursion with pointer swap  
+**Key Concepts:**
+- Swap left and right children at each node, then recurse
+- Base case: null returns null
+- Time: O(n), Space: O(h)
+
+---
+
+### 16. [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/)
+**Difficulty:** Easy  
+**Pattern:** Bottom-up recursion with sentinel early termination  
+**Key Concepts:**
+- Return height if balanced, -1 sentinel if any subtree is unbalanced
+- At each node: check `Math.abs(left - right) > 1`
+- Propagate -1 upward to short-circuit further computation
+- Time: O(n), Space: O(h)
+
+---
+
+### 17. [Lowest Common Ancestor of a BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+**Difficulty:** Medium  
+**Pattern:** BST property-based traversal  
+**Key Concepts:**
+- Exploit BST ordering: if both p, q < root, go left; both > root, go right
+- When p and q split (or one equals root), current node is LCA
+- Simpler than general LCA — no need to search both subtrees
+- Tail-recursive — easily convertible to iterative O(1) space
+- Time: O(h), Space: O(h)
+
+---
+
+### 18. [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/)
+**Difficulty:** Easy  
+**Pattern:** DFS with nested tree comparison  
+**Key Concepts:**
+- Two DFS functions: one to traverse, one to compare (isSameTree)
+- At each node, check if subtree matches; if not, try left OR right (`||` not `&&`)
+- Time: O(m*n), Space: O(h)
+
+---
+
+### 19. [Number of Islands](https://leetcode.com/problems/number-of-islands/)
+**Difficulty:** Medium  
+**Pattern:** Grid DFS with in-place visited marking  
+**Key Concepts:**
+- First grid DFS problem — 4-directional neighbors instead of tree children
+- Sink visited land ('1' → '0') to avoid extra visited set
+- For each unvisited '1', run DFS to mark entire island, increment count
+- Boundary check: `r < 0 || c < 0 || r >= rows || c >= cols`
+- Time: O(m*n), Space: O(m*n) worst case recursion depth
+
+---
+
+### 20. [Max Area of Island](https://leetcode.com/problems/max-area-of-island/)
+**Difficulty:** Medium  
+**Pattern:** Grid DFS returning area count  
+**Key Concepts:**
+- Same as Number of Islands, but DFS returns area instead of void
+- `return 1 + dfs(up) + dfs(down) + dfs(left) + dfs(right)`
+- Track max area across all islands
+- Watch for `int` grid vs `char` grid — don't compare against `'0'` (char 48)
+- Time: O(m*n), Space: O(m*n)
+
+---
+
+### 21. [Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
+**Difficulty:** Medium  
+**Pattern:** Reverse DFS from borders  
+**Key Concepts:**
+- Insight: instead of finding surrounded regions, find UNsurrounded ones (connected to border)
+- DFS from all border 'O's, mark safe cells with temporary sentinel ('S')
+- Final sweep: remaining 'O' → 'X' (captured), 'S' → 'O' (restored)
+- Watch for diagonal moves — grid DFS is 4-directional only
+- Time: O(m*n), Space: O(m*n)
+
+---
+
+### 22. [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/)
+**Difficulty:** Medium  
+**Pattern:** Dual border DFS with reachability intersection  
+**Key Concepts:**
+- Two boolean matrices: pacific-reachable and atlantic-reachable
+- DFS from Pacific borders (top + left) and Atlantic borders (bottom + right)
+- Reverse flow: move to neighbor if `heights[neighbor] >= heights[current]`
+- Result: cells where both matrices are true
+- Use `dirs` array for cleaner neighbor iteration when height comparison is needed
+- Time: O(m*n), Space: O(m*n)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -290,7 +393,36 @@
 - **When to use:** Restructuring a tree in-place with O(1) space, related to Morris Traversal
 - **Key insight:** Despite nested loops, O(n) time because each node is visited at most twice total
 
-### 11. Edge Case Handling
+### 12. Grid DFS (Island Pattern)
+- **Pattern:** Iterate grid, DFS from unvisited cells, mark visited in-place
+- **Used in:** Number of Islands, Max Area of Island
+- **Structure:**
+  ```
+  for each cell:
+      if cell == land:
+          dfs(cell)  // mark connected component
+          count++
+  
+  function dfs(r, c):
+      if out_of_bounds or not land: return
+      mark visited
+      dfs(up), dfs(down), dfs(left), dfs(right)
+  ```
+- **When to use:** Counting/measuring connected components in a grid
+
+### 13. Reverse Border DFS
+- **Pattern:** DFS from border cells inward to find reachable regions
+- **Used in:** Surrounded Regions, Pacific Atlantic Water Flow
+- **Structure:**
+  ```
+  for each border cell:
+      if matches condition:
+          dfs(cell)  // mark reachable
+  sweep grid to process marked/unmarked cells
+  ```
+- **When to use:** When the answer depends on connectivity to boundaries
+
+### 14. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -316,17 +448,17 @@ All problems follow similar complexity patterns for tree recursion:
 
 ## Next Steps
 
-**Upcoming Problems:**
-- Binary Tree Right Side View (LeetCode 199) - Level order traversal variant (BFS)
-- Sum Root to Leaf Numbers (LeetCode 129) - Top-down DFS with accumulated value
-- Path Sum III (LeetCode 437) - Prefix sum + DFS combination
-- Binary Tree Level Order Traversal (LeetCode 102) - Core BFS pattern
-- Populating Next Right Pointers (LeetCode 116) - BFS with sibling linking
+**Upcoming Problems (Graph DFS):**
+- Clone Graph (LeetCode 133) - Adjacency list DFS with HashMap for cycle handling
+- Course Schedule (LeetCode 207) - DFS cycle detection in directed graph
+- Course Schedule II (LeetCode 210) - Topological sort via DFS
+- Word Search (LeetCode 79) - Grid DFS + backtracking
+- Longest Increasing Path in a Matrix (LeetCode 329) - Grid DFS + memoization
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
-- Level Order Traversal (BFS)
-- In-place tree modification
+- BFS (Level Order, Rotting Oranges, Word Ladder)
+- Dijkstra / Bellman-Ford (Network Delay Time, Swim in Rising Water)
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -339,4 +471,7 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Recursive tree construction (divide and conquer)
 - ✅ Preorder DFS serialization/deserialization
 - ✅ In-place tree rewiring (iterative pointer manipulation)
+- ✅ BST property-based traversal
+- ✅ Grid DFS (island pattern / in-place marking)
+- ✅ Reverse border DFS (reachability from boundaries)
 - ✅ Edge case handling
