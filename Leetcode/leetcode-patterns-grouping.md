@@ -135,19 +135,19 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 10. BFS / DFS (Graphs & Grids)
 
-- [ ] 79. Word Search
+- [x] 79. Word Search
 - [ ] 127. Word Ladder
 - [x] 130. Surrounded Regions
-- [ ] 133. Clone Graph
+- [x] 133. Clone Graph
 - [x] 200. Number of Islands
-- [ ] 207. Course Schedule
-- [ ] 210. Course Schedule II
-- [ ] 329. Longest Increasing Path in a Matrix
+- [x] 207. Course Schedule
+- [x] 210. Course Schedule II
+- [x] 329. Longest Increasing Path in a Matrix
 - [x] 417. Pacific Atlantic Water Flow
 - [x] 695. Max Area of Island
 - [ ] 743. Network Delay Time
 - [ ] 778. Swim in Rising Water
-- [ ] 994. Rotting Oranges
+- [x] 994. Rotting Oranges
 
 ---
 
@@ -286,8 +286,8 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 23. Topological Sort
 
-- [ ] 207. Course Schedule
-- [ ] 210. Course Schedule II
+- [x] 207. Course Schedule
+- [x] 210. Course Schedule II
 - [ ] 269. Alien Dictionary *(🔒 premium)*
 
 ---

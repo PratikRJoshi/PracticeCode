@@ -286,6 +286,67 @@
 
 ---
 
+### 24. [Course Schedule](https://leetcode.com/problems/course-schedule/)
+**Difficulty:** Medium  
+**Pattern:** DFS cycle detection in directed graph  
+**Key Concepts:**
+- Build adjacency list from prerequisites
+- Three-state visited array: unvisited, in-progress, completed
+- Cycle exists if DFS reaches an in-progress node
+- Mark node completed after all descendants are processed (no cycle found)
+- Time: O(V + E), Space: O(V + E)
+
+---
+
+### 25. [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
+**Difficulty:** Medium  
+**Pattern:** Topological sort via DFS  
+**Key Concepts:**
+- Same cycle detection as Course Schedule
+- Add node to result in post-order (after all dependents processed)
+- Reverse the result for correct topological order
+- Time: O(V + E), Space: O(V + E)
+
+---
+
+### 26. [Word Search](https://leetcode.com/problems/word-search/)
+**Difficulty:** Medium  
+**Pattern:** Grid DFS + backtracking  
+**Key Concepts:**
+- Unlike island DFS, must unmark cells after exploring (backtracking) since a dead-end path may need the cell for a different path
+- Mark with sentinel char (`#`), restore original after exploring all 4 directions
+- Match characters against word index; return true when `index == word.length()`
+- Use `index + 1` not `index++` to avoid mutating the variable across sibling calls
+- Time: O(m*n*4^L) where L = word length, Space: O(L) recursion depth
+
+---
+
+### 27. [Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/)
+**Difficulty:** Hard  
+**Pattern:** Grid DFS + memoization  
+**Key Concepts:**
+- DFS from every cell, cache result in `memo[i][j]`
+- Strictly increasing constraint prevents cycles — no visited set needed
+- `memo[i][j]` stores longest path starting from cell `(i,j)`
+- Return `1 + dfs(neighbor)` to include current cell in path length
+- Bounds-check neighbors BEFORE accessing their values (not after entering DFS)
+- Time: O(m*n) — each cell computed once, Space: O(m*n)
+
+---
+
+### 28. [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
+**Difficulty:** Medium  
+**Pattern:** Multi-source BFS (level-by-level)  
+**Key Concepts:**
+- First BFS problem — processes nodes layer by layer (each layer = one minute)
+- Multi-source: enqueue ALL rotten oranges at time 0, not just one
+- Track fresh count; decrement when rotting a neighbor
+- Off-by-one fix: either use `mins - 1` at end, or add `fresh > 0` to while condition to stop early
+- Return -1 if fresh > 0 after BFS (unreachable oranges)
+- Time: O(m*n), Space: O(m*n)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -453,7 +514,69 @@
   ```
 - **When to use:** Deep copying graph structures where cycles exist; any problem requiring visited tracking + result caching per node
 
-### 14. Edge Case Handling
+### 14. Grid DFS + Backtracking
+- **Pattern:** Mark cell visited, explore, unmark after exploring
+- **Used in:** Word Search
+- **Structure:**
+  ```
+  function dfs(grid, r, c, index):
+      if index == target.length: return true
+      if out_of_bounds or grid[r][c] != target[index]: return false
+      original = grid[r][c]
+      grid[r][c] = '#'
+      found = dfs(up) || dfs(down) || dfs(left) || dfs(right)
+      grid[r][c] = original
+      return found
+  ```
+- **When to use:** Finding paths in grids where cells can be reused across different search paths but not within the same path
+
+### 15. Grid DFS + Memoization
+- **Pattern:** DFS from every cell with cached results
+- **Used in:** Longest Increasing Path in a Matrix
+- **Structure:**
+  ```
+  function dfs(r, c, memo):
+      if memo[r][c] != null: return memo[r][c]
+      len = 1
+      for each valid neighbor with greater value:
+          len = max(len, 1 + dfs(neighbor))
+      memo[r][c] = len
+      return len
+  ```
+- **When to use:** Optimization problems on grids where subproblems overlap and a monotonic constraint prevents cycles
+
+### 16. Multi-Source BFS
+- **Pattern:** Enqueue all sources at once, process level by level
+- **Used in:** Rotting Oranges
+- **Structure:**
+  ```
+  queue = all initial sources
+  while queue not empty (and condition):
+      size = queue.size()
+      for i in 0..size:
+          cell = queue.poll()
+          for each neighbor:
+              if valid: process, enqueue
+      level++
+  ```
+- **When to use:** Simultaneous spreading/expansion from multiple starting points; shortest distance from any source
+
+### 17. DFS Cycle Detection (Directed Graph)
+- **Pattern:** Three-state coloring (unvisited / in-progress / completed)
+- **Used in:** Course Schedule, Course Schedule II
+- **Structure:**
+  ```
+  function dfs(node):
+      if state[node] == IN_PROGRESS: return false (cycle)
+      if state[node] == COMPLETED: return true
+      state[node] = IN_PROGRESS
+      for each neighbor: if !dfs(neighbor): return false
+      state[node] = COMPLETED
+      return true
+  ```
+- **When to use:** Detecting cycles in directed graphs, topological ordering
+
+### 18. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -479,16 +602,16 @@ All problems follow similar complexity patterns for tree recursion:
 
 ## Next Steps
 
-**Upcoming Problems (Graph DFS):**
-- Course Schedule (LeetCode 207) - DFS cycle detection in directed graph
-- Course Schedule II (LeetCode 210) - Topological sort via DFS
-- Word Search (LeetCode 79) - Grid DFS + backtracking
-- Longest Increasing Path in a Matrix (LeetCode 329) - Grid DFS + memoization
+**Upcoming Problems:**
+- Network Delay Time (LeetCode 743) - Dijkstra's shortest path
+- Swim in Rising Water (LeetCode 778) - Modified Dijkstra / binary search + BFS
+- Word Ladder (LeetCode 127) - BFS on implicit graph (word transformations)
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
-- BFS (Level Order, Rotting Oranges, Word Ladder)
-- Dijkstra / Bellman-Ford (Network Delay Time, Swim in Rising Water)
+- Dijkstra / Bellman-Ford (weighted shortest paths)
+- Union Find
+- Backtracking (Subsets, Permutations, N-Queens)
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -505,4 +628,9 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Grid DFS (island pattern / in-place marking)
 - ✅ Reverse border DFS (reachability from boundaries)
 - ✅ Graph DFS with clone mapping (visited + cache via HashMap)
+- ✅ Grid DFS + backtracking (mark/unmark for path search)
+- ✅ Grid DFS + memoization (cache subproblem results)
+- ✅ Multi-source BFS (level-by-level expansion)
+- ✅ DFS cycle detection in directed graphs (three-state coloring)
+- ✅ Topological sort via DFS
 - ✅ Edge case handling
