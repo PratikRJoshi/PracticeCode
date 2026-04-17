@@ -396,36 +396,38 @@
 - **Pattern:** Return information to parent
 - **Used in:** Max Depth, Min Depth, Diameter, Max Path Sum, LCA
 - **Structure:** 
-  ```
-  if(node == null) return base_value;
-  left_result = recurse(left);
-  right_result = recurse(right);
-  return compute(left_result, right_result, node.val);
+  ```java
+  if (node == null) return baseValue;
+  int left = recurse(node.left);
+  int right = recurse(node.right);
+  return compute(left, right, node.val);
   ```
 
 ### 2. Global Answer Tracking
 - **Pattern:** Track best answer globally while returning different value
 - **Used in:** Diameter, Max Path Sum
 - **Structure:**
-  ```
-  global_answer = initial_value;
-  
-  function dfs(node):
-      compute local answer
-      update global_answer
-      return value_for_parent (different from local answer)
+  ```java
+  int globalAnswer = initialValue;
+
+  private int dfs(TreeNode node) {
+      int localAnswer = compute();
+      globalAnswer = Math.max(globalAnswer, localAnswer);
+      return valueForParent;
+  }
   ```
 
 ### 3. Top-Down Constraint Passing
 - **Pattern:** Pass constraints/bounds down the tree
 - **Used in:** Validate BST, Count Good Nodes
 - **Structure:**
-  ```
-  function validate(node, constraint1, constraint2):
-      if(node == null) return base_case;
-      if(!satisfies_constraints) return false;
-      return validate(left, updated_constraint1, updated_constraint2)
-             && validate(right, updated_constraint1, updated_constraint2);
+  ```java
+  private boolean validate(TreeNode node, long min, long max) {
+      if (node == null) return true;
+      if (node.val <= min || node.val >= max) return false;
+      return validate(node.left, min, node.val)
+          && validate(node.right, node.val, max);
+  }
   ```
 
 ### 4. Handling Negative Values
@@ -437,12 +439,12 @@
 - **Pattern:** Return immediately when condition is met, then analyze subtree results
 - **Used in:** LCA
 - **Structure:**
-  ```
-  if(node matches condition) return node;  // Early return
-  left = recurse(left);
-  right = recurse(right);
-  if(left != null && right != null) return node;  // Split detected
-  return non-null side;
+  ```java
+  if (node == p || node == q) return node;
+  TreeNode left = recurse(node.left);
+  TreeNode right = recurse(node.right);
+  if (left != null && right != null) return node;
+  return left != null ? left : right;
   ```
 - **When to use:** When finding a node that splits two targets, or when the current node itself is a target
 
@@ -450,15 +452,17 @@
 - **Pattern:** Build path incrementally, explore, then undo (backtrack)
 - **Used in:** Path Sum II
 - **Structure:**
-  ```
-  function dfs(node, path, result):
-      if(node == null) return;
-      path.add(node.val);              // Add to path
-      if(is_valid_endpoint):
-          result.add(clone(path));      // Clone before adding!
-      dfs(left, path, result);
-      dfs(right, path, result);
-      path.remove(last);                // Backtrack
+  ```java
+  private void dfs(TreeNode node, List<Integer> path, List<List<Integer>> result) {
+      if (node == null) return;
+      path.add(node.val);
+      if (isValidEndpoint) {
+          result.add(new ArrayList<>(path));
+      }
+      dfs(node.left, path, result);
+      dfs(node.right, path, result);
+      path.remove(path.size() - 1);
+  }
   ```
 - **When to use:** Finding all paths/combinations in trees, need to track current state
 
@@ -466,15 +470,17 @@
 - **Pattern:** Use inorder DFS (left, process, right) to visit BST nodes in sorted order, stop early when target is found
 - **Used in:** Kth Smallest Element in BST
 - **Structure:**
-  ```
-  function dfs(node):
-      if(node == null || found) return;
-      dfs(left);
-      countdown--;
-      if(countdown == 0):
+  ```java
+  private void dfs(TreeNode node) {
+      if (node == null || k == 0) return;
+      dfs(node.left);
+      k--;
+      if (k == 0) {
           result = node.val;
           return;
-      dfs(right);
+      }
+      dfs(node.right);
+  }
   ```
 - **When to use:** When you need sorted-order access to BST nodes, or need the kth element
 
@@ -482,15 +488,17 @@
 - **Pattern:** Use traversal properties to identify root, split into subtrees, recurse
 - **Used in:** Construct Binary Tree from Preorder and Inorder, Serialize and Deserialize, Construct Binary Tree from Inorder and Postorder
 - **Structure:**
-  ```
-  function build(preorder, preStart, preEnd, inorder, inStart, inEnd, map):
-      if(preStart > preEnd) return null;
-      root = new Node(preorder[preStart]);
-      rootIndex = map.get(root.val);
-      leftSize = rootIndex - inStart;
-      root.left = build(preStart+1, preStart+leftSize, inStart, rootIndex-1);
-      root.right = build(preStart+leftSize+1, preEnd, rootIndex+1, inEnd);
+  ```java
+  private TreeNode build(int[] preorder, int preStart, int preEnd,
+                         int inStart, int inEnd, Map<Integer, Integer> map) {
+      if (preStart > preEnd) return null;
+      TreeNode root = new TreeNode(preorder[preStart]);
+      int rootIndex = map.get(root.val);
+      int leftSize = rootIndex - inStart;
+      root.left = build(preorder, preStart + 1, preStart + leftSize, inStart, rootIndex - 1, map);
+      root.right = build(preorder, preStart + leftSize + 1, preEnd, rootIndex + 1, inEnd, map);
       return root;
+  }
   ```
 - **When to use:** Reconstructing a tree from two traversal orderings
 
@@ -498,14 +506,17 @@
 - **Pattern:** Iteratively rewire tree pointers without recursion or extra space
 - **Used in:** Flatten Binary Tree to Linked List
 - **Structure:**
-  ```
-  while(current != null):
-      if(current.left != null):
-          find rightmost of left subtree
-          rightmost.right = current.right
-          current.right = current.left
-          current.left = null
-      current = current.right
+  ```java
+  while (current != null) {
+      if (current.left != null) {
+          TreeNode rightmost = current.left;
+          while (rightmost.right != null) rightmost = rightmost.right;
+          rightmost.right = current.right;
+          current.right = current.left;
+          current.left = null;
+      }
+      current = current.right;
+  }
   ```
 - **When to use:** Restructuring a tree in-place with O(1) space, related to Morris Traversal
 - **Key insight:** Despite nested loops, O(n) time because each node is visited at most twice total
@@ -514,16 +525,22 @@
 - **Pattern:** Iterate grid, DFS from unvisited cells, mark visited in-place
 - **Used in:** Number of Islands, Max Area of Island
 - **Structure:**
-  ```
-  for each cell:
-      if cell == land:
-          dfs(cell)  // mark connected component
-          count++
-  
-  function dfs(r, c):
-      if out_of_bounds or not land: return
-      mark visited
-      dfs(up), dfs(down), dfs(left), dfs(right)
+  ```java
+  for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+          if (grid[i][j] == '1') {
+              dfs(grid, i, j);
+              count++;
+          }
+      }
+  }
+
+  private void dfs(char[][] grid, int r, int c) {
+      if (r < 0 || c < 0 || r >= grid.length || c >= grid[0].length || grid[r][c] != '1') return;
+      grid[r][c] = '0';
+      dfs(grid, r + 1, c); dfs(grid, r - 1, c);
+      dfs(grid, r, c + 1); dfs(grid, r, c - 1);
+  }
   ```
 - **When to use:** Counting/measuring connected components in a grid
 
@@ -531,11 +548,16 @@
 - **Pattern:** DFS from border cells inward to find reachable regions
 - **Used in:** Surrounded Regions, Pacific Atlantic Water Flow
 - **Structure:**
-  ```
-  for each border cell:
-      if matches condition:
-          dfs(cell)  // mark reachable
-  sweep grid to process marked/unmarked cells
+  ```java
+  for (int i = 0; i < rows; i++) {
+      dfs(board, i, 0);
+      dfs(board, i, cols - 1);
+  }
+  for (int j = 0; j < cols; j++) {
+      dfs(board, 0, j);
+      dfs(board, rows - 1, j);
+  }
+  // sweep: remaining 'O' → 'X', sentinel → 'O'
   ```
 - **When to use:** When the answer depends on connectivity to boundaries
 
@@ -543,17 +565,19 @@
 - **Pattern:** DFS traversal with HashMap mapping original nodes to cloned nodes
 - **Used in:** Clone Graph
 - **Structure:**
-  ```
-  map = HashMap<Node, Node>
+  ```java
+  Map<Node, Node> map = new HashMap<>();
 
-  function dfs(node, map):
-      if node == null: return null
-      if map.contains(node): return map.get(node)
-      clone = new Node(node.val)
-      map.put(node, clone)
-      for neighbor in node.neighbors:
-          clone.neighbors.add(dfs(neighbor, map))
-      return clone
+  private Node dfs(Node node) {
+      if (node == null) return null;
+      if (map.containsKey(node)) return map.get(node);
+      Node clone = new Node(node.val);
+      map.put(node, clone);
+      for (Node neighbor : node.neighbors) {
+          clone.neighbors.add(dfs(neighbor));
+      }
+      return clone;
+  }
   ```
 - **When to use:** Deep copying graph structures where cycles exist; any problem requiring visited tracking + result caching per node
 
@@ -561,15 +585,18 @@
 - **Pattern:** Mark cell visited, explore, unmark after exploring
 - **Used in:** Word Search
 - **Structure:**
-  ```
-  function dfs(grid, r, c, index):
-      if index == target.length: return true
-      if out_of_bounds or grid[r][c] != target[index]: return false
-      original = grid[r][c]
-      grid[r][c] = '#'
-      found = dfs(up) || dfs(down) || dfs(left) || dfs(right)
-      grid[r][c] = original
-      return found
+  ```java
+  private boolean dfs(char[][] grid, int r, int c, String word, int index) {
+      if (index == word.length()) return true;
+      if (r < 0 || c < 0 || r >= grid.length || c >= grid[0].length
+          || grid[r][c] != word.charAt(index)) return false;
+      char original = grid[r][c];
+      grid[r][c] = '#';
+      boolean found = dfs(grid, r + 1, c, word, index + 1) || dfs(grid, r - 1, c, word, index + 1)
+                   || dfs(grid, r, c + 1, word, index + 1) || dfs(grid, r, c - 1, word, index + 1);
+      grid[r][c] = original;
+      return found;
+  }
   ```
 - **When to use:** Finding paths in grids where cells can be reused across different search paths but not within the same path
 
@@ -577,14 +604,20 @@
 - **Pattern:** DFS from every cell with cached results
 - **Used in:** Longest Increasing Path in a Matrix
 - **Structure:**
-  ```
-  function dfs(r, c, memo):
-      if memo[r][c] != null: return memo[r][c]
-      len = 1
-      for each valid neighbor with greater value:
-          len = max(len, 1 + dfs(neighbor))
-      memo[r][c] = len
-      return len
+  ```java
+  private int dfs(int[][] matrix, int r, int c, Integer[][] memo) {
+      if (memo[r][c] != null) return memo[r][c];
+      int len = 1;
+      for (int[] dir : dirs) {
+          int x = r + dir[0], y = c + dir[1];
+          if (x >= 0 && y >= 0 && x < matrix.length && y < matrix[0].length
+              && matrix[x][y] > matrix[r][c]) {
+              len = Math.max(len, 1 + dfs(matrix, x, y, memo));
+          }
+      }
+      memo[r][c] = len;
+      return len;
+  }
   ```
 - **When to use:** Optimization problems on grids where subproblems overlap and a monotonic constraint prevents cycles
 
@@ -592,15 +625,20 @@
 - **Pattern:** Enqueue all sources at once, process level by level
 - **Used in:** Rotting Oranges
 - **Structure:**
-  ```
-  queue = all initial sources
-  while queue not empty (and condition):
-      size = queue.size()
-      for i in 0..size:
-          cell = queue.poll()
-          for each neighbor:
-              if valid: process, enqueue
-      level++
+  ```java
+  Queue<int[]> queue = new LinkedList<>();
+  // add all initial sources to queue
+  while (!queue.isEmpty() && fresh > 0) {
+      int size = queue.size();
+      for (int i = 0; i < size; i++) {
+          int[] cell = queue.poll();
+          for (int[] dir : dirs) {
+              int x = cell[0] + dir[0], y = cell[1] + dir[1];
+              if (valid && grid[x][y] == 1) { grid[x][y] = 2; queue.offer(new int[]{x, y}); fresh--; }
+          }
+      }
+      level++;
+  }
   ```
 - **When to use:** Simultaneous spreading/expansion from multiple starting points; shortest distance from any source
 
@@ -608,14 +646,17 @@
 - **Pattern:** Three-state coloring (unvisited / in-progress / completed)
 - **Used in:** Course Schedule, Course Schedule II
 - **Structure:**
-  ```
-  function dfs(node):
-      if state[node] == IN_PROGRESS: return false (cycle)
-      if state[node] == COMPLETED: return true
-      state[node] = IN_PROGRESS
-      for each neighbor: if !dfs(neighbor): return false
-      state[node] = COMPLETED
-      return true
+  ```java
+  private boolean dfs(int node, List<List<Integer>> graph, int[] state) {
+      if (state[node] == 1) return false; // in-progress → cycle
+      if (state[node] == 2) return true;  // completed
+      state[node] = 1;
+      for (int neighbor : graph.get(node)) {
+          if (!dfs(neighbor, graph, state)) return false;
+      }
+      state[node] = 2;
+      return true;
+  }
   ```
 - **When to use:** Detecting cycles in directed graphs, topological ordering
 
@@ -623,17 +664,21 @@
 - **Pattern:** Greedy shortest path using min-heap
 - **Used in:** Network Delay Time
 - **Structure:**
-  ```
-  pq = MinHeap([source, 0])
-  visited = Set
+  ```java
+  PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+  pq.offer(new int[]{source, 0});
+  Set<Integer> visited = new HashSet<>();
 
-  while pq not empty:
-      [node, dist] = pq.poll()
-      if visited(node): continue
-      visited.add(node)
-      for [neighbor, weight] in graph[node]:
-          if !visited(neighbor):
-              pq.offer([neighbor, dist + weight])
+  while (!pq.isEmpty()) {
+      int[] curr = pq.poll();
+      int node = curr[0], dist = curr[1];
+      if (visited.contains(node)) continue;
+      visited.add(node);
+      for (int[] edge : graph.getOrDefault(node, List.of())) {
+          if (!visited.contains(edge[0]))
+              pq.offer(new int[]{edge[0], dist + edge[1]});
+      }
+  }
   ```
 - **When to use:** Shortest paths in weighted graphs with non-negative edges
 
@@ -647,17 +692,23 @@
 - **Pattern:** BFS where neighbors are generated on-the-fly, not stored in adjacency list
 - **Used in:** Word Ladder
 - **Structure:**
-  ```
-  queue = [startState]
-  visited = Set(startState)
-  level = 1
+  ```java
+  Queue<String> queue = new LinkedList<>();
+  queue.offer(startState);
+  Set<String> visited = new HashSet<>();
+  visited.add(startState);
+  int level = 1;
 
-  while queue not empty:
-      for each item in current level:
-          generate all valid neighbors
-          if neighbor == target: return level + 1
-          if valid and !visited: enqueue, mark visited
-      level++
+  while (!queue.isEmpty()) {
+      int size = queue.size();
+      for (int i = 0; i < size; i++) {
+          String word = queue.poll();
+          // generate all valid neighbors (swap each char position through 'a'-'z')
+          if (neighbor.equals(target)) return level + 1;
+          if (visited.add(neighbor)) queue.offer(neighbor);
+      }
+      level++;
+  }
   ```
 - **When to use:** State-space search where graph is too large to precompute (word transformations, puzzle states)
 
