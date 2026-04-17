@@ -347,6 +347,49 @@
 
 ---
 
+### 29. [Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+**Difficulty:** Medium  
+**Pattern:** Dijkstra's shortest path  
+**Key Concepts:**
+- Weighted directed graph → Dijkstra with min-heap (PriorityQueue)
+- Build adjacency list: `Map<Integer, List<int[]>>` with `computeIfAbsent`
+- PQ stores `[node, distance]`, sorted by distance
+- Skip already-visited nodes with `continue`; visited Set tracks processed nodes
+- Last node popped has the max shortest distance — that's the answer
+- If `visited.size() < n`, some nodes unreachable → return -1
+- Lambda parameter names must not shadow method parameters
+- Time: O(E log V), Space: O(V + E)
+
+---
+
+### 30. [Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/)
+**Difficulty:** Hard  
+**Pattern:** Modified Dijkstra on grid (minimize maximum elevation)  
+**Key Concepts:**
+- PQ stores `[elevation, row, col]`, sorted by elevation
+- Key insight: push `Math.max(currentElevation, grid[x][y])` — bottleneck is the tallest cell on path
+- Use `boolean[][]` for visited (not `Set<int[]>` — arrays don't override equals/hashCode in Java)
+- Return elevation when `(n-1, n-1)` is popped from PQ
+- Start with only `(0,0)` in PQ, not all cells
+- Time: O(n^2 log n), Space: O(n^2)
+
+---
+
+### 31. [Word Ladder](https://leetcode.com/problems/word-ladder/)
+**Difficulty:** Hard  
+**Pattern:** BFS on implicit graph (word transformations)  
+**Key Concepts:**
+- Each word is a node; edges connect words differing by one letter
+- BFS guarantees shortest path (uniform cost per step)
+- Use `Set<String>` from wordList for O(1) lookup; remove words when enqueued (acts as visited)
+- Generate neighbors: `toCharArray()`, swap each position through 26 chars, create new String
+- `String.replace()` replaces ALL occurrences — use char array for single-position swap
+- Return `len + 1` when endWord found (current level + one more step)
+- Early exit: if endWord not in wordSet, return 0
+- Time: O(M^2 * N) where M = word length, N = wordList size, Space: O(M * N)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -576,7 +619,49 @@
   ```
 - **When to use:** Detecting cycles in directed graphs, topological ordering
 
-### 18. Edge Case Handling
+### 18. Dijkstra's Algorithm
+- **Pattern:** Greedy shortest path using min-heap
+- **Used in:** Network Delay Time
+- **Structure:**
+  ```
+  pq = MinHeap([source, 0])
+  visited = Set
+
+  while pq not empty:
+      [node, dist] = pq.poll()
+      if visited(node): continue
+      visited.add(node)
+      for [neighbor, weight] in graph[node]:
+          if !visited(neighbor):
+              pq.offer([neighbor, dist + weight])
+  ```
+- **When to use:** Shortest paths in weighted graphs with non-negative edges
+
+### 19. Modified Dijkstra (Minimax Path)
+- **Pattern:** Dijkstra but tracking max along path instead of sum
+- **Used in:** Swim in Rising Water
+- **Key difference:** Push `Math.max(currentCost, neighborCost)` instead of `currentCost + edgeWeight`
+- **When to use:** Finding path that minimizes the maximum edge/node weight (bottleneck path)
+
+### 20. BFS on Implicit Graph
+- **Pattern:** BFS where neighbors are generated on-the-fly, not stored in adjacency list
+- **Used in:** Word Ladder
+- **Structure:**
+  ```
+  queue = [startState]
+  visited = Set(startState)
+  level = 1
+
+  while queue not empty:
+      for each item in current level:
+          generate all valid neighbors
+          if neighbor == target: return level + 1
+          if valid and !visited: enqueue, mark visited
+      level++
+  ```
+- **When to use:** State-space search where graph is too large to precompute (word transformations, puzzle states)
+
+### 21. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -602,16 +687,15 @@ All problems follow similar complexity patterns for tree recursion:
 
 ## Next Steps
 
-**Upcoming Problems:**
-- Network Delay Time (LeetCode 743) - Dijkstra's shortest path
-- Swim in Rising Water (LeetCode 778) - Modified Dijkstra / binary search + BFS
-- Word Ladder (LeetCode 127) - BFS on implicit graph (word transformations)
+**Upcoming Sections:**
+- Backtracking (Subsets, Permutations, Combination Sum, N-Queens)
+- Dynamic Programming (Climbing Stairs, House Robber, Coin Change)
+- Union Find (Redundant Connection, Min Cost to Connect All Points)
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
-- Dijkstra / Bellman-Ford (weighted shortest paths)
-- Union Find
-- Backtracking (Subsets, Permutations, N-Queens)
+- Bellman-Ford (negative weight edges)
+- A* search
 
 **Patterns Mastered:**
 - ✅ Bottom-up recursion (return info to parent)
@@ -633,4 +717,7 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Multi-source BFS (level-by-level expansion)
 - ✅ DFS cycle detection in directed graphs (three-state coloring)
 - ✅ Topological sort via DFS
+- ✅ Dijkstra's algorithm (weighted shortest paths)
+- ✅ Modified Dijkstra / minimax path (minimize bottleneck)
+- ✅ BFS on implicit graph (state-space search)
 - ✅ Edge case handling
