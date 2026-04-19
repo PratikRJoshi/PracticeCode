@@ -53,7 +53,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 5. Stack
 
 - [x] 20. Valid Parentheses
-- [ ] 84. Largest Rectangle in Histogram
+- [x] 84. Largest Rectangle in Histogram
 - [x] 150. Evaluate Reverse Polish Notation
 - [x] 155. Min Stack
 - [ ] 678. Valid Parenthesis String
@@ -282,7 +282,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 22. Monotonic Stack
 
 - [ ] 42. Trapping Rain Water
-- [ ] 84. Largest Rectangle in Histogram
+- [x] 84. Largest Rectangle in Histogram
 - [x] 739. Daily Temperatures
 
 ---
