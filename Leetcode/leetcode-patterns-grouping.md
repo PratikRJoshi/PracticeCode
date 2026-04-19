@@ -281,7 +281,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 22. Monotonic Stack
 
-- [ ] 42. Trapping Rain Water
+- [x] 42. Trapping Rain Water
 - [x] 84. Largest Rectangle in Histogram
 - [x] 739. Daily Temperatures
 
