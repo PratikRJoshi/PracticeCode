@@ -52,10 +52,10 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 5. Stack
 
-- [ ] 20. Valid Parentheses
+- [x] 20. Valid Parentheses
 - [ ] 84. Largest Rectangle in Histogram
-- [ ] 150. Evaluate Reverse Polish Notation
-- [ ] 155. Min Stack
+- [x] 150. Evaluate Reverse Polish Notation
+- [x] 155. Min Stack
 - [ ] 678. Valid Parenthesis String
 - [ ] 739. Daily Temperatures *(monotonic stack)*
 
@@ -118,17 +118,20 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 9. Backtracking
 
-- [ ] 17. Letter Combinations of a Phone Number
-- [ ] 22. Generate Parentheses
+- [x] 17. Letter Combinations of a Phone Number
+- [x] 22. Generate Parentheses
 - [ ] 36. Valid Sudoku
-- [ ] 39. Combination Sum
-- [ ] 40. Combination Sum II
-- [ ] 46. Permutations
+- [x] 39. Combination Sum
+- [x] 40. Combination Sum II
+- [x] 46. Permutations
 - [ ] 51. N-Queens
-- [ ] 78. Subsets
-- [ ] 79. Word Search
-- [ ] 90. Subsets II
-- [ ] 131. Palindrome Partitioning
+- [x] 78. Subsets
+- [x] 79. Word Search
+- [x] 90. Subsets II
+- [x] 31. Next Permutation
+- [x] 47. Permutations II
+- [x] 77. Combinations
+- [x] 131. Palindrome Partitioning
 - [ ] 212. Word Search II
 
 ---
@@ -183,7 +186,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 13. Union Find
 
 - [ ] 128. Longest Consecutive Sequence
-- [ ] 200. Number of Islands
+- [x] 200. Number of Islands
 - [ ] 684. Redundant Connection
 - [ ] 1584. Min Cost to Connect All Points
 
@@ -248,17 +251,17 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 54. Spiral Matrix
 - [ ] 73. Set Matrix Zeroes
 - [ ] 74. Search a 2D Matrix
-- [ ] 200. Number of Islands
+- [x] 200. Number of Islands
 - [ ] 238. Product of Array Except Self
-- [ ] 329. Longest Increasing Path in a Matrix
-- [ ] 417. Pacific Atlantic Water Flow
-- [ ] 695. Max Area of Island
+- [x] 329. Longest Increasing Path in a Matrix
+- [x] 417. Pacific Atlantic Water Flow
+- [x] 695. Max Area of Island
 
 ---
 
 ## 19. Shortest Path (Dijkstra / Bellman-Ford)
 
-- [ ] 743. Network Delay Time
+- [x] 743. Network Delay Time
 - [ ] 787. Cheapest Flights Within K Stops
 
 ---
