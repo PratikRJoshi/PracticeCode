@@ -57,7 +57,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 150. Evaluate Reverse Polish Notation
 - [x] 155. Min Stack
 - [ ] 678. Valid Parenthesis String
-- [ ] 739. Daily Temperatures *(monotonic stack)*
+- [x] 739. Daily Temperatures *(monotonic stack)*
 
 ---
 
@@ -283,7 +283,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [ ] 42. Trapping Rain Water
 - [ ] 84. Largest Rectangle in Histogram
-- [ ] 739. Daily Temperatures
+- [x] 739. Daily Temperatures
 
 ---
 
