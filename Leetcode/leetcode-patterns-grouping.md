@@ -4,6 +4,15 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ---
 
+## Current Session
+
+**Last updated:** 2026-04-13  
+**Current problem:** [Valid Parenthesis String (LeetCode 678)](https://leetcode.com/problems/valid-parenthesis-string/) — Stack / Greedy  
+**Status:** In progress — at Phase 2 (approach discovery). Hint given: track two counters representing the range of possible open-paren counts given `*` flexibility.  
+**Section in progress:** Stack (1 problem left: 678). Next up: likely Two Pointers, Sliding Window, or DP based on user preference.
+
+---
+
 ## 1. Two Pointers
 
 - [ ] 1. Two Sum
