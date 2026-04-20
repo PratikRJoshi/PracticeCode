@@ -400,6 +400,18 @@
 - Avoids O(n^2) DP by collapsing all valid interpretations into a single range
 - Time: O(n), Space: O(1)
 
+### 33. [Container With Most Water](https://leetcode.com/problems/container-with-most-water/)
+**Difficulty:** Medium  
+**Pattern:** Two pointers (opposite ends) with greedy shrinking  
+**Key Concepts:**
+- Start pointers at both ends (`left = 0`, `right = n-1`) — this is the maximum possible width
+- Area = `min(height[left], height[right]) * (right - left)`; width strictly decreases on every move
+- Greedy dominance argument: move the pointer at the **shorter** line inward — the longer one can never improve the area while paired with the shorter
+  - Width shrinks, and limiting height is capped at the shorter line no matter what we land on
+  - Therefore all pairs involving the shorter line are dominated and can be discarded
+- On equal heights, moving either pointer is safe (both sides are simultaneously dominated)
+- Time: O(n), Space: O(1)
+
 ---
 
 ## Key Patterns Learned
@@ -785,3 +797,4 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ BFS on implicit graph (state-space search)
 - ✅ Edge case handling
 - ✅ Greedy range tracking (two-counter sweep for `*` wildcard)
+- ✅ Two pointers (opposite ends) with greedy dominance shrinking
