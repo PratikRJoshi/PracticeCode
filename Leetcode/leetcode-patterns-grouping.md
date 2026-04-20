@@ -6,10 +6,10 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-13  
-**Current problem:** [Valid Parenthesis String (LeetCode 678)](https://leetcode.com/problems/valid-parenthesis-string/) — Stack / Greedy  
-**Status:** In progress — at Phase 2 (approach discovery). Hint given: track two counters representing the range of possible open-paren counts given `*` flexibility.  
-**Section in progress:** Stack (1 problem left: 678). Next up: likely Two Pointers, Sliding Window, or DP based on user preference.
+**Last updated:** 2026-04-19  
+**Current problem:** ✅ [Valid Parenthesis String (LeetCode 678)](https://leetcode.com/problems/valid-parenthesis-string/) — Stack / Greedy — **COMPLETED**  
+**Status:** Completed. Solved via two-counter greedy sweep (`minOpen` / `maxOpen`) in O(n) time, O(1) space.  
+**Section in progress:** Stack ✅ (all 5 problems complete). Next up: Two Pointers (Two Sum → 3Sum → Container With Most Water).
 
 ---
 
@@ -65,7 +65,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 84. Largest Rectangle in Histogram
 - [x] 150. Evaluate Reverse Polish Notation
 - [x] 155. Min Stack
-- [ ] 678. Valid Parenthesis String
+- [x] 678. Valid Parenthesis String
 - [x] 739. Daily Temperatures *(monotonic stack)*
 
 ---

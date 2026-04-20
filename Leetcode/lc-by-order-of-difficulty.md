@@ -388,6 +388,18 @@
 - Early exit: if endWord not in wordSet, return 0
 - Time: O(M^2 * N) where M = word length, N = wordList size, Space: O(M * N)
 
+### 32. [Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/)
+**Difficulty:** Medium  
+**Pattern:** Greedy range tracking (two-counter sweep)  
+**Key Concepts:**
+- Track `minOpen` and `maxOpen` — the range of possible unmatched `(` counts across all `*` interpretations
+- `(` → both counters +1; `)` → both counters -1; `*` → `minOpen` -1, `maxOpen` +1 (most pessimistic/optimistic for each bound)
+- Hard-invalid early exit: if `maxOpen < 0`, no future char can rescue us — return false
+- Floor `minOpen` at 0 (a negative "unmatched open" has no real meaning — reinterpret earlier `*` as empty instead)
+- Final check: `minOpen == 0` (there exists *some* interpretation that balances; `maxOpen == 0` would be too strict)
+- Avoids O(n^2) DP by collapsing all valid interpretations into a single range
+- Time: O(n), Space: O(1)
+
 ---
 
 ## Key Patterns Learned
@@ -772,3 +784,4 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Modified Dijkstra / minimax path (minimize bottleneck)
 - ✅ BFS on implicit graph (state-space search)
 - ✅ Edge case handling
+- ✅ Greedy range tracking (two-counter sweep for `*` wildcard)
