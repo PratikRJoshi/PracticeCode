@@ -78,7 +78,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 347. Top K Frequent Elements
 - [ ] 703. Kth Largest Element in a Stream
 - [x] 1046. Last Stone Weight
-- [ ] 973. K Closest Points to Origin
+- [x] 973. K Closest Points to Origin
 
 ---
 
