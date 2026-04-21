@@ -77,7 +77,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 295. Find Median from Data Stream
 - [ ] 347. Top K Frequent Elements
 - [ ] 703. Kth Largest Element in a Stream
-- [ ] 1046. Last Stone Weight
+- [x] 1046. Last Stone Weight
 - [ ] 973. K Closest Points to Origin
 
 ---
