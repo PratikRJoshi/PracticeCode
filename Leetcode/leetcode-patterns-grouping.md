@@ -50,7 +50,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 2. Add Two Numbers
 - [ ] 19. Remove Nth Node From End of List
 - [ ] 21. Merge Two Sorted Lists
-- [ ] 23. Merge k Sorted Lists
+- [x] 23. Merge k Sorted Lists
 - [ ] 25. Reverse Nodes in k-Group
 - [ ] 138. Copy List with Random Pointer
 - [ ] 141. Linked List Cycle
@@ -72,7 +72,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 6. Heap / Priority Queue
 
-- [ ] 23. Merge k Sorted Lists
+- [x] 23. Merge k Sorted Lists
 - [x] 215. Kth Largest Element in an Array
 - [ ] 295. Find Median from Data Stream
 - [ ] 347. Top K Frequent Elements *(revisit — bucket sort draft incomplete)*
