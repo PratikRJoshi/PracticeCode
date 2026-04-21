@@ -7,9 +7,9 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-13  
-**Current problem:** ✅ [Kth Largest Element in an Array (LeetCode 215)](https://leetcode.com/problems/kth-largest-element-in-an-array/) — Heap — **COMPLETED**  
-**Status:** Completed. Solved via min-heap of size k in O(n log k) time, O(k) space.  
-**Section in progress:** Heap / Priority Queue (1/7). Next up: Last Stone Weight (1046), K Closest Points (973), Top K Frequent (347), Kth Largest in Stream (703), Merge k Sorted Lists (23), Find Median from Data Stream (295).
+**Current problem:** ✅ [Find Median from Data Stream (LeetCode 295)](https://leetcode.com/problems/find-median-from-data-stream/) — Two Heaps — **COMPLETED**  
+**Status:** Completed. Solved via max-heap (lower half) + min-heap (upper half) with size invariant (maxHeap.size() ≥ minHeap.size()). O(log n) addNum, O(1) findMedian.  
+**Section in progress:** Heap / Priority Queue (6/7). Pending: Top K Frequent (347) — marked for revisit (bucket sort draft incomplete). Next section: Sliding Window, Binary Search, Linked List, DP, or Hash Map.
 
 ---
 
@@ -74,7 +74,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [x] 23. Merge k Sorted Lists
 - [x] 215. Kth Largest Element in an Array
-- [ ] 295. Find Median from Data Stream
+- [x] 295. Find Median from Data Stream
 - [ ] 347. Top K Frequent Elements *(revisit — bucket sort draft incomplete)*
 - [x] 703. Kth Largest Element in a Stream
 - [x] 1046. Last Stone Weight
@@ -236,7 +236,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 155. Min Stack
 - [ ] 208. Implement Trie (Prefix Tree)
 - [ ] 211. Design Add and Search Words Data Structure
-- [ ] 295. Find Median from Data Stream
+- [x] 295. Find Median from Data Stream
 - [ ] 297. Serialize and Deserialize Binary Tree
 - [ ] 355. Design Twitter
 - [ ] 981. Time Based Key-Value Store
