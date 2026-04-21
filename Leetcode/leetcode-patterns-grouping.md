@@ -7,9 +7,9 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-13  
-**Current problem:** ✅ [3Sum (LeetCode 15)](https://leetcode.com/problems/3sum/) — Two Pointers — **COMPLETED**  
-**Status:** Completed. Solved via sort + fixed pivot + two-pointer on remaining, with duplicate skips at all three levels. O(n²) time, O(1) space.  
-**Section in progress:** Two Pointers COMPLETE (5/5). Next section: Sliding Window, Binary Search, DP, Linked List, or Heap.
+**Current problem:** ✅ [Kth Largest Element in an Array (LeetCode 215)](https://leetcode.com/problems/kth-largest-element-in-an-array/) — Heap — **COMPLETED**  
+**Status:** Completed. Solved via min-heap of size k in O(n log k) time, O(k) space.  
+**Section in progress:** Heap / Priority Queue (1/7). Next up: Last Stone Weight (1046), K Closest Points (973), Top K Frequent (347), Kth Largest in Stream (703), Merge k Sorted Lists (23), Find Median from Data Stream (295).
 
 ---
 
@@ -73,7 +73,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 6. Heap / Priority Queue
 
 - [ ] 23. Merge k Sorted Lists
-- [ ] 215. Kth Largest Element in an Array
+- [x] 215. Kth Largest Element in an Array
 - [ ] 295. Find Median from Data Stream
 - [ ] 347. Top K Frequent Elements
 - [ ] 703. Kth Largest Element in a Stream
