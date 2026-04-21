@@ -6,10 +6,12 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-13  
-**Current problem:** ✅ [Find Median from Data Stream (LeetCode 295)](https://leetcode.com/problems/find-median-from-data-stream/) — Two Heaps — **COMPLETED**  
-**Status:** Completed. Solved via max-heap (lower half) + min-heap (upper half) with size invariant (maxHeap.size() ≥ minHeap.size()). O(log n) addNum, O(1) findMedian.  
-**Section in progress:** Heap / Priority Queue (6/7). Pending: Top K Frequent (347) — marked for revisit (bucket sort draft incomplete). Next section: Sliding Window, Binary Search, Linked List, DP, or Hash Map.
+**Last updated:** 2026-04-19 (evening)  
+**Current problem:** Heap / PQ section done (6/7). Ready to start a new section.  
+**Last completed:** ✅ [Find Median from Data Stream (LeetCode 295)](https://leetcode.com/problems/find-median-from-data-stream/) — Two Heaps (max-heap + min-heap with size invariant).  
+**Pending in current section:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — marked for revisit; bucket sort draft incomplete. Needs `List<Integer>[] buckets = new List[nums.length + 1]` syntax fix and array-generic cast.  
+**Next section options:** Sliding Window (5), Binary Search (7), Linked List (9), Hash Map / Set (9), Dynamic Programming (23).  
+**Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 
 ---
 
