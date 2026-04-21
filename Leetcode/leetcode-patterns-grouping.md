@@ -6,10 +6,10 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-19  
-**Current problem:** ✅ [Container With Most Water (LeetCode 11)](https://leetcode.com/problems/container-with-most-water/) — Two Pointers — **COMPLETED**  
-**Status:** Completed. Solved via opposite-end two pointers with greedy dominance shrinking in O(n) time, O(1) space.  
-**Section in progress:** Two Pointers (1/5). Next up: Two Sum (1), 3Sum (15), Valid Palindrome (125), Two Sum II (167).
+**Last updated:** 2026-04-13  
+**Current problem:** ✅ [Valid Palindrome (LeetCode 125)](https://leetcode.com/problems/valid-palindrome/) — Two Pointers — **COMPLETED**  
+**Status:** Completed. Solved via inline two pointers with alphanumeric skip in O(n) time, O(1) space.  
+**Section in progress:** Two Pointers (2/5). Next up: Two Sum II (167), Two Sum (1), 3Sum (15).
 
 ---
 
@@ -18,7 +18,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 1. Two Sum
 - [x] 11. Container With Most Water
 - [ ] 15. 3Sum
-- [ ] 125. Valid Palindrome
+- [x] 125. Valid Palindrome
 - [ ] 167. Two Sum II - Input Array Is Sorted
 
 ---
@@ -313,8 +313,8 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 25. String / Palindrome
 
 - [ ] 5. Longest Palindromic Substring
-- [ ] 125. Valid Palindrome
-- [ ] 131. Palindrome Partitioning
+- [x] 125. Valid Palindrome
+- [x] 131. Palindrome Partitioning
 - [ ] 647. Palindromic Substrings
 
 ---
