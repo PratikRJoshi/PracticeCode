@@ -7,9 +7,9 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-13  
-**Current problem:** ✅ [Valid Palindrome (LeetCode 125)](https://leetcode.com/problems/valid-palindrome/) — Two Pointers — **COMPLETED**  
-**Status:** Completed. Solved via inline two pointers with alphanumeric skip in O(n) time, O(1) space.  
-**Section in progress:** Two Pointers (2/5). Next up: Two Sum II (167), Two Sum (1), 3Sum (15).
+**Current problem:** ✅ [Two Sum II - Input Array Is Sorted (LeetCode 167)](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) — Two Pointers — **COMPLETED**  
+**Status:** Completed. Solved via opposite-end two pointers on sorted array in O(n) time, O(1) space.  
+**Section in progress:** Two Pointers (3/5). Next up: Two Sum (1), 3Sum (15).
 
 ---
 
@@ -19,7 +19,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 11. Container With Most Water
 - [ ] 15. 3Sum
 - [x] 125. Valid Palindrome
-- [ ] 167. Two Sum II - Input Array Is Sorted
+- [x] 167. Two Sum II - Input Array Is Sorted
 
 ---
 
