@@ -7,9 +7,9 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-13  
-**Current problem:** ✅ [Two Sum (LeetCode 1)](https://leetcode.com/problems/two-sum/) — HashMap — **COMPLETED**  
-**Status:** Completed. Solved via single-pass HashMap lookup in O(n) time, O(n) space.  
-**Section in progress:** Two Pointers (4/5). Next up: 3Sum (15).
+**Current problem:** ✅ [3Sum (LeetCode 15)](https://leetcode.com/problems/3sum/) — Two Pointers — **COMPLETED**  
+**Status:** Completed. Solved via sort + fixed pivot + two-pointer on remaining, with duplicate skips at all three levels. O(n²) time, O(1) space.  
+**Section in progress:** Two Pointers COMPLETE (5/5). Next section: Sliding Window, Binary Search, DP, Linked List, or Heap.
 
 ---
 
@@ -17,7 +17,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [x] 1. Two Sum
 - [x] 11. Container With Most Water
-- [ ] 15. 3Sum
+- [x] 15. 3Sum
 - [x] 125. Valid Palindrome
 - [x] 167. Two Sum II - Input Array Is Sorted
 
