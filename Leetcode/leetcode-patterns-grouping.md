@@ -7,15 +7,15 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-13  
-**Current problem:** ✅ [Two Sum II - Input Array Is Sorted (LeetCode 167)](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) — Two Pointers — **COMPLETED**  
-**Status:** Completed. Solved via opposite-end two pointers on sorted array in O(n) time, O(1) space.  
-**Section in progress:** Two Pointers (3/5). Next up: Two Sum (1), 3Sum (15).
+**Current problem:** ✅ [Two Sum (LeetCode 1)](https://leetcode.com/problems/two-sum/) — HashMap — **COMPLETED**  
+**Status:** Completed. Solved via single-pass HashMap lookup in O(n) time, O(n) space.  
+**Section in progress:** Two Pointers (4/5). Next up: 3Sum (15).
 
 ---
 
 ## 1. Two Pointers
 
-- [ ] 1. Two Sum
+- [x] 1. Two Sum
 - [x] 11. Container With Most Water
 - [ ] 15. 3Sum
 - [x] 125. Valid Palindrome
@@ -84,7 +84,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 7. Hash Map / Set
 
-- [ ] 1. Two Sum
+- [x] 1. Two Sum
 - [ ] 49. Group Anagrams
 - [ ] 128. Longest Consecutive Sequence
 - [ ] 136. Single Number
