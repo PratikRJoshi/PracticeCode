@@ -89,7 +89,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 1. Two Sum
 - [x] 49. Group Anagrams
 - [ ] 128. Longest Consecutive Sequence
-- [ ] 136. Single Number
+- [x] 136. Single Number
 - [ ] 202. Happy Number
 - [x] 217. Contains Duplicate
 - [x] 242. Valid Anagram
@@ -224,7 +224,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 15. Bit Manipulation
 
-- [ ] 136. Single Number
+- [x] 136. Single Number
 - [ ] 190. Reverse Bits
 - [ ] 191. Number of 1 Bits
 - [ ] 338. Counting Bits
