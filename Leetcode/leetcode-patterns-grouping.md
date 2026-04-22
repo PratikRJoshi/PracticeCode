@@ -90,7 +90,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 49. Group Anagrams
 - [ ] 128. Longest Consecutive Sequence
 - [x] 136. Single Number
-- [ ] 202. Happy Number
+- [x] 202. Happy Number
 - [x] 217. Contains Duplicate
 - [x] 242. Valid Anagram
 - [x] 268. Missing Number
