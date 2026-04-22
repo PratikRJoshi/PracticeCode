@@ -93,7 +93,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 202. Happy Number
 - [x] 217. Contains Duplicate
 - [x] 242. Valid Anagram
-- [ ] 268. Missing Number
+- [x] 268. Missing Number
 - [ ] 287. Find the Duplicate Number
 - [ ] 2013. Detect Squares
 
@@ -251,7 +251,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 43. Multiply Strings
 - [ ] 50. Pow(x, n)
 - [ ] 66. Plus One
-- [ ] 268. Missing Number
+- [x] 268. Missing Number
 
 ---
 
