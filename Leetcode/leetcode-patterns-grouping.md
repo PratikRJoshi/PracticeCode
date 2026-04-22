@@ -6,11 +6,11 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-19 (evening)  
-**Current problem:** Heap / PQ section done (6/7). Ready to start a new section.  
-**Last completed:** ✅ [Find Median from Data Stream (LeetCode 295)](https://leetcode.com/problems/find-median-from-data-stream/) — Two Heaps (max-heap + min-heap with size invariant).  
-**Pending in current section:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — marked for revisit; bucket sort draft incomplete. Needs `List<Integer>[] buckets = new List[nums.length + 1]` syntax fix and array-generic cast.  
-**Next section options:** Sliding Window (5), Binary Search (7), Linked List (9), Hash Map / Set (9), Dynamic Programming (23).  
+**Last updated:** 2026-04-19 (late evening)  
+**Current problem:** Hash Map / Set section done (9/9). Heap / PQ done (6/7, 347 pending revisit).  
+**Last completed:** ✅ [Detect Squares (LeetCode 2013)](https://leetcode.com/problems/detect-squares/) — diagonal-corner check with frequency multiplication.  
+**Pending:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — revisit; bucket sort draft incomplete.  
+**Next section options:** Sliding Window (5), Binary Search (7), Linked List (9), Dynamic Programming (23).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 
 ---
@@ -95,7 +95,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 242. Valid Anagram
 - [x] 268. Missing Number
 - [x] 287. Find the Duplicate Number
-- [ ] 2013. Detect Squares
+- [x] 2013. Detect Squares
 
 ---
 
