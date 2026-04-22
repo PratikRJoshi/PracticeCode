@@ -87,7 +87,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 7. Hash Map / Set
 
 - [x] 1. Two Sum
-- [ ] 49. Group Anagrams
+- [x] 49. Group Anagrams
 - [ ] 128. Longest Consecutive Sequence
 - [ ] 136. Single Number
 - [ ] 202. Happy Number
