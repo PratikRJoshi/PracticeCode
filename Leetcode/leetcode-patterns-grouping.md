@@ -88,7 +88,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [x] 1. Two Sum
 - [x] 49. Group Anagrams
-- [ ] 128. Longest Consecutive Sequence
+- [x] 128. Longest Consecutive Sequence
 - [x] 136. Single Number
 - [x] 202. Happy Number
 - [x] 217. Contains Duplicate
@@ -196,7 +196,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 13. Union Find
 
-- [ ] 128. Longest Consecutive Sequence
+- [x] 128. Longest Consecutive Sequence
 - [x] 200. Number of Islands
 - [ ] 684. Redundant Connection
 - [ ] 1584. Min Cost to Connect All Points
