@@ -91,7 +91,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 128. Longest Consecutive Sequence
 - [ ] 136. Single Number
 - [ ] 202. Happy Number
-- [ ] 217. Contains Duplicate
+- [x] 217. Contains Duplicate
 - [ ] 242. Valid Anagram
 - [ ] 268. Missing Number
 - [ ] 287. Find the Duplicate Number
