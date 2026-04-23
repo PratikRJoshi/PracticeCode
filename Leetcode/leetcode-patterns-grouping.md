@@ -31,7 +31,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 76. Minimum Window Substring
 - [ ] 239. Sliding Window Maximum
 - [x] 424. Longest Repeating Character Replacement
-- [ ] 567. Permutation in String
+- [x] 567. Permutation in String
 
 ---
 
