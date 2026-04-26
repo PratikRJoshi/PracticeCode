@@ -52,7 +52,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [ ] 2. Add Two Numbers
 - [ ] 19. Remove Nth Node From End of List
-- [ ] 21. Merge Two Sorted Lists
+- [x] 21. Merge Two Sorted Lists
 - [x] 23. Merge k Sorted Lists
 - [ ] 25. Reverse Nodes in k-Group
 - [ ] 138. Copy List with Random Pointer
