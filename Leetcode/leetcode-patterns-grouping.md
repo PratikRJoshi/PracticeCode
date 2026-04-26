@@ -58,7 +58,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 138. Copy List with Random Pointer
 - [ ] 141. Linked List Cycle
 - [ ] 143. Reorder List
-- [ ] 206. Reverse Linked List
+- [x] 206. Reverse Linked List
 
 ---
 
