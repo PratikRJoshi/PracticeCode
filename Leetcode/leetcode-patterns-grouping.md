@@ -42,7 +42,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 33. Search in Rotated Sorted Array
 - [ ] 74. Search a 2D Matrix
 - [ ] 153. Find Minimum in Rotated Sorted Array
-- [ ] 704. Binary Search
+- [x] 704. Binary Search
 - [ ] 875. Koko Eating Bananas
 - [ ] 981. Time Based Key-Value Store
 
