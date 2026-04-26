@@ -44,7 +44,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 153. Find Minimum in Rotated Sorted Array
 - [x] 704. Binary Search
 - [x] 875. Koko Eating Bananas
-- [ ] 981. Time Based Key-Value Store
+- [x] 981. Time Based Key-Value Store
 
 ---
 
@@ -242,7 +242,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [x] 295. Find Median from Data Stream
 - [ ] 297. Serialize and Deserialize Binary Tree
 - [ ] 355. Design Twitter
-- [ ] 981. Time Based Key-Value Store
+- [x] 981. Time Based Key-Value Store
 
 ---
 
