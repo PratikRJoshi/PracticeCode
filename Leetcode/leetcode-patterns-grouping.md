@@ -6,11 +6,12 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-19 (late evening)  
-**Current problem:** Hash Map / Set section done (9/9). Heap / PQ done (6/7, 347 pending revisit).  
-**Last completed:** ✅ [Detect Squares (LeetCode 2013)](https://leetcode.com/problems/detect-squares/) — diagonal-corner check with frequency multiplication.  
+**Last updated:** 2026-04-25  
+**Completed sections:** Two Pointers (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
+**Mostly done:** Backtracking (11/15), Sliding Window (3/5), Heap/PQ (6/7).  
+**Last completed:** ✅ [Container With Most Water (LeetCode 11)](https://leetcode.com/problems/container-with-most-water/) — two pointers with greedy dominance shrinking.  
 **Pending:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — revisit; bucket sort draft incomplete.  
-**Next section options:** Sliding Window (5), Binary Search (7), Linked List (9), Dynamic Programming (23).  
+**Next section options:** Binary Search (0/7), Linked List (1/9), Dynamic Programming (0/23), finish Backtracking (4 remaining), finish Sliding Window (2 remaining).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 
 ---
@@ -117,7 +118,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 309. Best Time to Buy and Sell Stock with Cooldown
 - [ ] 312. Burst Balloons
 - [ ] 322. Coin Change
-- [ ] 329. Longest Increasing Path in a Matrix
+- [x] 329. Longest Increasing Path in a Matrix *(solved via Grid DFS + memoization)*
 - [ ] 416. Partition Equal Subset Sum
 - [ ] 494. Target Sum
 - [ ] 518. Coin Change II

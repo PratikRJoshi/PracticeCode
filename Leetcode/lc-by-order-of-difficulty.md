@@ -1,7 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Dates:** 2026-04-11, 2026-04-13  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS
+**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25  
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers  
+**Total problems tracked here:** 33  
+**Total unique problems solved (including pre-tracker sessions):** ~63
 
 ---
 
@@ -762,10 +764,28 @@ All problems follow similar complexity patterns for tree recursion:
 
 ## Next Steps
 
-**Upcoming Sections:**
-- Backtracking (Subsets, Permutations, Combination Sum, N-Queens)
-- Dynamic Programming (Climbing Stairs, House Robber, Coin Change)
-- Union Find (Redundant Connection, Min Cost to Connect All Points)
+**Sections fully completed (see leetcode-patterns-grouping.md):**
+- ✅ Two Pointers (5/5)
+- ✅ Stack (6/6)
+- ✅ Hash Map / Set (10/10)
+- ✅ Binary Tree (15/15)
+- ✅ BFS / DFS (13/13)
+- ✅ Monotonic Stack (3/3)
+- ✅ Topological Sort (2/3, remaining is premium)
+
+**Sections partially completed:**
+- Backtracking (11/15 — remaining: Valid Sudoku, N-Queens, Word Search II)
+- Sliding Window (3/5 — remaining: Minimum Window Substring, Sliding Window Maximum)
+- Heap / PQ (6/7 — remaining: Top K Frequent Elements revisit)
+
+**Sections not started (next up):**
+- Binary Search (0/7) — Search in Rotated, Koko Eating Bananas, etc.
+- Linked List (1/9) — Reverse Linked List, Merge Two Sorted, LRU Cache, etc.
+- Dynamic Programming (0/23) — Climbing Stairs → House Robber → Coin Change
+- Trie (0/4)
+- Greedy (0/14)
+
+**Recommended next section:** Binary Search or Linked List (both are foundational patterns needed before DP)
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
