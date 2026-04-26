@@ -7,11 +7,11 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## Current Session
 
 **Last updated:** 2026-04-25  
-**Completed sections:** Two Pointers (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
-**Mostly done:** Backtracking (11/15), Sliding Window (3/5), Heap/PQ (6/7).  
-**Last completed:** ✅ [Container With Most Water (LeetCode 11)](https://leetcode.com/problems/container-with-most-water/) — two pointers with greedy dominance shrinking.  
+**Completed sections:** Two Pointers (5/5), Sliding Window (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
+**Mostly done:** Backtracking (11/15), Heap/PQ (6/7).  
+**Last completed:** ✅ [Sliding Window Maximum (LeetCode 239)](https://leetcode.com/problems/sliding-window-maximum/) — monotonic deque of indices.  
 **Pending:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — revisit; bucket sort draft incomplete.  
-**Next section options:** Binary Search (0/7), Linked List (1/9), Dynamic Programming (0/23), finish Backtracking (4 remaining), finish Sliding Window (2 remaining).  
+**Next section options:** Binary Search (0/7), Linked List (1/9), Dynamic Programming (0/23), finish Backtracking (4 remaining).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 
 ---
@@ -30,7 +30,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [x] 3. Longest Substring Without Repeating Characters
 - [x] 76. Minimum Window Substring
-- [ ] 239. Sliding Window Maximum
+- [x] 239. Sliding Window Maximum
 - [x] 424. Longest Repeating Character Replacement
 - [x] 567. Permutation in String
 
