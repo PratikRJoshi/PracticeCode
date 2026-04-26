@@ -40,7 +40,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 - [ ] 4. Median of Two Sorted Arrays
 - [ ] 33. Search in Rotated Sorted Array
-- [ ] 74. Search a 2D Matrix
+- [x] 74. Search a 2D Matrix
 - [ ] 153. Find Minimum in Rotated Sorted Array
 - [x] 704. Binary Search
 - [ ] 875. Koko Eating Bananas
@@ -262,7 +262,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 48. Rotate Image
 - [ ] 54. Spiral Matrix
 - [ ] 73. Set Matrix Zeroes
-- [ ] 74. Search a 2D Matrix
+- [x] 74. Search a 2D Matrix
 - [x] 200. Number of Islands
 - [ ] 238. Product of Array Except Self
 - [x] 329. Longest Increasing Path in a Matrix
