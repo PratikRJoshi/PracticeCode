@@ -50,7 +50,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## 4. Linked List
 
-- [ ] 2. Add Two Numbers
+- [x] 2. Add Two Numbers
 - [x] 19. Remove Nth Node From End of List
 - [x] 21. Merge Two Sorted Lists
 - [x] 23. Merge k Sorted Lists
