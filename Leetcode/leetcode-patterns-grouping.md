@@ -57,7 +57,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 25. Reverse Nodes in k-Group
 - [ ] 138. Copy List with Random Pointer
 - [x] 141. Linked List Cycle
-- [ ] 143. Reorder List
+- [x] 143. Reorder List
 - [x] 206. Reverse Linked List
 
 ---
