@@ -29,7 +29,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 ## 2. Sliding Window
 
 - [x] 3. Longest Substring Without Repeating Characters
-- [ ] 76. Minimum Window Substring
+- [x] 76. Minimum Window Substring
 - [ ] 239. Sliding Window Maximum
 - [x] 424. Longest Repeating Character Replacement
 - [x] 567. Permutation in String
