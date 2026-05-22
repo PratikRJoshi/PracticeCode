@@ -6,11 +6,11 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-04-25  
+**Last updated:** 2026-05-20  
 **Completed sections:** Two Pointers (5/5), Sliding Window (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
 **Mostly done:** Backtracking (11/15), Heap/PQ (6/7).  
-**Last completed:** ✅ [Sliding Window Maximum (LeetCode 239)](https://leetcode.com/problems/sliding-window-maximum/) — monotonic deque of indices.  
-**Pending:** [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — revisit; bucket sort draft incomplete.  
+**Last completed:** ✅ Weekly Contest 502 Q1 (Check Adjacent Digit Differences) + Q2 (Count K-th Roots in a Range) — linear scan; iterate candidate roots with exact `long` arithmetic.  
+**Pending revisit:** Weekly Contest 502 Q3 (Largest Local Values in a Matrix II — 2D Sparse Table / RMQ) and Q4 (Smallest Unique Subarray — binary search on length + rolling hash). Also [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — bucket sort draft incomplete.  
 **Next section options:** Binary Search (0/7), Linked List (1/9), Dynamic Programming (0/23), finish Backtracking (4 remaining).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 

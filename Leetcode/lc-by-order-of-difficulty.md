@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers  
-**Total problems tracked here:** 33  
-**Total unique problems solved (including pre-tracker sessions):** ~63
+**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-20  
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502  
+**Total problems tracked here:** 35  
+**Total unique problems solved (including pre-tracker sessions):** ~65
 
 ---
 
@@ -413,6 +413,33 @@
   - Therefore all pairs involving the shorter line are dominated and can be discarded
 - On equal heights, moving either pointer is safe (both sides are simultaneously dominated)
 - Time: O(n), Space: O(1)
+
+---
+
+### 34. [Check Adjacent Digit Differences](https://leetcode.com/problems/check-adjacent-digit-differences/)
+**Difficulty:** Easy  
+**Pattern:** Linear scan over adjacent pairs  
+**Key Concepts:**
+- Iterate over consecutive index pairs `(i-1, i)` in the string
+- For each pair, compute `Math.abs(s.charAt(i-1) - s.charAt(i))` and check against threshold (here, 2)
+- Early return `false` on first violation; otherwise return `true` after full scan
+- Cleaner with a single index `i` from 1 to n-1 rather than dual `left`/`right` pointers
+- Time: O(n), Space: O(1)
+- *Solved during Weekly Contest 502 in 2m 57s*
+
+---
+
+### 35. [Count K-th Roots in a Range](https://leetcode.com/problems/count-k-th-roots-in-a-range/)
+**Difficulty:** Medium  
+**Pattern:** Iterate over candidate roots (smaller search space) + exact integer arithmetic  
+**Key Concepts:**
+- Count integers `x` such that `l ≤ x^k ≤ r`. Equivalently, count perfect k-th powers in `[l, r]`
+- **Critical pitfall — search space**: iterating `i` from `l` to `r` is O(r - l) and TLEs for large ranges. Instead iterate the candidate root `x` from `0` upward and stop once `x^k > r`; the loop runs only O(r^(1/k)) times
+- **Critical pitfall — integer division**: in Java, `1/k` is integer division → 0 for any `k ≥ 2`. Must write `1.0/k` (or any double) to force fractional division
+- **Critical pitfall — Math.pow precision**: returns `double` with precision loss (e.g., `Math.pow(64, 0.5)` may yield `7.99999...`). Cast truncation then misses perfect powers. Two fixes: (a) verify by re-raising — `rval` and `rval+1`; (b) better, drop `Math.pow` entirely and compute `x^k` via `long` multiplication in a loop — exact and faster
+- **Edge cases**: `k = 1` makes every integer in `[l, r]` a valid root → return `r - l + 1` directly; `x = 0` must be included when `l ≤ 0` (since `0^k = 0`)
+- Time: O(r^(1/k)) per query, Space: O(1)
+- *Solved during Weekly Contest 502 in 24m 19s after multiple iterations*
 
 ---
 
