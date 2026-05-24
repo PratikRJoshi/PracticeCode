@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU)  
-**Total problems tracked here:** 38  
-**Total unique problems solved (including pre-tracker sessions):** ~68
+**Total problems tracked here:** 39  
+**Total unique problems solved (including pre-tracker sessions):** ~69
 
 ---
 
@@ -484,6 +484,21 @@
 
 ---
 
+### 39. [Number of Operations to Make Network Connected](https://leetcode.com/problems/number-of-operations-to-make-network-connected/)
+**Difficulty:** Medium  
+**Pattern:** Union-Find for component counting + spare-edge accounting  
+**Key Concepts:**
+- Need at least n-1 cables to connect n computers; if `connections.length < n - 1` -> return -1
+- Each cable move can merge exactly 2 components into 1 (reducing total by 1)
+- To unify c components into 1, you need exactly `c - 1` moves
+- DSU does the heavy lifting: union all given connections, then count roots via `find(i) == i` for all i in [0, n)
+- Spare edges (cycle-creating ones) are automatically sufficient because of the early `n - 1` check
+- `union` itself handles the same-root case via early return - no need for explicit `find(u) == find(v)` check in caller
+- Must iterate ALL n nodes when counting components - isolated nodes that never appear in `connections` would otherwise be missed
+- Time: O((n + m) * alpha(n)) ~= O(n + m), Space: O(n) where m = connections.length
+
+---
+
 ---
 
 ## Key Patterns Learned
@@ -891,7 +906,7 @@ All problems follow similar complexity patterns for tree recursion:
 - Heap / PQ (6/7 — remaining: Top K Frequent Elements revisit)
 
 **Sections partially started:**
-- Union-Find / DSU (2/5) — next: **Number of Operations to Make Network Connected (1319)**, then Satisfiability of Equality Equations (990), Largest Component Size by Common Factor (952)
+- Union-Find / DSU (3/5) — next: **Satisfiability of Equality Equations (990)**, then Largest Component Size by Common Factor (952)
 
 **Sections not started (next up):**
 - Binary Search (0/7) — Search in Rotated, Koko Eating Bananas, etc.
@@ -900,7 +915,7 @@ All problems follow similar complexity patterns for tree recursion:
 - Trie (0/4)
 - Greedy (0/14)
 
-**Recommended next problem:** **Number of Operations to Make Network Connected (1319)** — extends the DSU pattern with component counting and surplus-edge logic
+**Recommended next problem:** **Satisfiability of Equality Equations (990)** — two-pass DSU: first union all `==`, then verify no `!=` violates a union
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
