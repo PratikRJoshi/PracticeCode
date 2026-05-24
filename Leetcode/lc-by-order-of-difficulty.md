@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-20  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502  
-**Total problems tracked here:** 35  
-**Total unique problems solved (including pre-tracker sessions):** ~65
+**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23  
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU)  
+**Total problems tracked here:** 37  
+**Total unique problems solved (including pre-tracker sessions):** ~67
 
 ---
 
@@ -441,6 +441,36 @@
 - Time: O(r^(1/k)) per query, Space: O(1)
 - *Solved during Weekly Contest 502 in 24m 19s after multiple iterations*
 
+### 36. [Find the Closest Palindrome](https://leetcode.com/problems/find-the-closest-palindrome/)
+**Difficulty:** Hard  
+**Pattern:** Candidate enumeration via palindrome construction  
+**Key Concepts:**
+- Only 5 candidates need to be considered: mirror(left), mirror(left+1), mirror(left-1), 10^(k-1)-1, 10^k+1
+- "Left half" = `n.substring(0, isEven ? k/2 : k/2 + 1)` (includes middle digit for odd length)
+- Mirror construction: even -> `left + reverse(left)`; odd -> `left + reverse(left).substring(1)` (skip duplicated middle)
+- Boundary candidates (`10^(k-1)-1` and `10^k+1`) handle digit-count transitions (e.g., 1000 -> 999, 99 -> 101)
+- Use long math instead of `Math.pow` (double precision loss past ~10^15 breaks k=18 inputs)
+- Tie-break logic: when distances are equal, pick the smaller candidate value
+- Always exclude `n` itself from candidate list
+- Time: O(k), Space: O(k) - k = number of digits
+
+---
+
+### 37. [Number of Provinces](https://leetcode.com/problems/number-of-provinces/)
+**Difficulty:** Medium  
+**Pattern:** Union-Find (DSU) for connected components  
+**Key Concepts:**
+- First DSU problem - connected components via "captain" (root) of each group
+- DSU class: `parent[]` and `rank[]`/`size[]` arrays, with `find` and `union` methods
+- Two essential optimizations: path compression in `find`, union by rank/size in `union` -> nearly O(1) per op (alpha(n))
+- Initialize `parent[i] = i` (each node is its own captain) and `rank[i] = 1` for all i
+- Compare rank/size at the **roots** (`rank[rootA]`), not at arbitrary nodes (`rank[a]`)
+- Matrix is symmetric -> iterate only upper triangle (`j = i + 1`) to halve work
+- Count provinces: number of `i` where `find(i) == i` (captains pointing to themselves)
+- Time: O(n^2 * alpha(n)) ~= O(n^2), Space: O(n)
+
+---
+
 ---
 
 ## Key Patterns Learned
@@ -765,7 +795,49 @@
   ```
 - **When to use:** State-space search where graph is too large to precompute (word transformations, puzzle states)
 
-### 21. Edge Case Handling
+### 21. Palindrome Construction (Candidate Enumeration)
+- **Pattern:** Generate a constant number of palindrome candidates from the input's left half, then pick by distance
+- **Used in:** Find the Closest Palindrome
+- **Structure:**
+  ```java
+  long mirror(String left, boolean isEven) {
+      String rev = new StringBuilder(left).reverse().toString();
+      return Long.parseLong(left + (isEven ? rev : rev.substring(1)));
+  }
+  // 5 candidates: mirror(left), mirror(left+/-1), 10^(k-1)-1, 10^k+1
+  ```
+- **When to use:** Closest-palindrome / next-palindrome problems where brute-force enumeration is infeasible
+- **Key insight:** The closest palindrome differs in at most the middle digit, OR is a digit-count boundary
+
+### 22. Union-Find (Disjoint Set Union)
+- **Pattern:** Maintain disjoint sets with `find` (group leader) and `union` (merge groups)
+- **Used in:** Number of Provinces
+- **Structure:**
+  ```java
+  class DSU {
+      int[] parent, rank;
+      DSU(int n) {
+          parent = new int[n]; rank = new int[n];
+          for (int i = 0; i < n; i++) { parent[i] = i; rank[i] = 1; }
+      }
+      int find(int x) {
+          if (parent[x] != x) parent[x] = find(parent[x]);
+          return parent[x];
+      }
+      void union(int a, int b) {
+          int ra = find(a), rb = find(b);
+          if (ra == rb) return;
+          if (rank[ra] < rank[rb]) parent[ra] = rb;
+          else if (rank[ra] > rank[rb]) parent[rb] = ra;
+          else { parent[rb] = ra; rank[ra]++; }
+      }
+  }
+  ```
+- **When to use:** Connected components, cycle detection in undirected graphs, MST (Kruskal), accounts/groups merging
+- **Key optimizations:** Path compression (`find`) + union by rank/size - together give nearly O(1) per op (alpha(n))
+- **Trap:** Compare `rank[root]`, not `rank[node]` - rank/size lives at roots only
+
+### 23. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -805,6 +877,9 @@ All problems follow similar complexity patterns for tree recursion:
 - Sliding Window (3/5 — remaining: Minimum Window Substring, Sliding Window Maximum)
 - Heap / PQ (6/7 — remaining: Top K Frequent Elements revisit)
 
+**Sections partially started:**
+- Union-Find / DSU (1/5) — next: **Redundant Connection (684)**, then Number of Operations to Make Network Connected (1319), Largest Component Size by Common Factor (952)
+
 **Sections not started (next up):**
 - Binary Search (0/7) — Search in Rotated, Koko Eating Bananas, etc.
 - Linked List (1/9) — Reverse Linked List, Merge Two Sorted, LRU Cache, etc.
@@ -812,7 +887,7 @@ All problems follow similar complexity patterns for tree recursion:
 - Trie (0/4)
 - Greedy (0/14)
 
-**Recommended next section:** Binary Search or Linked List (both are foundational patterns needed before DP)
+**Recommended next problem:** **Redundant Connection (684)** — locks in the "successful union" concept and is a small step from Number of Provinces
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
@@ -845,3 +920,5 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Edge case handling
 - ✅ Greedy range tracking (two-counter sweep for `*` wildcard)
 - ✅ Two pointers (opposite ends) with greedy dominance shrinking
+- ✅ Palindrome construction (candidate enumeration from left half)
+- ✅ Union-Find / DSU (path compression + union by rank)
