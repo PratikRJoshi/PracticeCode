@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23  
+**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU)  
-**Total problems tracked here:** 37  
-**Total unique problems solved (including pre-tracker sessions):** ~67
+**Total problems tracked here:** 38  
+**Total unique problems solved (including pre-tracker sessions):** ~68
 
 ---
 
@@ -471,6 +471,19 @@
 
 ---
 
+### 38. [Redundant Connection](https://leetcode.com/problems/redundant-connection/)
+**Difficulty:** Medium  
+**Pattern:** Union-Find for cycle detection in undirected graph  
+**Key Concepts:**
+- Tree with n nodes has exactly n-1 edges; one extra edge added creates exactly one cycle
+- Detect the cycle-creating edge DURING union: if `find(u) == find(v)` before unioning, this edge would close a cycle -> redundant
+- Iterate edges in input order and return the first edge that fails to union -> automatically the "last edge in input that completes the cycle" (matches problem's tie-break)
+- DSU sizing trap: nodes are labeled 1..n, so allocate `parent[]` of size `n + 1` to accommodate index `n`
+- No need for explicit cycle traversal or visited tracking - DSU collapses the work to O(1) per edge
+- Time: O(n * alpha(n)) ~= O(n), Space: O(n)
+
+---
+
 ---
 
 ## Key Patterns Learned
@@ -878,7 +891,7 @@ All problems follow similar complexity patterns for tree recursion:
 - Heap / PQ (6/7 — remaining: Top K Frequent Elements revisit)
 
 **Sections partially started:**
-- Union-Find / DSU (1/5) — next: **Redundant Connection (684)**, then Number of Operations to Make Network Connected (1319), Largest Component Size by Common Factor (952)
+- Union-Find / DSU (2/5) — next: **Number of Operations to Make Network Connected (1319)**, then Satisfiability of Equality Equations (990), Largest Component Size by Common Factor (952)
 
 **Sections not started (next up):**
 - Binary Search (0/7) — Search in Rotated, Koko Eating Bananas, etc.
@@ -887,7 +900,7 @@ All problems follow similar complexity patterns for tree recursion:
 - Trie (0/4)
 - Greedy (0/14)
 
-**Recommended next problem:** **Redundant Connection (684)** — locks in the "successful union" concept and is a small step from Number of Provinces
+**Recommended next problem:** **Number of Operations to Make Network Connected (1319)** — extends the DSU pattern with component counting and surplus-edge logic
 
 **Related Topics to Explore:**
 - Morris Traversal (O(1) space)
