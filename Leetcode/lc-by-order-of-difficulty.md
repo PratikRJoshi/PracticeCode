@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack  
-**Total problems tracked here:** 40  
-**Total unique problems solved (including pre-tracker sessions):** ~70
+**Total problems tracked here:** 41  
+**Total unique problems solved (including pre-tracker sessions):** ~71
 
 ---
 
@@ -513,6 +513,19 @@
 - Amortized O(n): each node pushed and popped at most once, so the nested `while` does not make it O(n²)
 - Time: O(n), Space: O(n) for the stack
 - *Alternative O(1)-space approach: reverse list → keep running max → reverse back, or recursion returning the max from the right*
+
+---
+
+### 41. [Delete Nodes From Linked List Present in Array](https://leetcode.com/problems/delete-nodes-from-linked-list-present-in-array/)
+**Difficulty:** Medium  
+**Pattern:** HashSet membership + single-pointer splice with dummy head  
+**Key Concepts:**
+- Build a `HashSet` from `nums` for O(1) membership. Note: `set.addAll(intArray)` does **not** compile — `int[]` is not a `Collection`. Loop and `set.add(n)` (or use boxed `Integer[]`)
+- **Cleanest deletion pattern**: dummy node + single pointer inspecting `temp.next`. If `temp.next.val` is in the set, splice it out (`temp.next = temp.next.next`); else advance (`temp = temp.next`)
+- This pattern avoids a separate `head` traversal pointer, avoids rebuilding links for survivors, and needs no trailing null-termination (splicing auto-links the survivor to whatever follows)
+- The `dummy` node elegantly handles deletions at the head with no special-casing
+- Common bug in the rebuild-style approach: forgetting `temp.next = null` at the end leaves a stale link to a deleted tail
+- Time: O(n + m), Space: O(m) where m = `nums.length`
 
 ---
 
