@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
-**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU)  
-**Total problems tracked here:** 39  
-**Total unique problems solved (including pre-tracker sessions):** ~69
+**Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack  
+**Total problems tracked here:** 40  
+**Total unique problems solved (including pre-tracker sessions):** ~70
 
 ---
 
@@ -498,6 +498,21 @@
 - Time: O((n + m) * alpha(n)) ~= O(n + m), Space: O(n) where m = connections.length
 
 ---
+
+---
+
+### 40. [Remove Nodes From Linked List](https://leetcode.com/problems/remove-nodes-from-linked-list/)
+**Difficulty:** Medium  
+**Pattern:** Monotonic (non-increasing) stack over linked list nodes  
+**Key Concepts:**
+- Remove every node that has a strictly greater node anywhere to its right → survivors form a non-increasing sequence
+- **Monotonic stack**: as each node arrives, pop all stack nodes with value `< current.val` (those now have a greater node to their right), then push current. Stack stays non-increasing bottom-to-top
+- **Pop condition is the crux**: `while (!stack.isEmpty() && stack.peek().val < current.val) pop()` — popping the *entire* stack is the classic bug
+- **Never rewire links during the scan**: a node you linked may get popped later, leaving a stale `next`. Build the result list *after* the scan, purely from the surviving stack
+- **Rebuild from stack**: pop nodes (top = tail), set `node.next = prev` starting from `prev = null` so the last real node terminates the list (initializing to `new ListNode()` leaves a trailing `0`)
+- Amortized O(n): each node pushed and popped at most once, so the nested `while` does not make it O(n²)
+- Time: O(n), Space: O(n) for the stack
+- *Alternative O(1)-space approach: reverse list → keep running max → reverse back, or recursion returning the max from the right*
 
 ---
 
