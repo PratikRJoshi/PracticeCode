@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack  
-**Total problems tracked here:** 41  
-**Total unique problems solved (including pre-tracker sessions):** ~71
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
+**Total problems tracked here:** 42  
+**Total unique problems solved (including pre-tracker sessions):** ~72
 
 ---
 
@@ -526,6 +526,21 @@
 - The `dummy` node elegantly handles deletions at the head with no special-casing
 - Common bug in the rebuild-style approach: forgetting `temp.next = null` at the end leaves a stale link to a deleted tail
 - Time: O(n + m), Space: O(m) where m = `nums.length`
+
+---
+
+### 42. [Minimum Path Sum](https://leetcode.com/problems/minimum-path-sum/)
+**Difficulty:** Medium  
+**Pattern:** Grid Dynamic Programming (first DP problem)  
+**Key Concepts:**
+- **Subproblem**: `dp[i][j]` = minimum path sum from top-left `(0,0)` to cell `(i,j)`, moving only right/down
+- **Transition**: `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])` — arrive from above OR left (pick the cheaper), then add current cell. Common bug: *adding* both predecessors instead of taking the min
+- **Base cases**: `dp[0][0] = grid[0][0]`; first row `dp[0][j] = dp[0][j-1] + grid[0][j]` (only-left); first column `dp[i][0] = dp[i-1][0] + grid[i][0]` (only-above)
+- **Loop bounds**: any loop using `i-1`/`j-1` must start at index `1`, never `0` (else negative index). Classic off-by-one source
+- **Why exponential brute force fails**: number of corner-to-corner paths is `C(m+n, n)` (exponential); DP collapses overlapping subproblems to `O(m·n)`
+- **Space optimization ladder**: 2D `dp` O(m·n) → 1D rolling row O(n) (since `dp[j]` pre-overwrite holds the row above, `dp[j-1]` holds current row's left) → **in-place on `grid` itself O(1)** extra space
+- Time: O(m·n), Space: O(1) with in-place (O(m·n) for naive 2D dp)
+- *Top-down memoized version still to be written (planned)*
 
 ---
 

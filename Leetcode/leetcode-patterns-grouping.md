@@ -6,12 +6,13 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 
 ## Current Session
 
-**Last updated:** 2026-05-28  
+**Last updated:** 2026-05-30  
 **Completed sections:** Two Pointers (5/5), Sliding Window (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
 **Mostly done:** Backtracking (11/15), Heap/PQ (6/7), Linked List (7/9 + 237, 2487, 3217 added).  
-**Last completed:** ✅ [Delete Nodes From Linked List Present in Array (LC 3217)](https://leetcode.com/problems/delete-nodes-from-linked-list-present-in-array/) — HashSet membership + dummy node single-pointer splice.  
-**Pending revisit:** Weekly Contest 502 Q3 (Largest Local Values in a Matrix II — 2D Sparse Table / RMQ) and Q4 (Smallest Unique Subarray — binary search on length + rolling hash). Also [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — bucket sort draft incomplete.  
-**Next section options:** Binary Search (0/7), finish Linked List (25, 138), Dynamic Programming (0/23), finish Backtracking (4 remaining).  
+**DP section started:** ✅ 64. Minimum Path Sum (1st DP problem).  
+**Last completed:** ✅ [Minimum Path Sum (LC 64)](https://leetcode.com/problems/minimum-path-sum/) — grid DP; derived subproblem/transition/base cases, optimized to in-place O(1) space.  
+**Pending revisit:** Weekly Contest 502 Q3 (Largest Local Values in a Matrix II — 2D Sparse Table / RMQ) and Q4 (Smallest Unique Subarray — binary search on length + rolling hash). Also [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — bucket sort draft incomplete. Also LC 64 top-down/memoized version (user planned to write it next).  
+**Next section options:** Continue DP (62 Unique Paths, 70 Climbing Stairs, 198 House Robber), Binary Search (0/7), finish Linked List (25, 138).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
 
 ---
@@ -108,6 +109,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 10. Regular Expression Matching
 - [ ] 53. Maximum Subarray *(Kadane's algorithm)*
 - [ ] 62. Unique Paths
+- [x] 64. Minimum Path Sum *(grid DP, in-place O(1) space)*
 - [ ] 70. Climbing Stairs
 - [ ] 72. Edit Distance
 - [ ] 91. Decode Ways
