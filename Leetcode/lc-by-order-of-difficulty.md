@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
-**Total problems tracked here:** 42  
-**Total unique problems solved (including pre-tracker sessions):** ~72
+**Total problems tracked here:** 43  
+**Total unique problems solved (including pre-tracker sessions):** ~73
 
 ---
 
@@ -540,7 +540,22 @@
 - **Why exponential brute force fails**: number of corner-to-corner paths is `C(m+n, n)` (exponential); DP collapses overlapping subproblems to `O(m·n)`
 - **Space optimization ladder**: 2D `dp` O(m·n) → 1D rolling row O(n) (since `dp[j]` pre-overwrite holds the row above, `dp[j-1]` holds current row's left) → **in-place on `grid` itself O(1)** extra space
 - Time: O(m·n), Space: O(1) with in-place (O(m·n) for naive 2D dp)
-- *Top-down memoized version still to be written (planned)*
+- Also wrote a **top-down memoized** variant: `solve(i,j)` = min sum to reach `(i,j)`; base `(0,0)=grid[0][0]`; out-of-bounds `i<0||j<0` returns `Integer.MAX_VALUE` (so an impossible direction never wins the `min`); `Integer[][]` memo defaulting to `null` for the "uncomputed" check; top-level call is `solve(m-1, n-1)`. Check `(0,0)` base **before** the out-of-bounds guard
+
+---
+
+### 43. [Minimum Path Cost in a Grid](https://leetcode.com/problems/minimum-path-cost-in-a-grid/)
+**Difficulty:** Medium  
+**Pattern:** Grid DP with value-indexed transition cost (every cell in next row reachable)  
+**Key Concepts:**
+- Movement differs from Minimum Path Sum: from `(i,j)` you can move to **any** column `(i+1,k)`, not just down/right. Start at any first-row cell, end at any last-row cell
+- **`moveCost` is indexed by VALUE, not position**: moving from a cell holding value `v` into column `k` of the next row costs `moveCost[v][k]`. Since grid values are distinct `0..m*n-1`, each value maps to a unique `moveCost` row
+- **Subproblem**: `dp[i][j]` = min cost of any path starting in row 0 and ending exactly at `(i,j)` (incl. `grid[i][j]`)
+- **Transition**: `dp[i][j] = grid[i][j] + min over k ( dp[i-1][k] + moveCost[grid[i-1][k]][j] )`. Critical: the `moveCost` term depends on `k`, so it must live **inside** the min, not be added afterward
+- **Base case**: `dp[0][j] = grid[0][j]` (no move into the first row)
+- **Answer**: minimum over the **entire last row**, not just `dp[m-1][n-1]` (path may end at any column)
+- **Space optimization**: rolling previous-row array → O(n). Unlike Minimum Path Sum, **cannot** overwrite `grid` in place — the transition needs the original `grid[i-1][k]` value for the `moveCost` lookup
+- Time: O(m·n²) (each of m·n cells scans n source columns), Space: O(n) with rolling array (O(m·n) for full 2D dp)
 
 ---
 
