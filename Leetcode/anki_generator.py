@@ -119,6 +119,45 @@ def escape(s: str) -> str:
     )
 
 
+def normalize(s: str) -> str:
+    """Lowercase and strip everything except alphanumerics, for fuzzy matching."""
+    return re.sub(r"[^a-z0-9]", "", s.lower())
+
+
+def slug_of(url: str) -> str:
+    match = re.search(r"/problems/([^/]+)/?", url)
+    return match.group(1) if match else ""
+
+
+SOLUTION_FILE_RE = re.compile(r"^(\d+)_(.+)\.md$")
+JAVA_BLOCK_RE = re.compile(r"```java\s*\n(.*?)```", re.DOTALL)
+
+
+def build_solution_index() -> dict[str, Path]:
+    """Map normalized problem title -> solution file path (files named <num>_<Title>.md)."""
+    index: dict[str, Path] = {}
+    for path in SOURCE.parent.glob("*.md"):
+        match = SOLUTION_FILE_RE.match(path.name)
+        if match:
+            index[normalize(match.group(2))] = path
+    return index
+
+
+SOLUTION_INDEX = build_solution_index()
+
+
+def find_code_html(name: str, url: str) -> str:
+    """Return the first Java code block of the matching solution file as HTML, or ''."""
+    path = SOLUTION_INDEX.get(normalize(name)) or SOLUTION_INDEX.get(normalize(slug_of(url)))
+    if not path:
+        return ""
+    block = JAVA_BLOCK_RE.search(path.read_text())
+    if not block:
+        return ""
+    code = block.group(1).strip("\n")
+    return f'<pre class="code-block"><code>{escape(code)}</code></pre>'
+
+
 CARD_CSS = """
 .card {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -139,6 +178,23 @@ li { margin-bottom: 4px; }
 code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 14px; }
 a { color: #0a66c2; text-decoration: none; }
 hr { border: 0; border-top: 1px solid #ddd; margin: 16px 0; }
+pre.code-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 14px 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+  margin: 6px 0 0 0;
+}
+pre.code-block code {
+  background: none;
+  padding: 0;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre;
+}
 """
 
 
@@ -153,6 +209,7 @@ model_problem_approach = genanki.Model(
         {"name": "Difficulty"},
         {"name": "Pattern"},
         {"name": "Concepts"},
+        {"name": "Code"},
     ],
     templates=[
         {
@@ -169,6 +226,9 @@ model_problem_approach = genanki.Model(
                 "{{FrontSide}}<hr>"
                 '<div class="section-label">Pattern</div>{{Pattern}}'
                 '<div class="section-label">Key Concepts</div>{{Concepts}}'
+                "{{#Code}}"
+                '<div class="section-label">Solution</div>{{Code}}'
+                "{{/Code}}"
                 '<div class="meta" style="margin-top:18px;">'
                 '<a href="{{Url}}">Open on LeetCode</a></div>'
             ),
@@ -247,6 +307,7 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
 
     for p in problems:
         concepts_html = html_concepts(p.concepts)
+        code_html = find_code_html(p.name, p.url)
 
         # GUIDs derived from stable fields so re-running doesn't duplicate
         guid_approach = genanki.guid_for(f"lc-{p.number}-approach")
@@ -262,6 +323,7 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
                     escape(p.difficulty),
                     escape(p.pattern),
                     concepts_html,
+                    code_html,
                 ],
                 guid=guid_approach,
                 tags=[slug(p.pattern), f"lc-{p.number}", slug(p.difficulty)],
@@ -318,9 +380,11 @@ def main() -> None:
 
     pattern_count = len({p.pattern for p in problems if p.pattern})
     total_cards = len(problems) * 2 + pattern_count
+    with_code = sum(1 for p in problems if find_code_html(p.name, p.url))
     print(f"Wrote {OUTPUT}")
     print(f"  {len(problems)} problems x 2 cards + {pattern_count} pattern cards "
           f"= {total_cards} cards")
+    print(f"  {with_code}/{len(problems)} approach cards include solution code")
 
 
 if __name__ == "__main__":
