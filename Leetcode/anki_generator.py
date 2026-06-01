@@ -6,12 +6,14 @@ Three card types per problem:
   B. Problem -> Pattern         (recall the technique)
   C. Pattern -> Problems        (one card per unique pattern; recognize when to use it)
 
-Run:
-  cd ~/PracticeCode
-  source .venv/bin/activate
-  python Leetcode/anki_generator.py
+Dependencies:
+  pip install genanki pygments      # pygments is optional (syntax highlighting)
 
-Output: ~/PracticeCode/Leetcode/leetcode-revision.apkg
+Run:
+  cd ~/Documents/Learning/PracticeCode
+  .venv/bin/python Leetcode/anki_generator.py
+
+Output: Leetcode/leetcode-revision.apkg
 """
 
 from __future__ import annotations
@@ -22,6 +24,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import genanki
+
+# Optional syntax highlighting. Falls back to plain escaped code if unavailable.
+try:
+    from pygments import highlight as _pyg_highlight
+    from pygments.formatters import HtmlFormatter as _HtmlFormatter
+    from pygments.lexers import JavaLexer as _JavaLexer
+
+    _PYG_LEXER = _JavaLexer()
+    # noclasses=True inlines all colors (works offline in AnkiDroid, no external CSS/JS);
+    # nowrap=True emits only the colored spans so we control the surrounding <pre>.
+    _PYG_FORMATTER = _HtmlFormatter(style="monokai", noclasses=True, nowrap=True)
+except Exception:  # pragma: no cover - pygments not installed
+    _pyg_highlight = None
 
 SOURCE = Path(__file__).parent / "lc-by-order-of-difficulty.md"
 OUTPUT = Path(__file__).parent / "leetcode-revision.apkg"
@@ -147,6 +162,13 @@ def build_solution_index() -> dict[str, Path]:
 SOLUTION_INDEX = build_solution_index()
 
 
+def highlight_java(code: str) -> str:
+    """Syntax-highlight Java as inline-styled HTML, or plain escaped code as fallback."""
+    if _pyg_highlight is None:
+        return escape(code)
+    return _pyg_highlight(code, _PYG_LEXER, _PYG_FORMATTER).rstrip("\n")
+
+
 def find_code_html(name: str, url: str) -> str:
     """Return the first Java code block of the matching solution file as HTML, or ''."""
     path = SOLUTION_INDEX.get(normalize(name)) or SOLUTION_INDEX.get(normalize(slug_of(url)))
@@ -156,7 +178,7 @@ def find_code_html(name: str, url: str) -> str:
     if not block:
         return ""
     code = block.group(1).strip("\n")
-    return f'<pre class="code-block"><code>{escape(code)}</code></pre>'
+    return f'<pre class="code-block"><code>{highlight_java(code)}</code></pre>'
 
 
 CARD_CSS = """
@@ -180,8 +202,8 @@ code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 14px; 
 a { color: #0a66c2; text-decoration: none; }
 hr { border: 0; border-top: 1px solid #ddd; margin: 16px 0; }
 pre.code-block {
-  background: #1e1e1e;
-  color: #d4d4d4;
+  background: #272822;
+  color: #f8f8f2;
   padding: 14px 16px;
   border-radius: 6px;
   overflow-x: auto;
