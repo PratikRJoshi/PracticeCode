@@ -556,6 +556,7 @@
 - **Answer**: minimum over the **entire last row**, not just `dp[m-1][n-1]` (path may end at any column)
 - **Space optimization**: rolling previous-row array → O(n). Unlike Minimum Path Sum, **cannot** overwrite `grid` in place — the transition needs the original `grid[i-1][k]` value for the `moveCost` lookup
 - Time: O(m·n²) (each of m·n cells scans n source columns), Space: O(n) with rolling array (O(m·n) for full 2D dp)
+- Also wrote a **top-down memoized** (forward) variant: `solve(i,j)` = min cost from `(i,j)` down to any last-row cell; base `i == m-1` → `grid[i][j]` (the *whole* last row, not just the corner); recurrence `grid[i][j] + min over k ( moveCost[grid[i][j]][k] + solve(i+1, k) )`; top-level answer = `min over j of solve(0, j)` (path may start at any first-row cell). Pass `m`/`n` into the helper (or make them fields) — they're not in scope otherwise
 
 ---
 

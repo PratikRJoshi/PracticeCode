@@ -110,7 +110,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 53. Maximum Subarray *(Kadane's algorithm)*
 - [ ] 62. Unique Paths
 - [x] 64. Minimum Path Sum *(grid DP, in-place O(1) space; also top-down memoized)*
-- [x] 2304. Minimum Path Cost in a Grid *(grid DP, value-indexed move cost, O(n) rolling)*
+- [x] 2304. Minimum Path Cost in a Grid *(grid DP, value-indexed move cost, O(n) rolling; also top-down memoized)*
 - [ ] 70. Climbing Stairs
 - [ ] 72. Edit Distance
 - [ ] 91. Decode Ways
