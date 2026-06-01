@@ -9,8 +9,8 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 **Last updated:** 2026-05-31  
 **Completed sections:** Two Pointers (5/5), Sliding Window (5/5), Stack (6/6), Hash Map/Set (10/10), Binary Tree (15/15), BFS/DFS (13/13), Monotonic Stack (3/3), Topological Sort (2/3).  
 **Mostly done:** Backtracking (11/15), Heap/PQ (6/7), Linked List (7/9 + 237, 2487, 3217 added).  
-**DP section in progress:** ✅ 64. Minimum Path Sum (bottom-up + top-down), ✅ 2304. Minimum Path Cost in a Grid (grid DP, O(n) rolling).  
-**Last completed:** ✅ [Minimum Path Cost in a Grid (LC 2304)](https://leetcode.com/problems/minimum-path-cost-in-a-grid/) — value-indexed move cost; move cost must be inside the min; answer = min over whole last row; O(n) rolling array (grid can't be reused in-place).  
+**DP section in progress:** ✅ 64. Minimum Path Sum (bottom-up + top-down), ✅ 2304. Minimum Path Cost in a Grid (grid DP, O(n) rolling), ✅ 1937. Maximum Number of Points with Cost (prefix/suffix-max optimization).  
+**Last completed:** ✅ [Maximum Number of Points with Cost (LC 1937)](https://leetcode.com/problems/maximum-number-of-points-with-cost/) — split abs(k-j) into prefix-max (k≤j) + suffix-max (k≥j) to drop O(n²) transition to O(n); long return type.  
 **Pending revisit:** Weekly Contest 502 Q3 (Largest Local Values in a Matrix II — 2D Sparse Table / RMQ) and Q4 (Smallest Unique Subarray — binary search on length + rolling hash). Also [Top K Frequent Elements (LeetCode 347)](https://leetcode.com/problems/top-k-frequent-elements/) — bucket sort draft incomplete.  
 **Next section options:** Continue DP (62 Unique Paths, 70 Climbing Stairs, 198 House Robber), Binary Search (0/7), finish Linked List (25, 138).  
 **Resume instructions:** On resume, ask user which section to start. Begin with starter problem for that pattern per the Progression Ladder.
@@ -111,6 +111,7 @@ A curated grouping of problems from [LeetCode Problem List v8bw0x9s](https://lee
 - [ ] 62. Unique Paths
 - [x] 64. Minimum Path Sum *(grid DP, in-place O(1) space; also top-down memoized)*
 - [x] 2304. Minimum Path Cost in a Grid *(grid DP, value-indexed move cost, O(n) rolling; also top-down memoized)*
+- [x] 1937. Maximum Number of Points with Cost *(grid DP + prefix/suffix-max, O(mn))*
 - [ ] 70. Climbing Stairs
 - [ ] 72. Edit Distance
 - [ ] 91. Decode Ways

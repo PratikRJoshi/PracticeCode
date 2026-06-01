@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
-**Total problems tracked here:** 43  
-**Total unique problems solved (including pre-tracker sessions):** ~73
+**Total problems tracked here:** 44  
+**Total unique problems solved (including pre-tracker sessions):** ~74
 
 ---
 
@@ -557,6 +557,24 @@
 - **Space optimization**: rolling previous-row array → O(n). Unlike Minimum Path Sum, **cannot** overwrite `grid` in place — the transition needs the original `grid[i-1][k]` value for the `moveCost` lookup
 - Time: O(m·n²) (each of m·n cells scans n source columns), Space: O(n) with rolling array (O(m·n) for full 2D dp)
 - Also wrote a **top-down memoized** (forward) variant: `solve(i,j)` = min cost from `(i,j)` down to any last-row cell; base `i == m-1` → `grid[i][j]` (the *whole* last row, not just the corner); recurrence `grid[i][j] + min over k ( moveCost[grid[i][j]][k] + solve(i+1, k) )`; top-level answer = `min over j of solve(0, j)` (path may start at any first-row cell). Pass `m`/`n` into the helper (or make them fields) — they're not in scope otherwise
+
+---
+
+### 44. [Maximum Number of Points with Cost](https://leetcode.com/problems/maximum-number-of-points-with-cost/)
+**Difficulty:** Medium  
+**Pattern:** Grid DP + prefix/suffix-max optimization to collapse an O(n) transition to O(1)  
+**Key Concepts:**
+- Pick one cell per row to maximize `sum(picked) - sum(abs(col diff between adjacent rows))`. Return type is **`long`** (scores reach ~10¹⁰)
+- **Subproblem**: `dp[i][j]` = best total for rows `0..i` ending at column `j` in row `i`
+- **Naive transition**: `dp[i][j] = points[i][j] + max over k ( dp[i-1][k] - abs(k - j) )` → O(m·n²), TLEs because `n` can be up to 10⁵ (only `m·n ≤ 10⁵` is bounded)
+- **Key optimization — split the absolute value**:
+  - `k ≤ j`: term = `(dp[i-1][k] + k) - j`. Precompute `left[j] = max over k≤j (dp[i-1][k] + k)` via L→R prefix max
+  - `k ≥ j`: term = `(dp[i-1][k] - k) + j`. Precompute `right[j] = max over k≥j (dp[i-1][k] - k)` via R→L suffix max
+  - Then `dp[i][j] = points[i][j] + max(left[j] - j, right[j] + j)` in O(1)
+- **Per row**: 3 linear passes (build `left`, build `right`, fill `current`) → overall **O(m·n)**, O(n) space with rolling `prev`
+- **No `m==1` / `n==1` special-case needed**: the final `max(prev)` return naturally handles a single row; single column has zero penalty
+- This prefix/suffix-max trick generalizes to any DP where the transition cost is `abs(index difference)`
+- Time: O(m·n), Space: O(n)
 
 ---
 
