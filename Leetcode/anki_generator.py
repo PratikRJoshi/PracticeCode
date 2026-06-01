@@ -136,10 +136,11 @@ JAVA_BLOCK_RE = re.compile(r"```java\s*\n(.*?)```", re.DOTALL)
 def build_solution_index() -> dict[str, Path]:
     """Map normalized problem title -> solution file path (files named <num>_<Title>.md)."""
     index: dict[str, Path] = {}
-    for path in SOURCE.parent.glob("*.md"):
+    # Search recursively so solution files in subfolders (e.g. contest/) are found too.
+    for path in SOURCE.parent.rglob("*.md"):
         match = SOLUTION_FILE_RE.match(path.name)
         if match:
-            index[normalize(match.group(2))] = path
+            index.setdefault(normalize(match.group(2)), path)
     return index
 
 
