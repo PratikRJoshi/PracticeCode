@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
-**Total problems tracked here:** 44  
-**Total unique problems solved (including pre-tracker sessions):** ~74
+**Total problems tracked here:** 45  
+**Total unique problems solved (including pre-tracker sessions):** ~75
 
 ---
 
@@ -575,6 +575,24 @@
 - **No `m==1` / `n==1` special-case needed**: the final `max(prev)` return naturally handles a single row; single column has zero penalty
 - This prefix/suffix-max trick generalizes to any DP where the transition cost is `abs(index difference)`
 - Time: O(m·n), Space: O(n)
+
+---
+
+### 45. [Minimize the Difference Between Target and Chosen Elements](https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/)
+**Difficulty:** Medium  
+**Pattern:** Top-down DP / memoized search over (row, running-sum) states  
+**Key Concepts:**
+- Pick exactly one element per row; minimize `abs(target - sum of chosen)`
+- **Brute force is `n^m`** (n choices per row, m rows) — exponential, infeasible for `m ≤ 70`
+- **Key collapse**: what matters after some rows isn't *which* elements were picked, only the `(row, runningSum)` reached — many branches converge on the same state
+- **State**: `solve(row, sum)` = min achievable `abs(target - final sum)` from this row onward
+- **Base case at `row == m`** (past the last row): `return Math.abs(target - sum)` — uniform recurrence for all rows, no special last-row handling
+- **Recurrence**: `min over columns j of solve(row + 1, sum + mat[row][j])`
+- **Memo**: `Integer[m][maxSum+1]`, `null` = uncomputed. `maxSum = m * maxValue ≤ 70*70 = 4900`, so size `4901` (indices `0..4900` inclusive → off-by-one: array size = max index + 1)
+- **Bug watch**: initialize the per-state `minDiff` to `Integer.MAX_VALUE`, not `0` (every diff is ≥ 0, so `min(diff, 0)` always returns 0)
+- **Complexity reasoning for memoized DP**: time = (#distinct states) × (work per state) = `O(m * maxSum) * O(n)`; each state computed once, later calls are O(1) cache hits
+- **Optional optimizations**: cap `sum` at ~`target` to shrink state space; or bottom-up `boolean[maxSum+1]` reachable-sums set for O(maxSum) space
+- Time: O(m · n · maxSum), Space: O(m · maxSum)
 
 ---
 
