@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
-**Total problems tracked here:** 45  
-**Total unique problems solved (including pre-tracker sessions):** ~75
+**Total problems tracked here:** 46  
+**Total unique problems solved (including pre-tracker sessions):** ~76
 
 ---
 
@@ -593,6 +593,20 @@
 - **Complexity reasoning for memoized DP**: time = (#distinct states) × (work per state) = `O(m * maxSum) * O(n)`; each state computed once, later calls are O(1) cache hits
 - **Optional optimizations**: cap `sum` at ~`target` to shrink state space; or bottom-up `boolean[maxSum+1]` reachable-sums set for O(maxSum) space
 - Time: O(m · n · maxSum), Space: O(m · maxSum)
+
+---
+
+### 46. [Minimum Cost Homecoming of a Robot in a Grid](https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/)
+**Difficulty:** Medium  
+**Pattern:** Greedy (looks like DP, but the path is forced)  
+**Key Concepts:**
+- Robot moves one cell at a time; entering row `r` costs `rowCosts[r]`, entering column `c` costs `colCosts[c]` (independent of the other coordinate)
+- **Meta-lesson — greedy vs DP**: this *looks* like a top-down grid DP, but two facts make it greedy: (1) all costs are **non-negative**, so detours/backtracking only add cost; (2) to go from `startRow` to `homeRow` the robot **must enter every row in between** — the set of rows/columns crossed is **forced**, there is no choice that creates overlapping subproblems. DP/memoization gains nothing.
+- **Answer = fixed sum**: rowCosts of every row from start (exclusive) to home (inclusive) + colCosts of every column likewise
+- **Direction handling**: a `step = home > start ? 1 : -1`; loop `for (r = start + step; r != home + step; r += step) sum += cost[r];`
+- **Same-row / same-column edge case** falls out for free: the loop starts at `start + step` and the stop condition `r != home + step` is immediately false when `start == home`, so zero iterations (no crash, no spurious home-cost add)
+- **When tempted to use DP, ask**: "do I have a *choice* that produces reusable subproblems?" If not → greedy
+- Time: O(m + n), Space: O(1)
 
 ---
 
