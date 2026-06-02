@@ -169,9 +169,23 @@ def highlight_java(code: str) -> str:
     return _pyg_highlight(code, _PYG_LEXER, _PYG_FORMATTER).rstrip("\n")
 
 
+def matching_solution_path(name: str, url: str) -> Path | None:
+    """Locate the solution file for a problem by normalized title or URL slug."""
+    return SOLUTION_INDEX.get(normalize(name)) or SOLUTION_INDEX.get(normalize(slug_of(url)))
+
+
+def real_lc_number(name: str, url: str) -> int | None:
+    """Real LeetCode number, parsed from the matching solution filename (<num>_Title.md)."""
+    path = matching_solution_path(name, url)
+    if not path:
+        return None
+    match = SOLUTION_FILE_RE.match(path.name)
+    return int(match.group(1)) if match else None
+
+
 def find_code_html(name: str, url: str) -> str:
     """Return the first Java code block of the matching solution file as HTML, or ''."""
-    path = SOLUTION_INDEX.get(normalize(name)) or SOLUTION_INDEX.get(normalize(slug_of(url)))
+    path = matching_solution_path(name, url)
     if not path:
         return ""
     block = JAVA_BLOCK_RE.search(path.read_text())
@@ -332,7 +346,12 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
         concepts_html = html_concepts(p.concepts)
         code_html = find_code_html(p.name, p.url)
 
-        # GUIDs derived from stable fields so re-running doesn't duplicate
+        # Display the real LeetCode number when known; fall back to tracker order.
+        lc_number = real_lc_number(p.name, p.url)
+        display_id = str(lc_number) if lc_number is not None else str(p.number)
+        lc_tag = f"lc-{lc_number}" if lc_number is not None else f"lc-{p.number}"
+
+        # GUIDs stay tracker-based and stable so re-running updates (not duplicates) cards.
         guid_approach = genanki.guid_for(f"lc-{p.number}-approach")
         guid_pattern = genanki.guid_for(f"lc-{p.number}-pattern")
 
@@ -340,7 +359,7 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
             genanki.Note(
                 model=model_problem_approach,
                 fields=[
-                    str(p.number),
+                    display_id,
                     escape(p.name),
                     p.url,
                     escape(p.difficulty),
@@ -349,7 +368,7 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
                     code_html,
                 ],
                 guid=guid_approach,
-                tags=[slug(p.pattern), f"lc-{p.number}", slug(p.difficulty)],
+                tags=[slug(p.pattern), lc_tag, slug(p.difficulty)],
             )
         )
 
@@ -357,14 +376,14 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
             genanki.Note(
                 model=model_problem_pattern,
                 fields=[
-                    str(p.number),
+                    display_id,
                     escape(p.name),
                     p.url,
                     escape(p.difficulty),
                     escape(p.pattern),
                 ],
                 guid=guid_pattern,
-                tags=[slug(p.pattern), f"lc-{p.number}", slug(p.difficulty)],
+                tags=[slug(p.pattern), lc_tag, slug(p.difficulty)],
             )
         )
 
@@ -374,7 +393,7 @@ def build_deck(problems: list[Problem]) -> genanki.Deck:
     for pattern, items in pattern_to_problems.items():
         list_html = "<ul>" + "".join(
             f'<li><a href="{p.url}">{escape(p.name)}</a> '
-            f'<span class="meta">(LC {p.number}, {escape(p.difficulty)})</span></li>'
+            f'<span class="meta">(LC {real_lc_number(p.name, p.url) or p.number}, {escape(p.difficulty)})</span></li>'
             for p in sorted(items, key=lambda x: x.number)
         ) + "</ul>"
 
