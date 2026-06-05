@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP, Cyclic Sort  
-**Total problems tracked here:** 49  
-**Total unique problems solved (including pre-tracker sessions):** ~79
+**Total problems tracked here:** 50  
+**Total unique problems solved (including pre-tracker sessions):** ~80
 
 ---
 
@@ -651,6 +651,19 @@
 
 ---
 
+### 50. [Find All Duplicates in an Array](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
+**Difficulty:** Medium  
+**Pattern:** Cyclic sort (same machinery as #47/#48, different read-out)  
+**Key Concepts:**
+- Values in `[1, n]`, each appearing once or twice — return the ones appearing **twice**
+- Identical cyclic-sort loop to #448; only the **second pass changes**: at a mismatched index `i`, add `nums[i]` (not `i+1`) — the value squatting in the wrong slot is the duplicate, because its real home is already occupied by an identical twin
+- The duplicate guard `nums[i] != nums[nums[i]-1]` is precisely what *leaves* the duplicate stranded in a wrong slot (so it can be collected in pass 2)
+- **Loop mnemonic**: keep escorting the value at slot `i` to its home `v-1`, unless home already holds a twin (stop, else infinite loop)
+- Same swap trap: freeze `target = nums[i]-1` before the three swap lines
+- Time: O(n), Space: O(1) extra (excluding output)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -1017,7 +1030,7 @@
 
 ### 23. Cyclic Sort (Index-as-Hash)
 - **Pattern:** When values are bounded in `[1, n]` (or `[0, n-1]`), place each value at its "home" index in-place, then scan for mismatches
-- **Used in:** First Missing Positive, Find All Numbers Disappeared in an Array
+- **Used in:** First Missing Positive, Find All Numbers Disappeared in an Array, Find All Duplicates in an Array
 - **Structure:**
   ```java
   for (int i = 0; i < n; i++) {
