@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP, Cyclic Sort  
-**Total problems tracked here:** 51  
-**Total unique problems solved (including pre-tracker sessions):** ~81
+**Total problems tracked here:** 52  
+**Total unique problems solved (including pre-tracker sessions):** ~82
 
 ---
 
@@ -677,6 +677,20 @@
 
 ---
 
+### 52. [Append K Integers With Minimal Sum](https://leetcode.com/problems/append-k-integers-with-minimal-sum/)
+**Difficulty:** Medium  
+**Pattern:** Greedy + arithmetic-series (Gauss) sum with a shifting boundary  
+**Key Concepts:**
+- Goal: append `k` unique positive integers absent from `nums`, minimizing their sum → these are the `k` smallest missing positives
+- **Cannot append one-by-one** (`k` up to 10⁸); use the closed form `k(k+1)/2` for "sum of first k positives" and adjust
+- **Boundary-shift greedy**: pretend you took `1..k` (`sum = k(k+1)/2`, `boundary = k`). Sort+dedup `nums`; for each unique `v ≤ boundary`, it's occupied → swap it out for the next free integer: `sum += (boundary + 1) - v; boundary++`. Once `v > boundary`, no later (sorted) value matters → `break`
+- **Overflow is the headline bug**: `k(k+1)` ≈ 10¹⁶ overflows `int`. `long sum = (long) k * (k + 1) / 2;` — the cast must hit a **single operand before** the multiply. `(long)(k*(k+1))` is WRONG (overflows in int first, then widens); `((long)k * (k+1))` is right
+- `sum` and `boundary` must both be `long`
+- Dedup needed so a repeated `nums` value doesn't shift the boundary twice
+- Time: O(n log n) (sort dominates), Space: O(n) for dedup list (O(1) achievable with in-place dedup)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -1146,3 +1160,4 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Palindrome construction (candidate enumeration from left half)
 - ✅ Union-Find / DSU (path compression + union by rank)
 - ✅ Cyclic sort (index-as-hash, in-place value placement)
+- ✅ Greedy + arithmetic-series (Gauss) sum with shifting boundary
