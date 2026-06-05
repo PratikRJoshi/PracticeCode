@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP, Cyclic Sort  
-**Total problems tracked here:** 48  
-**Total unique problems solved (including pre-tracker sessions):** ~78
+**Total problems tracked here:** 49  
+**Total unique problems solved (including pre-tracker sessions):** ~79
 
 ---
 
@@ -635,6 +635,19 @@
 - Output list does **not** count toward space → O(1) extra space
 - Same swap-correctness trap: freeze `target = nums[i]-1` before the three swap lines (the moving-target bug)
 - Time: O(n), Space: O(1) extra (excluding output)
+
+---
+
+### 49. [Smallest Missing Integer Greater Than Sequential Prefix Sum](https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/)
+**Difficulty:** Easy  
+**Pattern:** Linear prefix scan + HashSet membership probe  
+**Key Concepts:**
+- **"Prefix" = starts at index 0**: there is exactly ONE maximal sequential prefix. Once the `+1` chain breaks at index `i`, every longer prefix *contains* that broken pair, so none can be sequential — `break` immediately, no max-tracking, no reset/resume
+- A `+1` run starting later in the array is NOT a prefix and is irrelevant, even if longer
+- **Two phases**: (1) accumulate `sum` starting at `nums[0]` while `nums[i] == nums[i-1] + 1`; (2) put all values in a `HashSet`, then increment `sum` until it's not in the set
+- A length-1 prefix is trivially sequential → seed `sum = nums[0]`
+- **Why the final `while` is O(n)**: only `n` distinct values can block consecutive integers, so it advances at most `n+1` times
+- Time: O(n), Space: O(n) for the set
 
 ---
 
