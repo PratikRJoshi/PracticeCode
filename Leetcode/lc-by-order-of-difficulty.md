@@ -2,8 +2,8 @@
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
 **Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP, Cyclic Sort  
-**Total problems tracked here:** 50  
-**Total unique problems solved (including pre-tracker sessions):** ~80
+**Total problems tracked here:** 51  
+**Total unique problems solved (including pre-tracker sessions):** ~81
 
 ---
 
@@ -661,6 +661,19 @@
 - **Loop mnemonic**: keep escorting the value at slot `i` to its home `v-1`, unless home already holds a twin (stop, else infinite loop)
 - Same swap trap: freeze `target = nums[i]-1` before the three swap lines
 - Time: O(n), Space: O(1) extra (excluding output)
+
+---
+
+### 51. [Replace Elements in an Array](https://leetcode.com/problems/replace-elements-in-an-array/)
+**Difficulty:** Medium  
+**Pattern:** HashMap value→index for O(1) locate-and-mutate  
+**Key Concepts:**
+- Brute force (scan array per op) is O(n·m) ≈ 10¹⁰ → TLE; the bottleneck is *finding* the value to replace
+- **Map `value → index`** turns each locate into O(1). For op `[a, b]`: `idx = map.get(a)`, then `nums[idx] = b`, then `map.put(b, idx)`
+- **Crucial: keep the map current** — a later op may use this `b` as *its* `a`, so the map must always know where each live value sits
+- **Mutate `nums` in place** — after the ops loop, `nums` *is* the answer; just `return nums`. No need to rebuild from the map
+- **Trap — rebuilding from the map**: if you don't remove stale keys, both `a → idx` and `b → idx` linger; iterating `entrySet()` then writes the slot in nondeterministic order (a stale value can clobber the correct one). Mutating `nums` directly sidesteps this entirely
+- Time: O(n + m), Space: O(n) — n = array length, m = number of operations
 
 ---
 
