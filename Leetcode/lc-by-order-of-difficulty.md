@@ -1,9 +1,9 @@
 # LeetCode Problems - By Order of Difficulty
 
 **Session Dates:** 2026-04-11, 2026-04-13, 2026-04-14, 2026-04-25, 2026-05-19, 2026-05-20, 2026-05-23, 2026-05-24, 2026-05-28  
-**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP  
-**Total problems tracked here:** 46  
-**Total unique problems solved (including pre-tracker sessions):** ~76
+**Topics:** Tree Problems - Recursive Patterns, Graph/Grid DFS, BFS, Dijkstra, Greedy, Two Pointers, Weekly Contest 502, Palindrome Construction, Union-Find (DSU), Linked List + Monotonic Stack, Grid DP, Cyclic Sort  
+**Total problems tracked here:** 48  
+**Total unique problems solved (including pre-tracker sessions):** ~78
 
 ---
 
@@ -610,6 +610,34 @@
 
 ---
 
+### 47. [First Missing Positive](https://leetcode.com/problems/first-missing-positive/)
+**Difficulty:** Hard  
+**Pattern:** Cyclic sort (index-as-hash, in-place)  
+**Key Concepts:**
+- **Pigeonhole bound**: an array of size `n` can hold at most `n` distinct positives, so the answer always lies in `[1, n+1]` — no need to scan up to `Integer.MAX_VALUE`
+- **Index-as-hash**: use the array itself as the "seen" set by placing value `v` at index `v-1` (so a sorted prefix reads `1,2,3,...`)
+- **Answer pass**: after cyclic sort, the first index `i` where `nums[i] != i+1` gives answer `i+1`; if none mismatch, answer is `n+1`
+- **Guard order matters** (Java `&&` short-circuits left→right): bounds checks `nums[i] > 0 && nums[i] <= n` must come *before* dereferencing `nums[nums[i]-1]`, else negative/oversized values throw before the guard protects you
+- **Freeze the target index**: `int j = nums[i]-1;` *before* swapping — `nums[i]` is a moving target; reusing it mid-swap corrupts the write
+- **Duplicate guard prevents infinite loop**: only swap when `nums[i] != nums[nums[i]-1]` (e.g. `[2,2]` would loop forever otherwise)
+- **Amortized O(n)** despite nested `while`: each successful swap places one value permanently → at most n swaps total
+- Time: O(n), Space: O(1)
+
+---
+
+### 48. [Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
+**Difficulty:** Easy  
+**Pattern:** Cyclic sort (same shape as First Missing Positive)  
+**Key Concepts:**
+- Identical machinery to #47, but **collect all** mismatches instead of returning the first
+- Values are guaranteed in `[1, n]`, so the two **bounds guards can be dropped** — only the duplicate guard (`nums[i] != nums[nums[i]-1]`) is still required to avoid infinite loops
+- After cyclic sort, every index `i` with `nums[i] != i+1` contributes `i+1` to the result list
+- Output list does **not** count toward space → O(1) extra space
+- Same swap-correctness trap: freeze `target = nums[i]-1` before the three swap lines (the moving-target bug)
+- Time: O(n), Space: O(1) extra (excluding output)
+
+---
+
 ## Key Patterns Learned
 
 ### 1. Bottom-Up Recursion
@@ -974,7 +1002,26 @@
 - **Key optimizations:** Path compression (`find`) + union by rank/size - together give nearly O(1) per op (alpha(n))
 - **Trap:** Compare `rank[root]`, not `rank[node]` - rank/size lives at roots only
 
-### 23. Edge Case Handling
+### 23. Cyclic Sort (Index-as-Hash)
+- **Pattern:** When values are bounded in `[1, n]` (or `[0, n-1]`), place each value at its "home" index in-place, then scan for mismatches
+- **Used in:** First Missing Positive, Find All Numbers Disappeared in an Array
+- **Structure:**
+  ```java
+  for (int i = 0; i < n; i++) {
+      while (nums[i] > 0 && nums[i] <= n && nums[i] != nums[nums[i] - 1]) {
+          int j = nums[i] - 1;   // freeze target BEFORE swapping
+          int tmp = nums[i];
+          nums[i] = nums[j];
+          nums[j] = tmp;
+      }
+  }
+  // second pass: first/all i where nums[i] != i+1
+  ```
+- **When to use:** "smallest missing positive", "all missing/duplicate numbers", "find the duplicate" — any time the value range matches the index range
+- **Traps:** (1) bounds guards must precede `nums[nums[i]-1]` dereference (Java `&&` short-circuit); (2) freeze the target index before swapping (moving-target bug); (3) duplicate guard `nums[i] != nums[nums[i]-1]` prevents infinite loops
+- **Key insight:** the array *is* the hash table — O(1) extra space, O(n) amortized (each swap finalizes one element)
+
+### 24. Edge Case Handling
 - **Null nodes:** Usually return 0 or true (valid empty subtree)
 - **Single node:** Count as depth 1, valid BST, etc.
 - **Sentinel values:** Use `Long.MIN/MAX_VALUE` when `Integer` range isn't sufficient
@@ -1059,3 +1106,4 @@ All problems follow similar complexity patterns for tree recursion:
 - ✅ Two pointers (opposite ends) with greedy dominance shrinking
 - ✅ Palindrome construction (candidate enumeration from left half)
 - ✅ Union-Find / DSU (path compression + union by rank)
+- ✅ Cyclic sort (index-as-hash, in-place value placement)
