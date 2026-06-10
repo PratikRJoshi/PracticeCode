@@ -152,6 +152,10 @@ def slug_of(url: str) -> str:
 
 SOLUTION_FILE_RE = re.compile(r"^(\d+)_(.+)\.md$")
 JAVA_BLOCK_RE = re.compile(r"```java\s*\n(.*?)```", re.DOTALL)
+# Matches a "Final Code" / "Final Java Code" heading (markdown heading or bold),
+# but NOT "Step-by-Step to the Final Code". Used to pick the complete solution
+# in step-by-step files that contain several partial snippets.
+FINAL_HEADING_RE = re.compile(r"(?im)^\s*(?:#{1,6}\s*|\*\*\s*)?final\s+(?:code|java)\b")
 
 
 def build_solution_index() -> dict[str, Path]:
@@ -189,15 +193,32 @@ def real_lc_number(name: str, url: str) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def extract_solution_code(text: str) -> str | None:
+    """Pick the complete solution's Java block from a solution file.
+
+    Prefers the first block after a "Final Code"/"Final Java Code" heading;
+    otherwise the LAST java block (files build up toward the final solution).
+    This avoids grabbing a partial step-by-step snippet that appears first.
+    """
+    blocks = list(JAVA_BLOCK_RE.finditer(text))
+    if not blocks:
+        return None
+    final_heading = FINAL_HEADING_RE.search(text)
+    if final_heading:
+        for block in blocks:
+            if block.start() > final_heading.start():
+                return block.group(1).strip("\n")
+    return blocks[-1].group(1).strip("\n")
+
+
 def find_code_html(name: str, url: str) -> str:
-    """Return the first Java code block of the matching solution file as HTML, or ''."""
+    """Return the solution's Java code block of the matching solution file as HTML, or ''."""
     path = matching_solution_path(name, url)
     if not path:
         return ""
-    block = JAVA_BLOCK_RE.search(path.read_text())
-    if not block:
+    code = extract_solution_code(path.read_text())
+    if code is None:
         return ""
-    code = block.group(1).strip("\n")
     return f'<pre class="code-block"><code>{highlight_java(code)}</code></pre>'
 
 
