@@ -196,19 +196,31 @@ def real_lc_number(name: str, url: str) -> int | None:
 def extract_solution_code(text: str) -> str | None:
     """Pick the complete solution's Java block from a solution file.
 
-    Prefers the first block after a "Final Code"/"Final Java Code" heading;
-    otherwise the LAST java block (files build up toward the final solution).
-    This avoids grabbing a partial step-by-step snippet that appears first.
+    Strategy:
+      1. Prefer blocks that define a `class Solution` (real submissions),
+         which skips comparison/snippet blocks that have no class/method.
+      2. Among those, if a "Final Code"/"Final Java Code" heading exists,
+         take the first such block after it (handles step-by-step files
+         whose earlier blocks are partial stubs).
+      3. Otherwise take the last qualifying block (files build toward the
+         final solution).
     """
     blocks = list(JAVA_BLOCK_RE.finditer(text))
     if not blocks:
         return None
+
+    # Prefer full solutions (declare a class, e.g. Solution or Codec); this
+    # skips comparison/snippet blocks that are bare loops with no class.
+    class_decl = re.compile(r"\bclass\s+\w+")
+    candidates = [b for b in blocks if class_decl.search(b.group(1))] or blocks
+
     final_heading = FINAL_HEADING_RE.search(text)
     if final_heading:
-        for block in blocks:
-            if block.start() > final_heading.start():
-                return block.group(1).strip("\n")
-    return blocks[-1].group(1).strip("\n")
+        after = [b for b in candidates if b.start() > final_heading.start()]
+        if after:
+            return after[0].group(1).strip("\n")
+
+    return candidates[-1].group(1).strip("\n")
 
 
 def find_code_html(name: str, url: str) -> str:
