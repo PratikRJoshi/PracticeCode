@@ -60,40 +60,30 @@ We need to find all root-to-leaf paths that sum to targetSum. This is a backtrac
 class Solution {
     public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
         List<List<Integer>> result = new ArrayList<>();
-        List<Integer> currentPath = new ArrayList<>();
-        
-        // Start DFS traversal from root
-        dfs(root, targetSum, 0, currentPath, result);
-        
+        if(root == null){
+            return result;
+        }
+
+        pathSum(root, targetSum, new ArrayList<>(), result);
         return result;
     }
-    
-    private void dfs(TreeNode node, int targetSum, int currentSum, 
-                     List<Integer> currentPath, List<List<Integer>> result) {
-        // Base case: null node
-        if (node == null) {
+
+    private void pathSum(TreeNode root, int targetSum, List<Integer> temp, List<List<Integer>> result){
+        if(root == null){
             return;
         }
-        
-        // Add current node to path and update sum
-        currentPath.add(node.val);
-        currentSum += node.val;
-        
-        // Check if we're at a leaf node
-        if (node.left == null && node.right == null) {
-            // If sum equals target, add current path to result
-            if (currentSum == targetSum) {
-                result.add(new ArrayList<>(currentPath)); // Create copy
+
+        temp.add(root.val);
+
+        if(root.left == null && root.right == null){
+            if(targetSum - root.val == 0){
+                result.add(new ArrayList<>(temp));
             }
-        } else {
-            // Continue DFS on children
-            dfs(node.left, targetSum, currentSum, currentPath, result);
-            dfs(node.right, targetSum, currentSum, currentPath, result);
         }
-        
-        // Backtrack: remove current node from path
-        // This allows us to explore other paths
-        currentPath.remove(currentPath.size() - 1);
+
+        pathSum(root.left, targetSum - root.val, temp, result);
+        pathSum(root.right, targetSum - root.val, temp, result);
+        temp.remove(temp.size() - 1);
     }
 }
 ```
