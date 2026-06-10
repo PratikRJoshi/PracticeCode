@@ -27,57 +27,75 @@ Output: `[-1]`
 
 This is the mirror of "preorder + inorder" (LC 105). In **postorder** (`left, right, root`), the **last** element is the root. Inorder (`left, root, right`) tells us how many nodes are in the left vs right subtree.
 
-### Build the intuition step by step
+### Build the intuition step by step (explicit index windows)
 
-1. The last unused element of `postorder` is the current subtree's root.
-2. Find that root inside `inorder`. Everything to its left forms the left subtree; everything to its right forms the right subtree.
-3. Because postorder ends with the root and is structured `... left ... right ... root`, when we consume postorder **from the back** we must build the **right subtree before the left**.
-4. Recurse, narrowing the inorder window each time.
+This version mirrors the LC 105 (preorder + inorder) solution, passing explicit index windows for **both** arrays instead of a moving global pointer.
+
+1. The **last** element of the current `postorder` window (`postorder[postEnd]`) is the subtree's root.
+2. Find that root inside `inorder` (linear scan). `inorderLength = rootInInorder - inStart` = the number of nodes in the left subtree — the ruler that slices the postorder window.
+3. **Postorder slicing**: left subtree = `[postStart, postStart + inorderLength - 1]`; right subtree = `[postStart + inorderLength, postEnd - 1]` (the trailing `-1` drops the root that sits at the end).
+4. **Inorder slicing**: left = `[inStart, rootInInorder - 1]`; right = `[rootInInorder + 1, inEnd]`.
+5. Build left then right (natural order — no global pointer to force right-first).
 
 ### Why this works
 
-A moving pointer `postIdx` (starting at the end of postorder) always points at the next root to place. Pairing it with the inorder split uniquely reconstructs the tree, since all values are distinct. A HashMap from value → inorder index gives `O(1)` root location.
+`inorderLength` keeps both arrays' windows in lockstep: each subtree has the same node count in inorder and postorder. Since all values are unique, the root split is unambiguous, so the reconstruction is exact.
 
 ## Code Mapping
 
 | Problem Requirement (@) | Java Code Section |
 |---|---|
-| Root is the last postorder element | `int rootVal = postorder[postIdx--];` |
-| Split into left/right via inorder | `int mid = inorderIndex.get(rootVal);` |
-| Right subtree before left | `root.right = build(...); root.left = build(...);` |
-| O(1) root lookup | `Map<Integer,Integer> inorderIndex` |
+| Root is the last postorder element | `new TreeNode(postorder[postEnd])` |
+| Locate root in inorder | linear scan setting `rootInInorder` |
+| Left/right subtree sizes match across arrays | `inorderLength = rootInInorder - inStart` |
+| Slice postorder windows | left `[postStart, postStart+inorderLength-1]`, right `[postStart+inorderLength, postEnd-1]` |
 
 ## Final Java Code & Learning Pattern
 
 ```java
-// [Pattern: Recursive tree construction / divide and conquer (postorder variant)]
-import java.util.HashMap;
-import java.util.Map;
-
+// [Pattern: Recursive tree construction / divide and conquer (explicit index windows)]
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 class Solution {
-    private Map<Integer, Integer> inorderIndex;
-    private int postIdx;
-
     public TreeNode buildTree(int[] inorder, int[] postorder) {
-        inorderIndex = new HashMap<>();
-        for (int i = 0; i < inorder.length; i++) {
-            inorderIndex.put(inorder[i], i);
-        }
-        postIdx = postorder.length - 1;
-        return build(postorder, 0, inorder.length - 1);
-    }
-
-    private TreeNode build(int[] postorder, int inStart, int inEnd) {
-        if (inStart > inEnd) {
+        if (inorder.length != postorder.length) {
             return null;
         }
-        int rootVal = postorder[postIdx--];
-        TreeNode root = new TreeNode(rootVal);
-        int mid = inorderIndex.get(rootVal);
+        return buildTree(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1);
+    }
 
-        // Postorder consumed from the back => build RIGHT before LEFT.
-        root.right = build(postorder, mid + 1, inEnd);
-        root.left = build(postorder, inStart, mid - 1);
+    private TreeNode buildTree(int[] inorder, int inStart, int inEnd, int[] postorder, int postStart, int postEnd) {
+        if (inStart > inEnd || postStart > postEnd) {
+            return null;
+        }
+
+        TreeNode root = new TreeNode(postorder[postEnd]); // postorder: root is LAST
+        int rootInInorder = 0;
+        for (int i = 0; i < inorder.length; i++) {
+            if (inorder[i] == root.val) {
+                rootInInorder = i;
+                break;
+            }
+        }
+
+        int inorderLength = rootInInorder - inStart; // size of the left subtree
+
+        root.left = buildTree(inorder, inStart, rootInInorder - 1, postorder, postStart, postStart + inorderLength - 1);
+        root.right = buildTree(inorder, rootInInorder + 1, inEnd, postorder, postStart + inorderLength, postEnd - 1);
+
         return root;
     }
 }
@@ -85,22 +103,23 @@ class Solution {
 
 ### Why each part exists
 
-- **`inorderIndex` map** — turns the "find root in inorder" step from `O(n)` into `O(1)`.
-- **`postIdx` as instance state** — a single global pointer walking postorder backward; every recursive call takes the next root.
-- **Right-before-left ordering** — mandatory because we read postorder from the end (`...left, right, root`).
+- **`postorder[postEnd]`** — in postorder (`left, right, root`) the root is the last element of the current window.
+- **Explicit index windows for both arrays** — no global mutable pointer; each call is self-contained, which makes the left/right order irrelevant (build left then right naturally).
+- **`inorderLength`** — bridges the two arrays so their windows always describe the same set of nodes.
+- **`postEnd - 1` on the right slice** — excludes the root, which sits at the very end of the postorder window.
 
 ## Tree Problem Notes
 
-- **Helper function?** Yes — the recursion needs extra parameters (the current inorder window). The public `buildTree` only sets up state.
-- **Global variable?** Yes — `postIdx` must persist and decrement across all calls; a local would reset. `inorderIndex` is shared read-only state.
-- **Computed at each node:** pick the root value, locate it in inorder, then recurse.
-- **Returned to parent:** the constructed subtree root, which the parent wires as its `left`/`right`.
-- **Recursion order:** right child **before** left, dictated by consuming postorder back-to-front.
+- **Helper function?** Yes — the recursion needs the four window bounds as parameters. The public `buildTree` just kicks off with the full ranges.
+- **Global variable?** No — this version is stateless across calls; all context is passed via the index windows (contrast with the moving-pointer variant, which needs a persistent `postIdx`).
+- **Computed at each node:** take the last postorder element as root, locate it in inorder, compute `inorderLength`, then recurse on the sliced windows.
+- **Returned to parent:** the constructed subtree root, wired as the parent's `left`/`right`.
+- **Recursion order:** left or right first doesn't matter here, since each call's window is explicit (unlike the back-to-front pointer variant, which forces right-before-left).
 
 ## Complexity Analysis
 
-- **Time Complexity:** $O(n)$ — each node created once, `O(1)` lookups.
-- **Space Complexity:** $O(n)$ — map plus recursion stack (`O(h)` stack, `O(n)` map).
+- **Time Complexity:** $O(n^2)$ worst case — each of the `n` nodes does an `O(n)` linear scan to find the root in inorder (degrades on skewed trees). A `HashMap<value, index>` for root lookup restores `O(n)`.
+- **Space Complexity:** $O(n)$ — recursion stack (`O(h)`: `O(\log n)` balanced, `O(n)` skewed). The HashMap variant adds `O(n)`.
 
 ## Similar Problems
 
