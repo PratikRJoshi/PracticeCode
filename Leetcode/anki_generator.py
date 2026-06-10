@@ -14,11 +14,17 @@ Run:
   .venv/bin/python Leetcode/anki_generator.py
 
 Output: Leetcode/leetcode-revision.apkg
+
+Re-import tips (Anki Desktop -> Import File):
+  - "Import any learning progress" = OFF  (preserves your review history)
+  - "Update notes" = Always               (forces new code/content in; If newer
+                                            can skip updates when mod times tie)
 """
 
 from __future__ import annotations
 
 import re
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -418,7 +424,12 @@ def main() -> None:
 
     deck = build_deck(problems)
     package = genanki.Package(deck)
-    package.write_to_file(str(OUTPUT))
+    # Stamp every generated note/card with the current build time so Anki's
+    # "Update notes: If newer" sees each fresh export as newer than what's
+    # already in your collection. If a re-import still shows stale content,
+    # use "Update notes: Always" in the import dialog (timestamps can tie).
+    build_ts = time.time()
+    package.write_to_file(str(OUTPUT), timestamp=build_ts)
 
     pattern_count = len({p.pattern for p in problems if p.pattern})
     total_cards = len(problems) * 2 + pattern_count
@@ -427,6 +438,8 @@ def main() -> None:
     print(f"  {len(problems)} problems x 2 cards + {pattern_count} pattern cards "
           f"= {total_cards} cards")
     print(f"  {with_code}/{len(problems)} approach cards include solution code")
+    print(f"  note mod timestamp: {int(build_ts)} "
+          f"(re-import with 'Update notes: Always' if old content persists)")
 
 
 if __name__ == "__main__":
